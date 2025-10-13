@@ -1,0 +1,40 @@
+{
+    "tags": {
+      "alias_sensor_0": {
+        "enable": true,
+        "tag": "1:400003",
+        "data_type": "BOOL",
+        "targets": "objsensor"
+     },
+     "alias_sensor_1": {
+        "enable": true,
+        "tag": "1:400003",
+        "data_type": "BOOL",
+        "targets": "objsensor"
+     },
+     "alias_sensor_2": {
+        "enable": true,
+        "tag": "1:400003",
+        "data_type": "BOOL",
+        "targets": "objsensor"
+     },
+     "alias_sensor_3": {
+        "enable": true,
+        "tag": "1:400003",
+        "data_type": "BOOL",
+        "targets": "objsensor"
+     },
+     "alias_sensor_4": {
+        "enable": true,
+        "tag": "1:400003",
+        "data_type": "BOOL",
+        "targets": "objsensor"
+     },
+     "alias_sensor_5": {
+        "enable": true,
+        "tag": "1:400003",
+        "data_type": "BOOL",
+        "targets": "objsensor"
+     }
+   }
+}

@@ -1,0 +1,179 @@
+{
+    "objects": {
+      "di_0": {
+        "id": 1,
+        "type": 1,
+        "ctrlEnable": true,
+        "errType": 1,
+        "info": {
+          "tag": "TEMP_000",
+          "desc": "Датчик температуры 0",
+          "name": "Температура 0",
+          "txt": "Цех 0",
+          "type": 0
+        },
+        "state": {
+          "colorOff": "#00FF00",
+          "colorOn": "#FF0000",
+          "txtOff": "Норма",
+          "txtOn": "Авария"
+        },
+        "unit": {
+          "txt": "°C",
+          "format": "0.0"
+        },
+        "uso": {
+          "id": 1001,
+          "txt": "Датчик температуры"
+        },
+        "alias": {
+          "state": "alias_sensor_0",
+          "error": "alias_sensor_1",
+          "value": "alias_sensor_2"
+        },
+        "cmd": {
+          "cmd0": "cmd_bs"
+        }
+      },
+      "di_1": {
+        "id": 1,
+        "type": 1,
+        "ctrlEnable": true,
+        "errType": 1,
+        "info": {
+          "tag": "TEMP_001",
+          "desc": "Датчик температуры 1",
+          "name": "Температура 1",
+          "txt": "Цех 1",
+          "type": 0
+        },
+        "state": {
+          "colorOff": "#00FF00",
+          "colorOn": "#FF0000",
+          "txtOff": "Норма",
+          "txtOn": "Авария"
+        },
+        "unit": {
+          "txt": "°C",
+          "format": "0.0"
+        },
+        "uso": {
+          "id": 1001,
+          "txt": "Датчик температуры"
+        },
+        "alias": {
+          "state": "alias_sensor_3",
+          "error": "alias_sensor_4",
+          "value": "alias_sensor_5"
+        },
+        "cmd": {
+          "cmd0": "cmd_bs"
+        }
+      },
+      "di_2": {
+        "id": 1,
+        "type": 1,
+        "ctrlEnable": true,
+        "errType": 1,
+        "info": {
+          "tag": "TEMP_002",
+          "desc": "Датчик температуры 2",
+          "name": "Температура 2",
+          "txt": "Цех 2",
+          "type": 0
+        },
+        "state": {
+          "colorOff": "#00FF00",
+          "colorOn": "#FF0000",
+          "txtOff": "Норма",
+          "txtOn": "Авария"
+        },
+        "unit": {
+          "txt": "°C",
+          "format": "0.0"
+        },
+        "uso": {
+          "id": 1001,
+          "txt": "Датчик температуры"
+        },
+        "alias": {
+          "state": "alias_sensor_6",
+          "error": "alias_sensor_7",
+          "value": "alias_sensor_8"
+        },
+        "cmd": {
+          "cmd0": "cmd_bs"
+        }
+      },
+      "di_3": {
+        "id": 1,
+        "type": 1,
+        "ctrlEnable": true,
+        "errType": 1,
+        "info": {
+          "tag": "TEMP_003",
+          "desc": "Датчик температуры 3",
+          "name": "Температура 3",
+          "txt": "Цех 3",
+          "type": 0
+        },
+        "state": {
+          "colorOff": "#00FF00",
+          "colorOn": "#FF0000",
+          "txtOff": "Норма",
+          "txtOn": "Авария"
+        },
+        "unit": {
+          "txt": "°C",
+          "format": "0.0"
+        },
+        "uso": {
+          "id": 1001,
+          "txt": "Датчик температуры"
+        },
+        "alias": {
+          "state": "alias_sensor_0",
+          "error": "alias_sensor_1",
+          "value": "alias_sensor_2"
+        },
+        "cmd": {
+          "cmd0": "cmd_bs"
+        }
+      },
+      "di_4": {
+        "id": 1,
+        "type": 1,
+        "ctrlEnable": true,
+        "errType": 1,
+        "info": {
+          "tag": "TEMP_004",
+          "desc": "Датчик температуры 4",
+          "name": "Температура 4",
+          "txt": "Цех 4",
+          "type": 0
+        },
+        "state": {
+          "colorOff": "#00FF00",
+          "colorOn": "#FF0000",
+          "txtOff": "Норма",
+          "txtOn": "Авария"
+        },
+        "unit": {
+          "txt": "°C",
+          "format": "0.0"
+        },
+        "uso": {
+          "id": 1001,
+          "txt": "Датчик температуры"
+        },
+        "alias": {
+          "state": "alias_sensor_0",
+          "error": "alias_sensor_1",
+          "value": "alias_sensor_2"
+        },
+        "cmd": {
+          "cmd0": "cmd_bs"
+        }
+      }
+  }
+}

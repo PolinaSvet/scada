@@ -1,0 +1,27 @@
+{
+  "server": {
+	"channel_buffer_size": 1000,
+    "error_handler": {
+      "enabled": true,
+      "save_file": "log_error.json",
+	  "buffer_size": 1000,
+	  "save_interval_ms": 5000
+    },
+	"status_handler": {
+      "enabled": true,
+      "save_file": "log_status.json",
+	  "buffer_size": 1000,
+	  "save_interval_ms": 5000
+    }
+  },
+  "modules": {
+    "generationdata": {
+      "enabled": true,
+      "config_file": "configs/config_generationdata.json"
+    },
+    "database": {
+      "enabled": true,
+      "config_file": "configs/config_database.json"
+    }
+  }
+}

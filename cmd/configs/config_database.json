@@ -1,0 +1,22 @@
+{
+  "limit_time_ms": 1000, 
+  "status_time_s": 30,
+  "id": "database",
+  "batch_writing": {
+    "buffer_size": 10000,
+    "flush_interval_ms": 100,
+    "delay_between_pack_ms": 10,
+    "max_pack_size": 1000
+  },
+  "database_config_path": "configs/objects/database.json",
+  "objects": {
+    "objsensor": {
+      "enabled": true,
+      "config_file": "configs/objects/objsensor.json"
+    },
+    "objdi": {
+      "enabled": true,
+      "config_file": "configs/objects/objdi.json"
+    }
+  }
+}

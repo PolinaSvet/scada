@@ -1,0 +1,96 @@
+5. Предлагаемая архитектура
+5.1. Схема обмена данными
+text
+Go Module → WebSocket Server → Vue.js Frontend
+     ↓                              ↑
+Database (состояние)          User Commands
+5.2. Разделение сообщений
+go
+// Канал 1: Object Updates (high frequency)
+type ObjectUpdate struct {
+    ID        string                 `json:"id"`
+    Type      string                 `json:"type"` // "status", "value"
+    Timestamp time.Time              `json:"ts"`
+    Data      map[string]interface{} `json:"data"` // Оптимизированные данные
+}
+
+// Канал 2: Control Messages (on-demand)
+type ControlMessage struct {
+    ID     string          `json:"id"`
+    Action string          `json:"action"`
+    Data   json.RawMessage `json:"data"`
+}
+5.3. Гибридная обработка данных
+go
+// На сервере (Go) - критичная логика
+func ProcessObjectUpdate(tag TagValue, info TypeInfo) ObjectState {
+    state := ObjectState{
+        // Сервер вычисляет базовый статус
+        Status:     calculateStatus(tag.Value),
+        BaseColor:  calculateBaseColor(tag.Value, info),
+        IsBlinking: shouldBlink(tag.Value),
+        
+        // Сырые данные для кастомизации
+        RawData: RawData{
+            State: extractState(tag.Value),
+            Imit:  extractImit(tag.Value),
+            Mask:  extractMask(tag.Value),
+            Ack:   extractAck(tag.Value),
+        },
+    }
+    return state
+}
+
+// На клиенте (Vue) - кастомизация
+computed: {
+    finalStyle() {
+        // Базовые стили с сервера
+        const base = this.serverState;
+        
+        // Клиентская кастомизация
+        if (this.customTheme === 'dark') {
+            base.color = darken(base.color);
+        }
+        
+        return base;
+    }
+}
+5.4. Оптимизация передачи
+Сжатие: gzip для больших сообщений
+
+Бинарные протоколы: MessagePack вместо JSON при больших объемах
+
+Кэширование: статических данных TypeInfo
+
+Троттлинг: обновлений для редко меняющихся объектов
+
+6. Рекомендации
+Протокол: WebSocket + JSON (с возможностью перехода на MessagePack)
+
+Разделение: 2 канала - статусы (частые) и управление (редкие)
+
+Обработка: Гибридная - сервер (критичная логика) + клиент (кастомизация)
+
+Оптимизация: Пакетные + дифференциальные обновления
+
+Безопасность: Аутентификация WebSocket + валидация команд
+
+Преимущества подхода:
+
+Минимальная задержка для критичных обновлений
+
+Гибкость настройки отображения без изменения сервера
+
+Оптимизированный трафик
+
+Масштабируемость для 30+ объектов
+
+Такой подход обеспечит баланс между производительностью, гибкостью и простотой поддержки.
+
+
+
+
+
+
+
+

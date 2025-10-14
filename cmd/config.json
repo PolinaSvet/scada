@@ -22,6 +22,10 @@
     "database": {
       "enabled": true,
       "config_file": "configs/config_database.json"
+    },
+    "vueway": {
+      "enabled": true,
+      "config_file": "configs/config_vueway.json"
     }
   }
 }

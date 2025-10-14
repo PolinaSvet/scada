@@ -1,0 +1,24 @@
+{
+  "limit_time_ms": 1000,
+  "status_time_s": 30,
+  "id": "vueway",
+  "max_clients": 10,
+  "batch_writing": {
+    "buffer_size": 10000,
+    "flush_interval_ms": 100,
+    "delay_between_pack_ms": 10,
+    "max_pack_size": 1000
+  },
+  "websocket": {
+    "data_port": 8081,
+    "control_port": 8082,
+    "test_port": 8083,
+    "read_buffer_size": 1024,
+    "write_buffer_size": 1024,
+    "max_msg_per_minute": 60
+  },
+  "demo_mode": {
+    "session_duration_min": 15,
+    "reconnect_cooldown_min": 30
+  }
+}

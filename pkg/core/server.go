@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"server-system/pkg/modules/database"
+	"server-system/pkg/modules/vueway"
 	"server-system/pkg/types"
 	"sync"
 	"time"
@@ -19,10 +20,11 @@ func DataInit() {
 
 	// 2. Создание каналов
 	bufferSize := 1000
-	genToDb := make(chan types.Message, bufferSize)
-	dbToVue := make(chan types.Message, bufferSize)
-	systemMessChan := make(chan types.Message, bufferSize)
-	statusChan := make(chan types.Message, bufferSize)
+	chanGenToDbs := make(chan types.Message, bufferSize)
+	chanDbsToVue := make(chan types.Message, bufferSize)
+	chanVueToDbs := make(chan types.Message, bufferSize)
+	chanSystemMess := make(chan types.Message, bufferSize)
+	chanStatus := make(chan types.Message, bufferSize)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -33,45 +35,66 @@ func DataInit() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		handleSystemMessages(ctx, systemMessChan)
+		handleSystemMessages(ctx, chanSystemMess)
 	}()
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		handleStatus(ctx, statusChan)
+		handleStatus(ctx, chanStatus)
 	}()
 
-	go generateTestData(genToDb)
+	go generateTestData(chanGenToDbs)
 
 	// 4. Запуск database модуля
-	dbInit := database.DatabaseInit{
+	dbsInit := database.DatabaseInit{
 		Ctx:            ctx,
-		SystemMessChan: systemMessChan,
-		StatusChan:     statusChan,
-		InputChan:      genToDb,
-		OutputChan:     dbToVue,
+		ChanSystemMess: chanSystemMess,
+		ChanStatus:     chanStatus,
+		ChanInputGen:   chanGenToDbs,
+		ChanOutputVue:  chanDbsToVue,
+		ChanInputVue:   chanVueToDbs,
 		ConfigFile:     config["modules"].(map[string]interface{})["database"].(map[string]interface{})["config_file"].(string),
 	}
 
-	db := database.NewModule(dbInit)
-	if db != nil {
+	dbs := database.NewModule(dbsInit)
+	if dbs != nil {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			db.Start()
+			dbs.Start()
 		}()
 	}
+
+	// 5. Запуск vueway модуля
+	vueInit := vueway.VueWayInit{
+		Ctx:            ctx,
+		ChanSystemMess: chanSystemMess,
+		ChanStatus:     chanStatus,
+		ChanOutputDbs:  chanVueToDbs,
+		ChanInputDbs:   chanDbsToVue,
+		ConfigFile:     config["modules"].(map[string]interface{})["vueway"].(map[string]interface{})["config_file"].(string),
+	}
+
+	vue := vueway.NewModule(vueInit)
+	if vue != nil {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			vue.Start()
+		}()
+	}
+
 	// test for reading data
-	wg.Add(1)
+	/*wg.Add(1)
 	go func() {
 		defer wg.Done()
 
-		for _ = range dbToVue {
-			//for msg := range dbToVue {
-			//log.Println("get msg from dbToVue", msg.InitDT, msg.ID, len(msg.Data))
+		//for _ = range chanDbsToVue {
+		for msg := range chanDbsToVue {
+			log.Println("get msg from chanDbsToVue", msg.InitDT, msg.ID, len(msg.Data))
 		}
-	}()
+	}()*/
 
 	log.Println("Server started")
 	wg.Wait()

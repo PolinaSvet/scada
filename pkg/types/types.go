@@ -30,6 +30,7 @@ type Message struct {
 	InitDT   time.Time       `json:"init_dt"`
 	UpdateDT time.Time       `json:"update_dt"`
 	Source   string          `json:"source"`
+	ClientID string          `json:"clientId"`
 }
 
 // TagValue - значение тега
@@ -74,6 +75,7 @@ type ServiceStatus struct {
 	MessagesRecv     int                `json:"messages_received"`
 	ErrorsCount      int                `json:"errors_count"`
 	StatusOutChannel StatusChannelAlive `json:"status_channel_alive"`
+	ExtraData        interface{}        `json:"extra_data"`
 }
 
 type StatusChannelAlive struct {

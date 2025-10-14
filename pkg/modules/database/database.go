@@ -14,16 +14,34 @@ import (
 // DatabaseInit - параметры инициализации
 type DatabaseInit struct {
 	Ctx            context.Context
-	SystemMessChan chan<- types.Message
-	StatusChan     chan<- types.Message
-	InputChan      <-chan types.Message
-	OutputChan     chan<- types.Message
+	ChanSystemMess chan<- types.Message
+	ChanStatus     chan<- types.Message
+	ChanInputGen   <-chan types.Message
+	ChanOutputVue  chan<- types.Message
+	ChanInputVue   <-chan types.Message
 	ConfigFile     string
 }
 
 type Database struct {
+	ctx        context.Context
 	сonfigFile string
 	config     types.DatabaseMainConfig
+
+	// каналы
+	chanSystemMess chan<- types.Message
+	chanStatus     chan<- types.Message
+	chanInputGen   <-chan types.Message
+	chanOutputVue  chan<- types.Message
+	chanInputVue   <-chan types.Message
+
+	// пакетная обработка данных
+	batchProcessor *batch.BatchProcessor
+
+	// статистика
+	cntMsgGet int
+	cntMsgSet int
+	cntErr    int
+	statsMu   sync.Mutex
 
 	// база тэгов - используем sync.Map для безопасного доступа из горутин
 	dbTags sync.Map // ключ: string (alias), значение: types.DatabaseTag
@@ -35,28 +53,16 @@ type Database struct {
 	objSensors sync.Map // ключ: string, значение: types.ObjectConfig
 	objDi      sync.Map // ключ: string, значение: types.ObjectConfig
 
-	// статистика
-	cntMsgGet int
-	cntMsgSet int
-	cntErr    int
-	statsMu   sync.Mutex
-	ctx       context.Context
-	// каналы
-	systemMessChan chan<- types.Message
-	statusChan     chan<- types.Message
-	inputChan      <-chan types.Message
-	outputChan     chan<- types.Message
-
-	batchProcessor *batch.BatchProcessor
 }
 
 func NewModule(init DatabaseInit) *Database {
 
 	db := &Database{ctx: init.Ctx,
-		systemMessChan: init.SystemMessChan,
-		statusChan:     init.StatusChan,
-		inputChan:      init.InputChan,
-		outputChan:     init.OutputChan,
+		chanSystemMess: init.ChanSystemMess,
+		chanStatus:     init.ChanStatus,
+		chanInputGen:   init.ChanInputGen,
+		chanOutputVue:  init.ChanOutputVue,
+		chanInputVue:   init.ChanInputVue,
 		сonfigFile:     init.ConfigFile,
 	}
 
@@ -91,8 +97,8 @@ func (db *Database) Start() {
 
 	// Инициализируем пакетный процессор
 	db.batchProcessor = batch.NewBatchProcessor(
-		db.outputChan,
-		db.systemMessChan,
+		db.chanOutputVue,
+		db.chanSystemMess,
 		db.config.BatchWriting,
 		db.config.ID,
 	)
@@ -118,24 +124,51 @@ func (db *Database) processMessages() {
 		select {
 		case <-db.ctx.Done():
 			return
-		case msg, ok := <-db.inputChan:
+		case msg, ok := <-db.chanInputGen:
 			if !ok {
-				db.sendMessError("Database: input channel closed")
+				db.sendMessError("Database: chanInputGen channel closed")
 				return
 			}
 			db.statsMu.Lock()
 			db.cntMsgGet++
 			db.statsMu.Unlock()
 
-			taskCtx, cancel := context.WithTimeout(db.ctx, time.Duration(db.config.LimitTimeMs)*time.Millisecond)
+			/*taskCtx, cancel := context.WithTimeout(db.ctx, time.Duration(db.config.LimitTimeMs)*time.Millisecond)
 			go func(m types.Message, cancelFunc context.CancelFunc) {
 				defer cancelFunc()
 
 				db.processMessage(taskCtx, m)
-			}(msg, cancel)
+			}(msg, cancel)*/
+			go func(m types.Message) {
+				taskCtx, cancel := context.WithTimeout(db.ctx, time.Duration(db.config.LimitTimeMs)*time.Millisecond)
+				defer cancel()
+
+				db.processMessage(taskCtx, m)
+			}(msg)
+
+			//go db.processMessage(msg)
+
+		case msg, ok := <-db.chanInputVue:
+			if !ok {
+				db.sendMessError("Database: chanInputVue channel closed")
+				return
+			}
+			db.statsMu.Lock()
+			db.cntMsgGet++
+			db.statsMu.Unlock()
+
+			go func(m types.Message) {
+				//taskCtx, cancel := context.WithTimeout(db.ctx, time.Duration(db.config.LimitTimeMs)*time.Millisecond)
+				//defer cancel()
+
+				//db.processMessage(taskCtx, m)
+
+				log.Println("chanInputVue:", m)
+			}(msg)
 
 			//go db.processMessage(msg)
 		}
+
 	}
 }
 
@@ -306,7 +339,8 @@ func (db *Database) updateObjectState(alias string, tagValue types.TagValue) {
 	}
 }
 
-// processStatus обрабатывает отправку статусов
+// === STATUS ==========================================================
+
 func (db *Database) processStatus() {
 	statusTicker := time.NewTicker(time.Duration(db.config.StatusTimeS) * time.Second)
 	defer statusTicker.Stop()
@@ -335,7 +369,7 @@ func (db *Database) sendStatus() {
 		StatusOutChannel: db.batchProcessor.GetChannelStats(),
 	}
 
-	if db.statusChan != nil {
+	if db.chanStatus != nil {
 
 		data, _ := json.Marshal(status)
 		msg := types.Message{
@@ -345,24 +379,25 @@ func (db *Database) sendStatus() {
 		}
 
 		select {
-		case db.statusChan <- msg:
+		case db.chanStatus <- msg:
 		default:
 			log.Printf("Error channel full")
 		}
 	}
 
-	// Сбрасываем счетчики
 	db.cntMsgGet = 0
 	db.cntMsgSet = 0
 	db.cntErr = 0
 }
+
+// === MESSAGE ==========================================================
 
 // sendMessage универсальный метод отправки сообщений
 func (db *Database) sendMessage(msgType string, format string, args ...interface{}) {
 	content := fmt.Sprintf(format, args...)
 
 	// Если канал не nil, отправляем сообщение
-	if db.systemMessChan != nil {
+	if db.chanSystemMess != nil {
 		messageData := types.MessageData{
 			Message: content,
 			Time:    time.Now().Format(time.RFC3339),
@@ -385,7 +420,7 @@ func (db *Database) sendMessage(msgType string, format string, args ...interface
 
 		// Неблокирующая отправка
 		select {
-		case db.systemMessChan <- msg:
+		case db.chanSystemMess <- msg:
 			// Сообщение отправлено
 		case <-time.After(100 * time.Millisecond):
 			log.Printf("WARNING: Message channel timeout for type: %s", msgType)

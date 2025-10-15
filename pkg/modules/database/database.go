@@ -306,6 +306,15 @@ func (db *Database) updateObjectState(alias string, tagValue types.TagValue) {
 			//}
 			updatedObj := obj
 
+			/*objectStateForVue := types.ObjectStateForVue{
+				ID:        obj.Info.Tag,
+				Type:      "sensor",
+				ObjInfo:      obj,
+				RawData:   objectInfo.LastState.RawData,
+				ObjVue:    objectInfo.LastState.ObjVue,
+				Timestamp: tagValue.Timestamp,
+			}*/
+
 			// Сохраняем обновленный объект
 			db.objSensors.Store(ref.ObjectKey, updatedObj)
 			db.batchProcessor.Add(obj)

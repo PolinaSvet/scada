@@ -72,7 +72,7 @@ func (vw *VueWay) Start() {
 	}
 
 	// Инициализируем clientManager
-	clientManager := NewClientManager(vw.config.DemoMode)
+	clientManager := NewClientManager(vw.config.DemoMode, vw.config.MaxClients)
 	vw.clientManager = clientManager
 
 	// Инициализируем websocketManager

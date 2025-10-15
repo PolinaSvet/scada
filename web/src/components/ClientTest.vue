@@ -28,31 +28,6 @@
       </div>
     </div>
     
-    <!-- Данные объектов 
-    <div class="object-data">
-      <h2>Object Data (from Data WebSocket)</h2>
-      <div v-if="objectData.length === 0" class="no-data">
-        No object data received
-      </div>
-      <div v-else class="objects-grid">
-        <div 
-          v-for="obj in objectData" 
-          :key="obj.id"
-          class="object-item"
-        >
-          <h3>Object {{ obj.id }}</h3>
-          <p><strong>Name:</strong> {{ obj.info?.name || 'N/A' }}</p>
-          <p><strong>Type:</strong> {{ obj.info?.type || 'N/A' }}</p>
-          <p><strong>State:</strong> {{ obj.state?.txtOn || 'N/A' }}</p>
-          <div class="object-actions">
-            <button @click="sendCommand(obj.id, 'ON')">ON</button>
-            <button @click="sendCommand(obj.id, 'OFF')">OFF</button>
-            <button @click="sendCommand(obj.id, 'RESET')">RESET</button>
-          </div>
-        </div>
-      </div>
-    </div>-->
-
     <!-- Данные объектов -->
     <div class="test-data">
       <h2>Object Data (from Data WebSocket)</h2>
@@ -107,11 +82,16 @@
         >
         <button 
           @click="sendCustomCommand"
-          :disabled="connectionStats.control !== 'connected'"
+          :disabled="!isConnected"
         >
           Send Command
         </button>
       </div>
+    </div>
+
+    <div class="controls">
+      <button @click="updateUserIdDemo" :disabled="isConnected">User: User (type DEMO)</button>
+      <button @click="updateUserIdFull" :disabled="isConnected">User: Admin (type FULL)</button>
     </div>
 
     <!-- Информация о клиенте -->
@@ -166,6 +146,15 @@ const updateClientId = () => {
   const newClientId = 'test_client_' + Math.random().toString(36).substr(2, 9)
   websocketStore.updateConfig({ clientId: newClientId })
   disconnectAll()
+}
+
+const updateUserIdDemo = () => {
+  const newUserId = 'User_' + Math.random().toString(36).substr(2, 9)
+  websocketStore.updateConfig({ userId: newUserId, clientType: 'demo' })
+}
+
+const updateUserIdFull = () => {
+  websocketStore.updateConfig({ userId: 'Admin', clientType: 'full' })
 }
 </script>
 

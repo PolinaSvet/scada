@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 // ObjectConfig - общие структуры для конфигураций
 // =========================================================
 type ModuleConfig struct {
@@ -84,4 +86,13 @@ type BatchConfig struct {
 	FlushIntervalMs    int `json:"flush_interval_ms"`
 	DelayBetweenPackMs int `json:"delay_between_pack_ms"`
 	MaxPackSize        int `json:"max_pack_size"`
+}
+
+type ObjectStateForVue struct {
+	ID        string                 `json:"id"`
+	Type      string                 `json:"type"`
+	ObjInfo   ObjectConfig           `json:"objInfo"`
+	RawData   map[string]interface{} `json:"rawData"`
+	ObjVue    VueObjectState         `json:"objVue"`
+	Timestamp time.Time              `json:"timestamp"`
 }

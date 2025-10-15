@@ -24,13 +24,14 @@ const (
 
 // Message - основная структура сообщения
 type Message struct {
-	ID       string          `json:"id"`
-	Type     string          `json:"type"`
-	Data     json.RawMessage `json:"data"`
-	InitDT   time.Time       `json:"init_dt"`
-	UpdateDT time.Time       `json:"update_dt"`
-	Source   string          `json:"source"`
-	ClientID string          `json:"clientId"`
+	ID   string          `json:"id"`
+	Type string          `json:"type"`
+	Data json.RawMessage `json:"data"`
+	//Data     interface{} `json:"data"`
+	InitDT   time.Time `json:"init_dt"`
+	UpdateDT time.Time `json:"update_dt"`
+	Source   string    `json:"source"`
+	ClientID string    `json:"clientId"`
 }
 
 // TagValue - значение тега

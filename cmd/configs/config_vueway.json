@@ -18,7 +18,7 @@
     "max_msg_per_minute": 60
   },
   "demo_mode": {
-    "session_duration_min": 15,
-    "reconnect_cooldown_min": 30
+    "session_duration_min": 10,
+    "reconnect_cooldown_min": 15
   }
 }

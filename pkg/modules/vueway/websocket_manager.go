@@ -22,7 +22,6 @@ type WebSocketManager struct {
 	сhanInputDbs         <-chan types.Message
 	commandChan          chan VueCommand
 	config               WebSocketConfig
-	//mu                   sync.RWMutex
 }
 
 func NewWebSocketManager(clientManager *ClientManager, сhanOutputDbs chan<- types.Message, сhanInputDbs <-chan types.Message, config WebSocketConfig) *WebSocketManager {
@@ -136,6 +135,7 @@ func (wm *WebSocketManager) SendToAllClients(message types.Message) {
 		if wm.clientManager.CheckClientValidity(clientID) {
 			if err := wm.SendToClient(clientID, message); err != nil {
 				log.Printf("Error sending to client %s: %v", clientID, err)
+				wm.CloseConnection(clientID)
 			} else {
 				clientCount++
 			}
@@ -201,7 +201,7 @@ func (wm *WebSocketManager) handleDatabaseMessage(msg types.Message) {
 	if msg.Type == "data_batch" {
 		// Отправляем данные клиентам
 		wm.SendToClientByID(msg.ClientID, msg)
-		log.Printf("Object updates sent to clients")
+		log.Println("Object updates sent to clients")
 	}
 }
 

@@ -1,6 +1,7 @@
 package vueway
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -45,22 +46,6 @@ func NewRealWebSocketConnection(w http.ResponseWriter, r *http.Request, id strin
 // func (rwc *RealWebSocketConnection) Send(messageType string, data []byte) error {
 func (rwc *RealWebSocketConnection) Send(messageType string, message types.Message) error {
 
-	/*rwc.mu.RLock()
-	defer rwc.mu.RUnlock()
-
-	if rwc.isClosed {
-		return fmt.Errorf("websocket connection closed")
-	}
-
-
-	// Упаковываем в MessagePack
-	msgpackData, err := msgpack.Marshal(message)
-	if err != nil {
-		return fmt.Errorf("failed to marshal message with msgpack: %v", err)
-	}
-
-	return rwc.conn.WriteMessage(websocket.BinaryMessage, msgpackData)*/
-
 	rwc.mu.RLock()
 	defer rwc.mu.RUnlock()
 
@@ -68,10 +53,13 @@ func (rwc *RealWebSocketConnection) Send(messageType string, message types.Messa
 		return fmt.Errorf("websocket connection closed")
 	}
 
+	var decodeData interface{}
+	_ = json.Unmarshal(message.Data, &decodeData)
+
 	// Создаем структуру сообщения
 	msgWrapper := map[string]interface{}{
 		"type": messageType,
-		"data": message, // Передаем данные как есть
+		"data": decodeData,
 		"time": time.Now(),
 	}
 

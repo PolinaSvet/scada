@@ -10,9 +10,10 @@ import (
 )
 
 type ClientManager struct {
-	clients sync.Map
-	mu      sync.RWMutex
-	config  DemoConfig
+	clients    sync.Map
+	mu         sync.RWMutex
+	config     DemoConfig
+	maxClients int
 
 	// Атомарные счетчики статистики - ДОБАВЛЕНО
 	totalClients atomic.Int64
@@ -20,9 +21,10 @@ type ClientManager struct {
 	demoClients  atomic.Int64
 }
 
-func NewClientManager(config DemoConfig) *ClientManager {
+func NewClientManager(config DemoConfig, maxClients int) *ClientManager {
 	return &ClientManager{
-		config: config,
+		config:     config,
+		maxClients: maxClients,
 	}
 }
 
@@ -35,6 +37,18 @@ func (cm *ClientManager) RegisterClient(clientID string, clientType ClientType, 
 	if existing, exists := cm.clients.Load(clientID); exists {
 		config := existing.(*ClientConfig)
 		return config, nil
+	}
+
+	// Проверяем количество клиентов
+	tClients := int(cm.totalClients.Load())
+	if tClients >= cm.maxClients {
+		return nil, fmt.Errorf("client can not connect. Max count clients")
+	}
+
+	// Временно: определяем тип подключения по пользователю
+	clientType = ClientTypeDemo
+	if userID == "Admin" {
+		clientType = ClientTypeFull
 	}
 
 	// Для демо клиента проверяем время переподключения

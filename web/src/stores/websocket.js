@@ -25,7 +25,7 @@ export const useWebSocketStore = defineStore('websocket', () => {
     testPort: 8083,
     clientId: 'test_client_' + Math.random().toString(36).substr(2, 9),
     userId: 'test_user',
-    clientType: 'full'
+    clientType: 'demo'
   })
 
   // Getters
@@ -113,11 +113,27 @@ export const useWebSocketStore = defineStore('websocket', () => {
       case 'data':
         if (message.type === 'data_batch' || message.type === 'updateObjectsBatch') {
           // Данные объектов
-          let objectDataDecoded
-          objectDataDecoded = message.data
+          let messageData
+          messageData = message.data
 
-          objectData.value.unshift({
-            message: objectDataDecoded.ID,
+          //console.log('Array.isArray:',message.data)
+          //console.log('Array.isArray:', Array.isArray(objectDataDecoded.Data),objectDataDecoded.Data)
+          
+          if (Array.isArray(messageData)) {
+            messageData.forEach(obj => 
+              objectData.value.unshift({
+              message: obj.info,
+              time: obj.info || new Date().toISOString(),
+              received: new Date().toLocaleTimeString()
+            }))
+
+            if (objectData.value.length > 20) {
+              objectData.value = objectData.value.slice(0, 20)
+            }
+          }
+
+          /*objectData.value.unshift({
+            message: messageData.ID,
             time: message.time || new Date().toISOString(),
             received: new Date().toLocaleTimeString()
           })
@@ -125,7 +141,7 @@ export const useWebSocketStore = defineStore('websocket', () => {
           // Ограничиваем количество сохраняемых тестовых данных
           if (objectData.value.length > 20) {
             objectData.value = objectData.value.slice(0, 20)
-          }
+          }*/
           
           
         } else {
@@ -137,7 +153,7 @@ export const useWebSocketStore = defineStore('websocket', () => {
         if (message.type === 'test_data') {
           // Тестовые данные
           try {
-            console.log('Processing test data')
+            //console.log('Processing test data')
             
             // message.data - это Uint8Array с тестовыми данными
             let testDataDecoded
@@ -154,8 +170,8 @@ export const useWebSocketStore = defineStore('websocket', () => {
               testData.value = testData.value.slice(0, 20)
             }
             
-            console.log('Test data updated, count:', testData.value.length)
-            console.log('Latest test data:', testData.value[0])
+            //console.log('Test data updated, count:', testData.value.length)
+            //console.log('Latest test data:', testData.value[0])
             
           } catch (error) {
             console.error('Error decoding test data:', error)

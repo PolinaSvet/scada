@@ -86,7 +86,7 @@ func (bp *BatchProcessor) flush() {
 		return
 	}
 
-	log.Printf("%s: Flushing buffer with %d items", bp.moduleID, len(bp.buffer))
+	//log.Printf("%s: Flushing buffer with %d items", bp.moduleID, len(bp.buffer))
 
 	// Делим на пакеты по MaxPackSize
 	for len(bp.buffer) > 0 {

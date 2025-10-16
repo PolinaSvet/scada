@@ -122,7 +122,7 @@ export const useWebSocketStore = defineStore('websocket', () => {
           if (Array.isArray(messageData)) {
             messageData.forEach(obj => 
               objectData.value.unshift({
-              message: obj.info,
+              message: obj.objVue,
               time: obj.info || new Date().toISOString(),
               received: new Date().toLocaleTimeString()
             }))

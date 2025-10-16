@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"server-system/pkg/batch"
+	"server-system/pkg/objects"
 	"server-system/pkg/types"
 	"sync"
 	"time"
@@ -274,78 +275,120 @@ func (db *Database) updateObjectState(alias string, tagValue types.TagValue) {
 		}
 	}()
 
-	// Ищем объекты по алиасу (безопасный доступ)
 	objectRefsInterface, exists := db.aliasIndex.Load(alias)
 	if !exists {
-		db.sendMessInfo("тэг %s несвязан ни с каким объектом", alias)
+		return
 	}
 
 	objectRefs, ok := objectRefsInterface.([]types.ObjectReference)
 	if !ok {
-		db.sendMessInfo("invalid object references type for alias %s", alias)
+		return
 	}
 
-	// Обрабатываем каждый найденный объект
 	for _, ref := range objectRefs {
+		var objInterface interface{}
+		var exists bool
+
 		switch ref.ObjectType {
-		case "sensor":
-			objInterface, exists := db.objSensors.Load(ref.ObjectKey)
-			if !exists {
-				db.sendMessInfo("нет объекта в objSensors с ключом %s", ref.ObjectKey)
-			}
-
-			obj, ok := objInterface.(types.ObjectConfig)
-			if !ok {
-				db.sendMessInfo("invalid object type in objSensors for key %s", ref.ObjectKey)
-			}
-
-			// Обрабатываем сенсор
-			//updatedObj, err := db.processSensorObject(obj, tagValue, alias)
-			//if err != nil {
-			//	return types.ObjectConfig{}, err
-			//}
-			updatedObj := obj
-
-			/*objectStateForVue := types.ObjectStateForVue{
-				ID:        obj.Info.Tag,
-				Type:      "sensor",
-				ObjInfo:      obj,
-				RawData:   objectInfo.LastState.RawData,
-				ObjVue:    objectInfo.LastState.ObjVue,
-				Timestamp: tagValue.Timestamp,
-			}*/
-
-			// Сохраняем обновленный объект
-			db.objSensors.Store(ref.ObjectKey, updatedObj)
-			db.batchProcessor.Add(obj)
-			//log.Println(alias)
-
-		case "di":
-			objInterface, exists := db.objDi.Load(ref.ObjectKey)
-			if !exists {
-				db.sendMessAlarm("нет объекта в objSensors с ключом %s", ref.ObjectKey)
-			}
-
-			obj, ok := objInterface.(types.ObjectConfig)
-			if !ok {
-				db.sendMessAlarm("invalid object type in objSensors for key %s", ref.ObjectKey)
-			}
-
-			// Обрабатываем DI объект
-			//updatedObj, err := db.processDIObject(obj, tagValue, alias)
-			//if err != nil {
-			//	return types.ObjectConfig{}, err
-			//}
-			updatedObj := obj
-
-			// Сохраняем обновленный объект
-			db.objDi.Store(ref.ObjectKey, updatedObj)
-			db.batchProcessor.Add(obj)
-
+		case string(objects.TypeSensor):
+			objInterface, exists = db.objSensors.Load(ref.ObjectKey)
+		case string(objects.TypeDI):
+			objInterface, exists = db.objDi.Load(ref.ObjectKey)
 		default:
-			db.sendMessInfo("неизвестный тип объекта: %s", ref.ObjectType)
+			continue
+		}
+
+		if !exists {
+			continue
+		}
+
+		obj, ok := objInterface.(types.ObjectConfig)
+		if !ok {
+			continue
+		}
+
+		// Вызываем обработчик из пакета objects
+		if handler, exists := objects.Handlers[objects.ObjectType(ref.ObjectType)]; exists {
+
+			state := &types.ObjectStateForVue{
+				ID:        ref.ObjectKey,
+				Type:      string(ref.ObjectType),
+				ObjInfo:   obj,
+				Timestamp: tagValue.Timestamp,
+				ObjVue:    types.VueObjectState{},
+			}
+
+			// Обрабатываем
+			handler(&obj, state, tagValue, alias)
+
+			// Сохраняем обновленный объект
+			switch ref.ObjectType {
+			case string(objects.TypeSensor):
+				db.objSensors.Store(ref.ObjectKey, obj)
+			case string(objects.TypeDI):
+				db.objDi.Store(ref.ObjectKey, obj)
+			}
+			//log.Println(state)
+			// Отправляем в batch
+			db.batchProcessor.Add(*state)
 		}
 	}
+
+	/*
+		// Ищем объекты по алиасу (безопасный доступ)
+		objectRefsInterface, exists := db.aliasIndex.Load(alias)
+		if !exists {
+			db.sendMessInfo("тэг %s несвязан ни с каким объектом", alias)
+		}
+
+		objectRefs, ok := objectRefsInterface.([]types.ObjectReference)
+		if !ok {
+			db.sendMessInfo("invalid object references type for alias %s", alias)
+		}
+
+		// Обрабатываем каждый найденный объект
+		for _, ref := range objectRefs {
+			switch ref.ObjectType {
+			case "sensor":
+				objInterface, exists := db.objSensors.Load(ref.ObjectKey)
+				if !exists {
+					db.sendMessInfo("нет объекта в objSensors с ключом %s", ref.ObjectKey)
+				}
+
+				obj, ok := objInterface.(types.ObjectConfig)
+				if !ok {
+					db.sendMessInfo("invalid object type in objSensors for key %s", ref.ObjectKey)
+				}
+
+				updatedObj := obj
+
+				// Сохраняем обновленный объект
+				db.objSensors.Store(ref.ObjectKey, updatedObj)
+				db.batchProcessor.Add(obj)
+				//log.Println(alias)
+
+			case "di":
+				objInterface, exists := db.objDi.Load(ref.ObjectKey)
+				if !exists {
+					db.sendMessAlarm("нет объекта в objSensors с ключом %s", ref.ObjectKey)
+				}
+
+				obj, ok := objInterface.(types.ObjectConfig)
+				if !ok {
+					db.sendMessAlarm("invalid object type in objSensors for key %s", ref.ObjectKey)
+				}
+
+				updatedObj := obj
+
+				// Сохраняем обновленный объект
+				db.objDi.Store(ref.ObjectKey, updatedObj)
+				db.batchProcessor.Add(obj)
+
+			default:
+				db.sendMessInfo("неизвестный тип объекта: %s", ref.ObjectType)
+			}
+		}
+	*/
 }
 
 // === STATUS ==========================================================

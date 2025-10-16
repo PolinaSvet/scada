@@ -57,6 +57,7 @@ type DataType string
 const (
 	DataTypeBOOL    DataType = "BOOL"
 	DataTypeBYTE    DataType = "BYTE"
+	DataTypeUINT8   DataType = "UINT8"
 	DataTypeINT16   DataType = "INT16"
 	DataTypeUINT16  DataType = "UINT16"
 	DataTypeINT32   DataType = "INT32"

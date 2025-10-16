@@ -67,16 +67,17 @@ type ObjectUsoConfig struct {
 }
 
 type VueObjectState struct {
-	StateColor   string `json:"stateColor"`
-	StateTxt     string `json:"stateTxt"`
-	State        uint   `json:"state"`
-	Mask         bool   `json:"mask"`
-	Imit         bool   `json:"imit"`
-	Ack          bool   `json:"ack"`
-	RealInput    bool   `json:"realInput"`
-	ChainControl bool   `json:"chainControl"`
-	InputValue   string `json:"inputValue"`
-	Error        uint   `json:"error"`
+	StateColor   string                 `json:"stateColor"`
+	StateTxt     string                 `json:"stateTxt"`
+	State        uint                   `json:"state"`
+	Mask         bool                   `json:"mask"`
+	Imit         bool                   `json:"imit"`
+	Ack          bool                   `json:"ack"`
+	RealInput    bool                   `json:"realInput"`
+	ChainControl bool                   `json:"chainControl"`
+	InputValue   string                 `json:"inputValue"`
+	Error        uint                   `json:"error"`
+	Alias        map[string]interface{} `json:"alias"`
 }
 
 // BatchConfig - конфигурация пакетной обработки
@@ -89,10 +90,9 @@ type BatchConfig struct {
 }
 
 type ObjectStateForVue struct {
-	ID        string                 `json:"id"`
-	Type      string                 `json:"type"`
-	ObjInfo   ObjectConfig           `json:"objInfo"`
-	RawData   map[string]interface{} `json:"rawData"`
-	ObjVue    VueObjectState         `json:"objVue"`
-	Timestamp time.Time              `json:"timestamp"`
+	ID        string         `json:"id"`
+	Type      string         `json:"type"`
+	ObjInfo   ObjectConfig   `json:"objInfo"`
+	ObjVue    VueObjectState `json:"objVue"`
+	Timestamp time.Time      `json:"timestamp"`
 }

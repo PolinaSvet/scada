@@ -20,7 +20,7 @@
         },
         "unit": {
           "txt": "°C",
-          "format": "0.0"
+          "format": "%.1f"
         },
         "uso": {
           "id": 1001,
@@ -90,7 +90,7 @@
         },
         "unit": {
           "txt": "°C",
-          "format": "0.0"
+          "format": "%.2f"
         },
         "uso": {
           "id": 1001,
@@ -125,16 +125,16 @@
         },
         "unit": {
           "txt": "°C",
-          "format": "0.0"
+          "format": "%.0f"
         },
         "uso": {
           "id": 1001,
           "txt": "Датчик температуры"
         },
         "alias": {
-          "state": "alias_sensor_0",
-          "error": "alias_sensor_1",
-          "value": "alias_sensor_2"
+          "state": "alias_sensor_9",
+          "error": "alias_sensor_10",
+          "value": "alias_sensor_11"
         },
         "cmd": {
           "cmd0": "cmd_bs"
@@ -160,16 +160,16 @@
         },
         "unit": {
           "txt": "°C",
-          "format": "0.0"
+          "format": "%.3f"
         },
         "uso": {
           "id": 1001,
           "txt": "Датчик температуры"
         },
         "alias": {
-          "state": "alias_sensor_0",
-          "error": "alias_sensor_1",
-          "value": "alias_sensor_2"
+          "state": "alias_sensor_12",
+          "error": "alias_sensor_13",
+          "value": "alias_sensor_14"
         },
         "cmd": {
           "cmd0": "cmd_bs"

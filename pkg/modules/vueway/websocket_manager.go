@@ -143,9 +143,9 @@ func (wm *WebSocketManager) SendToAllClients(message types.Message) {
 		return true
 	})
 
-	if clientCount == 0 {
-		log.Printf("No connected clients, message dropped")
-	}
+	//if clientCount == 0 {
+	//	log.Printf("No connected clients, message dropped")
+	//}
 }
 
 // SendToClientByID отправляет сообщение конкретному клиенту
@@ -201,7 +201,7 @@ func (wm *WebSocketManager) handleDatabaseMessage(msg types.Message) {
 	if msg.Type == "data_batch" {
 		// Отправляем данные клиентам
 		wm.SendToClientByID(msg.ClientID, msg)
-		log.Println("Object updates sent to clients")
+		//log.Println("Object updates sent to clients")
 	}
 }
 

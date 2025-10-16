@@ -6,7 +6,7 @@
     "buffer_size": 10000,
     "flush_interval_ms": 100,
     "delay_between_pack_ms": 10,
-    "max_pack_size": 1000
+    "max_pack_size": 5000
   },
   "database_config_path": "configs/objects/database.json",
   "objects": {

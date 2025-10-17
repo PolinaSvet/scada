@@ -1,0 +1,109 @@
+/* assets/styles/main-container.css */
+.main-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #c6c9cc; /*d0d7de dcdde1*/
+    color: white;
+    transition: all 0.3s ease;
+  }
+  
+  .screen-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  
+  .screen-wrapper.auto-scale {
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  
+  .screen-wrapper.scroll-mode {
+    overflow: auto;
+  }
+  
+  .screen-content {
+    position: relative;
+    background: transparent;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+  
+  /* Стилизация скроллбаров */
+  /*.screen-wrapper.scroll-mode::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .screen-wrapper.scroll-mode::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+  }
+  
+  .screen-wrapper.scroll-mode::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+  }
+  
+  .screen-wrapper.scroll-mode::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }*/
+  /* Обновляем стили скроллбаров */
+.screen-wrapper.scroll-mode::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .screen-wrapper.scroll-mode::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .screen-wrapper.scroll-mode::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #34495e 0%, #1a252f 100%);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .screen-wrapper.scroll-mode::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #1a252f 0%, #34495e 100%);
+  }
+  
+  .screen-wrapper.scroll-mode::-webkit-scrollbar-corner {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Для Firefox */
+  .screen-wrapper.scroll-mode {
+    scrollbar-width: thin;
+    scrollbar-color: #34495e rgba(255, 255, 255, 0.08);
+  }
+  
+  /* Анимации перехода между экранами */
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.3s ease;
+  }
+  
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
+  
+  /* Индикатор режима */
+  .mode-indicator {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 1000;
+  }

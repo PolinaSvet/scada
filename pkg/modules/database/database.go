@@ -51,9 +51,18 @@ type Database struct {
 	aliasIndex sync.Map // ключ: string (alias), значение: []types.ObjectReference
 
 	// объекты - также используем sync.Map
-	objSensors sync.Map // ключ: string, значение: types.ObjectConfig
-	objDi      sync.Map // ключ: string, значение: types.ObjectConfig
+	//objSensors sync.Map // ключ: string, значение: types.ObjectConfig
+	//objDi      sync.Map // ключ: string, значение: types.ObjectConfig
 
+	// Хранилища конфигов
+	objSensorsConfig sync.Map // ключ: string, значение: types.ObjectConfig
+	objDiConfig      sync.Map // ключ: string, значение: types.ObjectConfig
+
+	// Хранилища состояний (конкретные типы)
+	objSensorsState sync.Map // ключ: string, значение: *types.VueObjectSensorsState
+	objDiState      sync.Map // ключ: string, значение: *types.VueObjectDiState
+
+	objectsManager *ObjectsManager
 }
 
 func NewModule(init DatabaseInit) *Database {
@@ -66,6 +75,23 @@ func NewModule(init DatabaseInit) *Database {
 		chanInputVue:   init.ChanInputVue,
 		сonfigFile:     init.ConfigFile,
 	}
+
+	// Инициализируем менеджер объектов
+	db.objectsManager = NewObjectsManager()
+
+	// Регистрируем хранилища для каждого типа
+	db.objectsManager.RegisterStorage(
+		string(objects.TypeSensor),
+		&db.objSensorsConfig,
+		&db.objSensorsState,
+		func() interface{} { return &objects.VueObjectSensorsState{} },
+	)
+	db.objectsManager.RegisterStorage(
+		string(objects.TypeDi),
+		&db.objDiConfig,
+		&db.objDiState,
+		func() interface{} { return &objects.VueObjectDiState{} },
+	)
 
 	return db
 }
@@ -286,6 +312,82 @@ func (db *Database) updateObjectState(alias string, tagValue types.TagValue) {
 	}
 
 	for _, ref := range objectRefs {
+		if !db.objectsManager.HasStorage(ref.ObjectType) {
+			continue
+		}
+
+		// Загружаем конфиг
+		config, exists := db.objectsManager.LoadConfig(ref.ObjectType, ref.ObjectKey)
+		if !exists {
+			continue
+		}
+
+		// Загружаем состояние как interface{} или создаем новое
+		stateInterface, exists := db.objectsManager.LoadState(ref.ObjectType, ref.ObjectKey)
+		if !exists {
+			stateInterface = db.objectsManager.CreateNewState(ref.ObjectType)
+			if stateInterface == nil {
+				continue
+			}
+		}
+
+		// Вызываем обработчик с конкретным типом
+		if handler, exists := objects.Handlers[objects.ObjectType(ref.ObjectType)]; exists {
+			// Передаем конкретный тип состояния
+			handler(&config, stateInterface, tagValue, alias)
+
+			// Сохраняем обновленные данные
+			//db.objectsManager.StoreConfig(ref.ObjectType, ref.ObjectKey, config)
+			db.objectsManager.StoreState(ref.ObjectType, ref.ObjectKey, stateInterface)
+
+			// Создаем stateForVue с конкретным типом состояния
+			/*stateForVue := struct {
+				ID        string      `json:"id"`
+				Type      string      `json:"type"`
+				ObjInfo   interface{} `json:"objInfo"`
+				ObjVue    interface{} `json:"objVue"`
+				Timestamp time.Time   `json:"timestamp"`
+			}{
+				ID:        ref.ObjectKey,
+				Type:      ref.ObjectType,
+				ObjInfo:   config,
+				ObjVue:    stateInterface,
+				Timestamp: tagValue.Timestamp,
+			}*/
+
+			stateForVue := &types.ObjectStateForVue{
+				ID:        ref.ObjectKey,
+				Type:      ref.ObjectType,
+				ObjInfo:   config,
+				ObjVue:    stateInterface,
+				Timestamp: tagValue.Timestamp,
+			}
+
+			db.batchProcessor.Add(stateForVue)
+		}
+	}
+}
+
+/*
+// updateObjectState обновляет состояние объектов, связанных с тегом через алиас
+func (db *Database) updateObjectState(alias string, tagValue types.TagValue) {
+	defer func() {
+		if r := recover(); r != nil {
+			db.sendMessError("updateObjectState panic for alias %s: %v", alias, r)
+		}
+	}()
+
+	objectRefsInterface, exists := db.aliasIndex.Load(alias)
+	if !exists {
+		return
+	}
+
+	objectRefs, ok := objectRefsInterface.([]types.ObjectReference)
+	if !ok {
+		return
+	}
+
+	for _, ref := range objectRefs {
 		var objInterface interface{}
 		var exists bool
 
@@ -334,62 +436,8 @@ func (db *Database) updateObjectState(alias string, tagValue types.TagValue) {
 		}
 	}
 
-	/*
-		// Ищем объекты по алиасу (безопасный доступ)
-		objectRefsInterface, exists := db.aliasIndex.Load(alias)
-		if !exists {
-			db.sendMessInfo("тэг %s несвязан ни с каким объектом", alias)
-		}
-
-		objectRefs, ok := objectRefsInterface.([]types.ObjectReference)
-		if !ok {
-			db.sendMessInfo("invalid object references type for alias %s", alias)
-		}
-
-		// Обрабатываем каждый найденный объект
-		for _, ref := range objectRefs {
-			switch ref.ObjectType {
-			case "sensor":
-				objInterface, exists := db.objSensors.Load(ref.ObjectKey)
-				if !exists {
-					db.sendMessInfo("нет объекта в objSensors с ключом %s", ref.ObjectKey)
-				}
-
-				obj, ok := objInterface.(types.ObjectConfig)
-				if !ok {
-					db.sendMessInfo("invalid object type in objSensors for key %s", ref.ObjectKey)
-				}
-
-				updatedObj := obj
-
-				// Сохраняем обновленный объект
-				db.objSensors.Store(ref.ObjectKey, updatedObj)
-				db.batchProcessor.Add(obj)
-				//log.Println(alias)
-
-			case "di":
-				objInterface, exists := db.objDi.Load(ref.ObjectKey)
-				if !exists {
-					db.sendMessAlarm("нет объекта в objSensors с ключом %s", ref.ObjectKey)
-				}
-
-				obj, ok := objInterface.(types.ObjectConfig)
-				if !ok {
-					db.sendMessAlarm("invalid object type in objSensors for key %s", ref.ObjectKey)
-				}
-
-				updatedObj := obj
-
-				// Сохраняем обновленный объект
-				db.objDi.Store(ref.ObjectKey, updatedObj)
-				db.batchProcessor.Add(obj)
-
-			default:
-				db.sendMessInfo("неизвестный тип объекта: %s", ref.ObjectType)
-			}
-		}
-	*/
 }
+*/
 
 // === STATUS ==========================================================
 

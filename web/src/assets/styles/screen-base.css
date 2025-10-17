@@ -1,0 +1,127 @@
+/* assets/styles/screen-base.css */
+/* Базовые стили для всех экранов */
+
+/*
+.screen-sensors {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.sensors-area {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.sensors-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sensors-container > * {
+  pointer-events: auto;
+}
+*/
+
+.screen-sensors {
+    width: 2000px;
+    height: 1000px;
+    position: relative;
+    overflow: hidden;
+    background: #c6c9cc;
+  }
+
+  .sensors-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .sensors-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  
+  .sensors-container > * {
+    pointer-events: auto;
+  }
+
+  
+  .screen-header {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .screen-header h2 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  
+  .screen-info {
+    display: flex;
+    gap: 1rem;
+    font-weight: 500;
+  }
+  
+  .screen-info span {
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  
+
+  
+  .background-svg {
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+  }
+  
+
+
+.svg-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.svg-container :deep(svg) {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Стили для динамических компонентов */
+.dynamic-component {
+  box-sizing: border-box;
+  transform-origin: center center;
+}
+

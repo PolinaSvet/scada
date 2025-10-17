@@ -1,0 +1,293 @@
+/* /assets/styles/navbar-left.css */
+.navbar-left {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  bottom: 40px;
+  background: #1a252f;
+  color: white;
+  border-right: 2px solid #1a252f;
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Стили для разных состояний панели */
+.navbar-left.minimized {
+  width: 60px;
+}
+
+.navbar-left.expanded {
+  width: 200px;
+}
+
+.navbar-left.maximized {
+  width: 400px;
+}
+
+/* Панель управления */
+.left-controls {
+  padding: 10px;
+  background: #2c3e50;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+/* Горизонтальное расположение кнопок */
+.control-buttons.horizontal {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+/* Вертикальное расположение кнопок */
+.control-buttons.vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.control-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.control-btn:active {
+  transform: translateY(0);
+}
+
+/* Иконки для кнопок */
+.icon-minimize::before {
+  content: "−";
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.icon-expand::before {
+  content: "□";
+  font-size: 14px;
+}
+
+.icon-maximize::before {
+  content: "⛶";
+  font-size: 14px;
+}
+
+/* Блок даты и времени */
+.time-display {
+  padding: 10px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.2);
+  margin: 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.time-display.expanded {
+  font-size: 12px;
+}
+
+.time-display.maximized {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Скрываем время в minimized состоянии */
+.time-display.minimized {
+  display: none;
+}
+
+/* Навигация по экранам */
+.screen-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+/* Горизонтальная сетка для maximized состояния */
+.screen-nav.grid-layout {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: flex-start;
+  gap: 10px;
+}
+
+.nav-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.nav-button.active {
+  background: #42b883;
+  border-color: #42b883;
+}
+
+/* Стили для minimized состояния - только иконки */
+.nav-button.minimized {
+  flex-direction: column;
+  padding: 12px 4px;
+  min-height: 50px;
+  gap: 4px;
+  width: 100%;
+}
+
+.nav-button.minimized .nav-icon {
+  font-size: 18px;
+}
+
+.nav-button.minimized .nav-label {
+  display: none; /* Скрываем текст в minimized состоянии */
+}
+
+/* Стили для expanded состояния */
+.nav-button.expanded {
+  flex-direction: row;
+  padding: 10px 12px;
+  gap: 10px;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.nav-button.expanded .nav-icon {
+  font-size: 18px;
+  min-width: 24px;
+}
+
+.nav-button.expanded .nav-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Стили для maximized состояния - сетка */
+.nav-button.maximized {
+  flex-direction: column;
+  padding: 12px 8px;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  width: calc(50% - 5px); /* 2 колонки с отступом */
+  min-height: 70px;
+  text-align: center;
+}
+
+.nav-button.maximized .nav-icon {
+  font-size: 22px;
+  min-width: 28px;
+}
+
+.nav-button.maximized .nav-label {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Второй ряд кнопок для maximized состояния */
+.secondary-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.secondary-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 10px;
+  transition: all 0.2s ease;
+  flex: 1;
+  min-width: calc(50% - 6px);
+  text-align: center;
+}
+
+.secondary-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Стили для скроллбара */
+.screen-nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.screen-nav::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.screen-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.screen-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Добавляем в navbar-left.css */
+/* Обновляем стили для кнопки переключения режима */
+.control-btn.icon-viewmode::before {
+  content: '🔍';
+  font-size: 16px;
+}
+
+.control-btn.icon-viewmode.active::before {
+  content: '📜';
+  font-size: 16px;
+}
+
+.control-btn.icon-viewmode {
+  transition: all 0.3s ease;
+}
+
+.control-btn.icon-viewmode:hover {
+  background-color: rgba(52, 152, 219, 0.3);
+}
+
+.control-btn.icon-viewmode.active {
+  background-color: #3498db;
+  color: white;
+}

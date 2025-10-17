@@ -1,0 +1,214 @@
+/* /assets/styles/navbar-bottom.css */
+.navbar-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1a252f;
+    color: white;
+    border-top: 2px solid #1a252f;
+    transition: all 0.3s ease;
+    z-index: 999;
+  }
+  
+  /* Стили для разных состояний панели */
+  .navbar-bottom.minimized {
+    height: 40px;
+  }
+  
+  .navbar-bottom.expanded {
+    height: 150px;
+  }
+  
+  .navbar-bottom.maximized {
+    top: 60px; /* Высота верхней панели */
+    bottom: 0;
+    height: auto;
+  }
+  
+  /* Панель управления */
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 5px;
+    background: #2C3E50;
+    height: 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .control-buttons {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .control-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .control-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+  }
+  
+  .control-btn:active {
+    transform: translateY(0);
+  }
+  
+  /* Иконки для кнопок */
+  .icon-minimize::before {
+    content: "−";
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .icon-expand::before {
+    content: "□";
+    font-size: 14px;
+  }
+  
+  .icon-maximize::before {
+    content: "⛶";
+    font-size: 14px;
+  }
+  
+  /* Текстовое поле статуса */
+  .status-text {
+    flex: 1;
+    margin: 0 5px;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Расширенное содержимое */
+  .expanded-content {
+    display: flex;
+    height: calc(100% - 40px);
+    padding: 10px;
+    overflow: hidden;
+  }
+  
+  .table-section {
+    flex: 0 0 80%;
+    overflow: auto;
+    padding-right: 10px;
+    height: 100%;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  th, td {
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: left;
+  }
+  
+  th {
+    background: rgba(0, 0, 0, 0.3);
+    font-weight: 600;
+    color: #42b883;
+  }
+  
+  .normal {
+    color: #00ff00;
+    font-weight: bold;
+  }
+  
+  .warning {
+    color: #ff4444;
+    font-weight: bold;
+  }
+  
+  .buttons-section {
+    flex: 0 0 20%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 10px;
+  }
+  
+  .action-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+  }
+  
+  .action-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+  }
+  
+  .action-btn:active {
+    transform: translateY(0);
+  }
+  
+  /* Стили для скроллбара */
+  .table-section::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .table-section::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+  
+  .table-section::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+  }
+  
+  .table-section::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
+  
+  /* Адаптивность для таблицы */
+  .table-section table {
+    min-width: 100%;
+  }
+  
+  .table-section th:nth-child(1),
+  .table-section td:nth-child(1) {
+    width: 20%;
+  }
+  
+  .table-section th:nth-child(2),
+  .table-section td:nth-child(2) {
+    width: 30%;
+  }
+  
+  .table-section th:nth-child(3),
+  .table-section td:nth-child(3) {
+    width: 20%;
+  }

@@ -1,11 +1,38 @@
 <template>
   <div id="app">
-    <ClientTest />
+    <NavbarTop />
+    <NavbarLeft />
+    <MainContainer />
+    <NavbarBottom />
+    
+    <!-- Глобальные компоненты управления -->
+    <!-- <CtrlConfirmation /> -->
   </div>
 </template>
 
-<script setup>
-import ClientTest from './components/ClientTest.vue'
+<script>
+import NavbarTop from '@/components/layout/NavbarTop.vue'
+import NavbarLeft from '@/components/layout/NavbarLeft.vue'
+import MainContainer from '@/components/layout/MainContainer.vue'
+import NavbarBottom from '@/components/layout/NavbarBottom.vue'
+//import CtrlConfirmation from '@/components/CtrlConfirmation.vue'
+
+export default {
+  name: 'App',
+  components: {
+    NavbarTop,
+    NavbarLeft,
+    MainContainer,
+    NavbarBottom,
+    //CtrlConfirmation
+  },
+  setup() {
+    console.log('SCADA System initialized')
+    
+    return {
+    }
+  }
+}
 </script>
 
 <style>
@@ -17,11 +44,14 @@ import ClientTest from './components/ClientTest.vue'
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f5f5;
-  color: #333;
+  background: #1a1a1a;
+  color: white;
+  overflow: hidden;
 }
 
 #app {
-  min-height: 100vh;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
 }
 </style>

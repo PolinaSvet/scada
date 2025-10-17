@@ -180,12 +180,12 @@ func loadConfig(filename string) map[string]interface{} {
 // test gen data
 func generateTestData(outputChan chan<- types.Message) {
 	for j := 0; ; j++ {
-		n := 50 //rand.Intn(500)
+		n := 20 //rand.Intn(500)
 		for i := 0; i <= n; i++ {
 			tagValue := types.TagValue{
 				Tag:       fmt.Sprintf("sensor_%d", i),
-				Alias:     fmt.Sprintf("alias_sensor_%d", i%2), //i%2 i
-				Value:     rand.Intn(100000),                   //float64(i) * 10.0,
+				Alias:     fmt.Sprintf("alias_sensor_%d", i), //i%2 i
+				Value:     rand.Intn(100000),                 //float64(i) * 10.0,
 				Quality:   types.QualityGood,
 				Timestamp: time.Now(),
 				DataType:  types.DataTypeFLOAT32,
@@ -205,6 +205,6 @@ func generateTestData(outputChan chan<- types.Message) {
 			//log.Printf("Generated message %+v", tagValue)
 		}
 		//t := rand.Intn(1000)
-		time.Sleep(1000 * time.Millisecond)
+		time.Sleep(2000 * time.Millisecond)
 	}
 }

@@ -1,0 +1,30 @@
+/* obj-base.css */
+.obj-sensor {
+    transition: all 0.3s ease;
+  }
+  
+  .obj-sensor:hover {
+    transform: scale(1.05);
+    z-index: 20;
+  }
+  
+  .blinking {
+    animation: blink 1s infinite;
+  }
+  
+  @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+  }
+  
+  .fade-transition {
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .text-wrap {
+    word-spacing: 0;
+    letter-spacing: 0;
+  }
+
+

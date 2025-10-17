@@ -55,7 +55,7 @@
         },
         "unit": {
           "txt": "°C",
-          "format": "0.0"
+          "format": "%.2f"
         },
         "uso": {
           "id": 1001,

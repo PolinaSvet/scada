@@ -66,7 +66,7 @@ type ObjectUsoConfig struct {
 	Txt string `json:"txt"`
 }
 
-type VueObjectState struct {
+/*type VueObjectState struct {
 	StateColor   string                 `json:"stateColor"`
 	StateTxt     string                 `json:"stateTxt"`
 	State        uint                   `json:"state"`
@@ -78,6 +78,14 @@ type VueObjectState struct {
 	InputValue   string                 `json:"inputValue"`
 	Error        uint                   `json:"error"`
 	Alias        map[string]interface{} `json:"alias"`
+}*/
+
+type ObjectStateForVue struct {
+	ID        string       `json:"id"`
+	Type      string       `json:"type"`
+	ObjInfo   ObjectConfig `json:"objInfo"`
+	ObjVue    interface{}  `json:"objVue"` //VueObjectState
+	Timestamp time.Time    `json:"timestamp"`
 }
 
 // BatchConfig - конфигурация пакетной обработки
@@ -87,12 +95,4 @@ type BatchConfig struct {
 	FlushIntervalMs    int `json:"flush_interval_ms"`
 	DelayBetweenPackMs int `json:"delay_between_pack_ms"`
 	MaxPackSize        int `json:"max_pack_size"`
-}
-
-type ObjectStateForVue struct {
-	ID        string         `json:"id"`
-	Type      string         `json:"type"`
-	ObjInfo   ObjectConfig   `json:"objInfo"`
-	ObjVue    VueObjectState `json:"objVue"`
-	Timestamp time.Time      `json:"timestamp"`
 }

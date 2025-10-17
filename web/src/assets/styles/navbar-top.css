@@ -1,0 +1,182 @@
+/* /assets/styles/navbar-top.css */
+.navbar-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #1a252f;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 1000;
+  border-bottom: 2px solid #1a252f;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Логотип и бренд */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+/*
+.logo {
+  font-size: 24px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6b88c5be, #35495e);
+  border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}*/
+
+.brand-text {
+  font-size: 18px;
+  font-weight: bold;
+  background: linear-gradient(45deg, #c6cad3be, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Центральная часть - навигация или статус */
+.navbar-center {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  justify-content: center;
+}
+
+.screen-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #c6cad3be;
+}
+
+/* Правая часть - пользователь и индикаторы */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.data-indicator {
+  width: 10px;
+  height: 10px;
+  background: #00ff00;
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.data-indicator.offline {
+  background: #ff4444;
+  animation: none;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.data-indicator.connecting {
+  background: #ffaa00;
+  animation: pulse 0.5s infinite;
+  box-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+}
+
+/* Меню и дополнительные кнопки */
+.navbar-menu {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.navbar-menu:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.system-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #ccc;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+/* Анимации */
+@keyframes pulse {
+  0% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+  100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .navbar-top {
+    padding: 0 10px;
+  }
+  
+  .brand-text {
+    font-size: 16px;
+  }
+  
+  .navbar-center {
+    display: none;
+  }
+  
+  .user-name {
+    display: none;
+  }
+}

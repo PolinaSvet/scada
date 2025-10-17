@@ -1,0 +1,621 @@
+/* ================================================ */
+/* ------------------------------------------------ */
+/* 1. Базовые стили для окон управления - CtrlBase  */
+/* ------------------------------------------------ */
+/* ================================================ */
+
+
+/* Базовые стили для окон управления - CtrlBase */
+.ctrl-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(60, 60, 60, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-family: 'Segoe UI', 'Arial', 'Helvetica', sans-serif;
+}
+
+.ctrl-dialog {
+  background: linear-gradient(135deg, #fafafa 0%, #f0f2f5 100%);
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d0d7de;
+  overflow: hidden;
+  /* ФИКСИРУЕМ РАЗМЕРЫ ОКНА */
+  width: 500px;
+  height: 600px;
+  min-width: 460px;
+  max-width: 500px;
+  min-height: 500px;
+  max-height: 600px;
+  resize: none;
+}
+
+.ctrl-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  /* УГОЛЬНО-ЧЕРНЫЙ СТИЛЬ */
+  background: linear-gradient(135deg, #2f3640 0%, #353b48 100%);
+  border-bottom: 1px solid #1e272e;
+  color: #ffffff;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  font-weight: 600;
+  /* ФИКСИРУЕМ ВЫСОТУ ХЕДЕРА */
+  height: 50px;
+  min-height: 50px;
+  max-height: 50px;
+  box-sizing: border-box;
+}
+
+.ctrl-close-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #dcdde1;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.ctrl-close-button:hover {
+  background: #e84118;
+  border-color: #e84118;
+  color: #ffffff;
+}
+
+.ctrl-dialog-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ctrl-dialog-content {
+  flex: 1;
+  padding: 18px;
+  overflow-y: auto;
+  background: #ffffff;
+  /* ФИКСИРУЕМ ОБЛАСТЬ КОНТЕНТА */
+  min-height: calc(500px - 50px - 44px); /* общая высота - хедер - футер */
+  box-sizing: border-box;
+}
+
+.ctrl-dialog-footer {
+  padding: 12px 18px;
+  border-top: 1px solid #e1e8ed;
+  background: #f8f9fa;
+  color: #495057;
+  font-size: 11px;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  font-weight: 500;
+  /* ФИКСИРУЕМ ВЫСОТУ ФУТЕРА */
+  height: 44px;
+  min-height: 44px;
+  max-height: 44px;
+  box-sizing: border-box;
+}
+
+/* Область объекта */
+.ctrl-obj-section {
+  position: relative;
+  margin-bottom: 16px;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid #e1e8ed;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  /* ФИКСИРУЕМ ВЫСОТУ ОБЛАСТИ ОБЪЕКТА */
+  height: 100px;
+  min-height: 100px;
+  max-height: 100px;
+  box-sizing: border-box;
+}
+
+.ctrl-obj-grid {
+  display: grid;
+  grid-template-columns: 160px 1fr; /* ФИКСИРУЕМ ширину сенсора */
+  gap: 16px;
+  height: 100%;
+  align-items: start;
+  box-sizing: border-box;
+}
+
+.ctrl-obj-sens-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  /* ФИКСИРУЕМ ШИРИНУ КОНТЕЙНЕРА СЕНСОРА */
+  width: 160px;
+  min-width: 160px;
+  max-width: 160px;
+  height: 76px; /* Высота ObjSens компонента */
+  box-sizing: border-box;
+}
+
+.ctrl-obj-status-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* ЗАНИМАЕМ ВСЮ ОСТАВШУЮСЯ ШИРИНУ */
+  width: 100%;
+  flex: 1;
+  min-width: 0; /* Важно для правильного расчета flex */
+  box-sizing: border-box;
+}
+
+.ctrl-status-text,
+.ctrl-value-text {
+  height: 28px;
+  width: 100%; /* ЗАНИМАЕМ ВСЮ ШИРИНУ КОНТЕЙНЕРА */
+  padding: 5px 10px;
+  font-size: 12px;
+  text-align: center;
+  border: 1px solid #d0d7de;
+  background: #ffffff;
+  color: #2c3e50;
+  border-radius: 4px;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  font-weight: 500;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ctrl-status-text {
+  font-weight: 600;
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.ctrl-status-text:hover,
+.ctrl-value-text:hover {
+  border-color: #6c757d;
+}
+
+/* Вкладки */
+.ctrl-tab-titles {
+  display: flex;
+  cursor: pointer;
+  background: #f8f9fa;
+  border-radius: 6px 6px 0 0;
+  overflow: hidden;
+  border: 1px solid #e1e8ed;
+  border-bottom: none;
+  /* ФИКСИРУЕМ ВЫСОТУ ВКЛАДОК */
+  height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  box-sizing: border-box;
+}
+
+.ctrl-tab-title {
+  flex: 1;
+  padding: 10px;
+  background: #f8f9fa;
+  color: #495057;
+  text-align: center;
+  transition: all 0.2s ease;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  border-right: 1px solid #e1e8ed;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ctrl-tab-title:last-child {
+  border-right: none;
+}
+
+.ctrl-tab-title.active {
+  background: #ffffff;
+  color: #2c3e50;
+  box-shadow: inset 0 -2px 0 #3498db;
+}
+
+.ctrl-tab-title:hover:not(.active) {
+  background: #e9ecef;
+  color: #2c3e50;
+}
+
+.ctrl-tab-content {
+  border: 1px solid #e1e8ed;
+  border-top: none;
+  padding: 18px;
+  background: #ffffff;
+  border-radius: 0 0 6px 6px;
+  /* ФИКСИРУЕМ ВЫСОТУ КОНТЕНТА ВКЛАДОК */
+  height: 280px;
+  min-height: 280px;
+  max-height: 280px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/* Обеспечиваем одинаковую высоту для всех панелей вкладок */
+.tab-panel {
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Сетка управления */
+.ctrl-grid-layout {
+  display: grid;
+  gap: 8px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+
+.ctrl-grid-section {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 8px;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 0;
+  transition: all 0.2s ease;
+}
+
+.ctrl-grid-section.active {
+  background: #e9ecef;
+  border-color: #ced4da;
+}
+
+.ctrl-grid-section-full {
+  grid-column: 1 / -1;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 8px;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 0;
+  transition: all 0.2s ease;
+}
+
+.ctrl-grid-section-full.active {
+  background: #e9ecef;
+  border-color: #ced4da;
+}
+
+.ctrl-grid-section-header {
+  color: #495057;
+  text-align: center;
+  padding: 6px;
+  font-weight: 600;
+  font-size: 10px;
+  border-radius: 3px;
+  background: #f8f9fa;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.2s ease;
+}
+
+.ctrl-grid-section.active .ctrl-grid-section-header,
+.ctrl-grid-section-full.active .ctrl-grid-section-header {
+  background: #e9ecef;
+}
+
+.ctrl-grid-section-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-height: 0; /* Для правильного flex расчета */
+  box-sizing: border-box;
+}
+
+
+.ctrl-grid-btn {
+  height: 36px;
+  font-weight: 600;
+  font-size: 12px;
+  border: 1px solid #5a6268;
+  background: #6c757d;
+  color: #ffffff;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ctrl-grid-btn-full {
+  height: 36px;
+  font-weight: 600;
+  font-size: 12px;
+  border: 1px solid #5a6268;
+  background: #6c757d;
+  color: #ffffff;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ctrl-grid-btn:hover,
+.ctrl-grid-btn-full:hover {
+  background: #5a6268;
+  border-color: #495057;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.ctrl-grid-btn:active,
+.ctrl-grid-btn-full:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Сетка ошибок */
+.ctrl-error-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  /* ВОССТАНАВЛИВАЕМ ВЫСОТУ ДЛЯ ПРОКРУТКИ */
+  height: 244px; /* 280px (высота tab-content) - 36px (отступы) */
+  min-height: 244px;
+  max-height: 244px;
+  /*overflow-y: auto;*/
+  /*border: 1px solid #e1e8ed;*/
+  border-radius: 4px;
+  padding: 0px;
+  /*background: #f8f9fa;*/
+  /*box-sizing: border-box;*/
+}
+
+.ctrl-error-item {
+  background: #ffffff;
+  color: #495057;
+  border: 1px solid #6c757d;
+  text-align: left;
+  padding: 8px 12px;
+  font-weight: 500;
+  font-size: 10px;
+  border-radius: 3px;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  transition: background-color 0.2s ease;
+  border-left: 5px solid #6c757d;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* ФИКСИРУЕМ ВЫСОТУ ЭЛЕМЕНТА ОШИБКИ */
+  height: 28px;
+  min-height: 28px;
+  max-height: 28px;
+  display: flex;
+  align-items: center;
+}
+
+.ctrl-error-item:hover {
+  background: #fffaf0;
+}
+
+/* Состояния для доступности */
+.ctrl-grid-btn:focus,
+.ctrl-grid-btn-full:focus,
+.ctrl-tab-title:focus,
+.ctrl-close-button:focus {
+  outline: 2px solid #3498db;
+  outline-offset: 1px;
+}
+
+/* Стили для скроллбара */
+.ctrl-dialog-content::-webkit-scrollbar,
+.ctrl-tab-content::-webkit-scrollbar,
+.ctrl-error-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ctrl-dialog-content::-webkit-scrollbar-track,
+.ctrl-tab-content::-webkit-scrollbar-track,
+.ctrl-error-grid::-webkit-scrollbar-track {
+  background: #f1f3f4;
+  border-radius: 3px;
+}
+
+.ctrl-dialog-content::-webkit-scrollbar-thumb,
+.ctrl-tab-content::-webkit-scrollbar-thumb,
+.ctrl-error-grid::-webkit-scrollbar-thumb {
+  background: #c6c8ca;
+  border-radius: 3px;
+}
+
+.ctrl-dialog-content::-webkit-scrollbar-thumb:hover,
+.ctrl-tab-content::-webkit-scrollbar-thumb:hover,
+.ctrl-error-grid::-webkit-scrollbar-thumb:hover {
+  background: #a6a8ab;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+  .ctrl-dialog {
+    width: 95vw;
+    height: 90vh;
+    min-width: 95vw;
+    max-width: 95vw;
+    min-height: 90vh;
+    max-height: 90vh;
+  }
+  
+  .ctrl-obj-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ctrl-obj-sens-container {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Утилитарные классы для кастомизации */
+.ctrl-grid-cols-1 { grid-template-columns: 1fr; }
+.ctrl-grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.ctrl-grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+.ctrl-w-auto { width: auto; }
+.ctrl-w-full { width: 100%; }
+.ctrl-h-auto { height: auto; }
+.ctrl-h-full { height: 100%; }
+
+.ctrl-mb-0 { margin-bottom: 0; }
+.ctrl-mb-1 { margin-bottom: 4px; }
+.ctrl-mb-2 { margin-bottom: 8px; }
+.ctrl-mb-3 { margin-bottom: 12px; }
+.ctrl-mb-4 { margin-bottom: 16px; }
+
+.ctrl-p-0 { padding: 0; }
+.ctrl-p-1 { padding: 4px; }
+.ctrl-p-2 { padding: 8px; }
+.ctrl-p-3 { padding: 12px; }
+.ctrl-p-4 { padding: 16px; }
+
+/* Классы для фиксированных размеров */
+.ctrl-fixed-width-460 { width: 460px; min-width: 460px; max-width: 460px; }
+.ctrl-fixed-height-500 { height: 500px; min-height: 500px; max-height: 500px; }
+.ctrl-fixed-obj-height-100 { height: 100px; min-height: 100px; max-height: 100px; }
+.ctrl-fixed-tab-height-280 { height: 280px; min-height: 280px; max-height: 280px; }
+
+/* Гарантируем, что все элементы используют border-box */
+.ctrl-dialog *,
+.ctrl-dialog *::before,
+.ctrl-dialog *::after {
+  box-sizing: border-box;
+}
+
+/* =================================================== */
+/* --------------------------------------------------- */
+/* 2. Стили для окна подтверждения - CtrlConfirmation  */
+/* --------------------------------------------------- */
+/* =================================================== */
+.ctrl-confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.ctrl-confirmation-dialog {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid #dee2e6;
+  min-width: 380px;
+  max-width: 480px;
+  background: linear-gradient(135deg, #fafafa 0%, #f0f2f5 100%);
+}
+
+.ctrl-confirmation-message {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+}
+
+.ctrl-confirmation-question {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.5;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+}
+
+.ctrl-confirmation-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.ctrl-confirmation-btn {
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background: #6c757d;
+  border: 1px solid #5a6268;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+}
+
+.ctrl-confirmation-btn:hover {
+  background: #5a6268;
+  border-color: #495057;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.ctrl-confirmation-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.ctrl-confirmation-btn.confirm {
+  background: #3498db;
+  border-color: #2980b9;
+}
+
+.ctrl-confirmation-btn.confirm:hover {
+  background: #2980b9;
+  border-color: #2471a3;
+}

@@ -10,11 +10,11 @@
   },
   "database_config_path": "configs/objects/database.json",
   "objects": {
-    "objsensor": {
+    "sensor": {
       "enabled": true,
       "config_file": "configs/objects/objsensor.json"
     },
-    "objdi": {
+    "di": {
       "enabled": true,
       "config_file": "configs/objects/objdi.json"
     }

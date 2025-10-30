@@ -28,12 +28,14 @@ export const CTRL_COLORS = {
   textInverted: '#ffffff',
   
   // Состояния
-  stateActive: '#90EE90',
+  stateActive: '#3498DB',
   stateInactive: '#C0C0C0',
   stateWarning: '#f39c12',
   stateAlarm: '#e74c3c',
   stateNormal: '#27ae60',
-  stateUnknown: '#95a5a6',
+  stateUnknown: '#C0C0C0',
+  stateMaskOn: '#FFFFFF',
+  stateMaskOff: '#000000',
   
   // Ошибки
   errorActive: '#FFEB3B', // Желтый вместо красного

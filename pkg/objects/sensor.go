@@ -115,7 +115,7 @@ var sensorArrStateColors = map[uint]string{
 var sensorArrStateTexts = map[uint]string{
 	0: "НЕДОСТОВЕРНОСТЬ",
 	1: "ДЕЖУРСТВО",
-	2: "ОШИБКА",
+	2: "НЕИСПРАВНОСТЬ",
 	3: "ПОЖАР",
 	4: "ВНИМАНИЕ",
 }

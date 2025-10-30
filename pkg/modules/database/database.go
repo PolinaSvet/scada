@@ -249,7 +249,7 @@ func (db *Database) processTagValue(tagValue types.TagValue) {
 	// 1. Находим тег в базе по alias (безопасный доступ)
 	dbTagInterface, exists := db.dbTags.Load(tagValue.Alias)
 	if !exists {
-		db.sendMessInfo("Tag not found: %s", tagValue.Alias)
+		//db.sendMessInfo("Tag not found: %s", tagValue.Alias)
 		return
 	}
 

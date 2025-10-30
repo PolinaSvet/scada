@@ -25,7 +25,6 @@
           </div>
         </div>
         
-        <!-- Остальной код без изменений -->
         <div class="ctrl-tab-titles">
           <div
             v-for="tab in tabs"
@@ -206,7 +205,10 @@ export default {
         ackColor: objVue.ack ? CTRL_COLORS.stateActive : CTRL_COLORS.stateInactive,
         uso: objInfo.uso?.txt || '',
         errorColors,
-        errorTexts: CTRL_TEXT.errors
+        errorTexts: 
+          objData?.objInfo?.errType === 1 ? CTRL_TEXT.errors_type_1 :
+          objData?.objInfo?.errType === 2 ? CTRL_TEXT.errors_type_2 :
+          CTRL_TEXT.errors_type_0 
       }
     })
 
@@ -232,7 +234,7 @@ export default {
       ackColor: CTRL_COLORS.stateInactive,
       uso: '',
       errorColors: Array(16).fill(CTRL_COLORS.errorInactive),
-      errorTexts: CTRL_TEXT.errors
+      errorTexts: CTRL_TEXT.errors_type_0
     })
 
     const activateTab = (tabName) => {
@@ -252,13 +254,42 @@ export default {
 
       confirmationMessage.value = computedData.value.fullName
       confirmationMessageQuestion.value = commandMessages.value[commandType] || 'Подтвердите действие'
-      pendingCommand.value = commandType
+      //pendingCommand.value = commandType
+  
+      const commandMap = {
+        'imit_on': 1,
+        'imit_off': 2,
+        'imit_clear':3,
+        'mask_on': 4,
+        'mask_off': 5,
+        'set_settings': 6,
+        'imit_atten': 7,
+        'ack':15
+      }
+
+      const objInfo = objData.objInfo || {}
+      const stateInfo = objInfo.cmd || {}
+      const codeCmd = commandMap[commandType] || 0
+      const idObj = objInfo.id || 0
+      
+      const command = (codeCmd << 12) | idObj
+      
+      pendingCommand.value = {
+        cmdTag: stateInfo, 
+        cmdValue: command, 
+        cmdMess:  confirmationMessage.value,
+        cmdMessQuestion: confirmationMessageQuestion.value,
+        objId: props.id,
+        objType: 'sensor'
+      }
+      
       isConfirmationOpen.value = true
     }
 
     const handleConfirm = () => {
       if (pendingCommand.value) {
-        objectsStore.sendCommand(props.id, pendingCommand.value)
+        objectsStore.sendCommand(props.id,'sendCommand', pendingCommand.value)
+        //alert(JSON.stringify(pendingCommand.value, null, 2))
       }
       closeConfirmation()
     }

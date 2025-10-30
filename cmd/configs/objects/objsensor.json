@@ -4,7 +4,7 @@
         "id": 1,
         "type": 1,
         "ctrlEnable": true,
-        "errType": 1,
+        "errType": 0,
         "info": {
           "tag": "TEMP_000",
           "desc": "Датчик температуры 0",
@@ -15,8 +15,8 @@
         "state": {
           "colorOff": "#00FF00",
           "colorOn": "#FF0000",
-          "txtOff": "Норма",
-          "txtOn": "Авария"
+          "txtOff": "ДЕЖУРСТВО-1",
+          "txtOn": "ПОЖАР-1"
         },
         "unit": {
           "txt": "°C",
@@ -36,7 +36,7 @@
         }
       },
       "sensor_1": {
-        "id": 1,
+        "id": 2,
         "type": 1,
         "ctrlEnable": true,
         "errType": 1,
@@ -50,8 +50,8 @@
         "state": {
           "colorOff": "#00FF00",
           "colorOn": "#FF0000",
-          "txtOff": "Норма",
-          "txtOn": "Авария"
+          "txtOff": "ДЕЖУРСТВО-2",
+          "txtOn": "ПОЖАР-2"
         },
         "unit": {
           "txt": "°C",
@@ -74,7 +74,7 @@
         "id": 1,
         "type": 1,
         "ctrlEnable": true,
-        "errType": 1,
+        "errType": 2,
         "info": {
           "tag": "TEMP_002",
           "desc": "Датчик температуры 2",
@@ -85,8 +85,8 @@
         "state": {
           "colorOff": "#00FF00",
           "colorOn": "#FF0000",
-          "txtOff": "Норма",
-          "txtOn": "Авария"
+          "txtOff": "ДЕЖУРСТВО",
+          "txtOn": "ПОЖАР"
         },
         "unit": {
           "txt": "°C",
@@ -120,8 +120,8 @@
         "state": {
           "colorOff": "#00FF00",
           "colorOn": "#FF0000",
-          "txtOff": "Норма",
-          "txtOn": "Авария"
+          "txtOff": "ДЕЖУРСТВО",
+          "txtOn": "ПОЖАР"
         },
         "unit": {
           "txt": "°C",
@@ -155,8 +155,8 @@
         "state": {
           "colorOff": "#00FF00",
           "colorOn": "#FF0000",
-          "txtOff": "Норма",
-          "txtOn": "Авария"
+          "txtOff": "ДЕЖУРСТВО",
+          "txtOn": "ПОЖАР"
         },
         "unit": {
           "txt": "°C",

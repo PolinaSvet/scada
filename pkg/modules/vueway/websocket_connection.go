@@ -135,6 +135,8 @@ func (rwc *RealWebSocketConnection) Listen(messageChan chan<- VueCommand, maxMsg
 			return
 		}
 
+		//log.Println("XXXX", messageType, data)
+
 		// Проверяем защиту от спама
 		if time.Since(lastReset) > time.Minute {
 			messageCount = 0
@@ -172,39 +174,108 @@ func (rwc *RealWebSocketConnection) Listen(messageChan chan<- VueCommand, maxMsg
 	}
 }
 
-// processMessage обрабатывает распакованное сообщение
 func (rwc *RealWebSocketConnection) processMessage(message map[string]interface{}, messageChan chan<- VueCommand) {
-	if command, ok := message["command"]; ok {
-		vueCommand := VueCommand{
-			ClientID: rwc.id,
-			UserID:   getString(message, "userId"),
-			ObjectID: getString(message, "objectId"),
-			Command:  command.(string),
-			Time:     time.Now(),
-		}
+	// Базовый парсинг VueCommand
+	var vueCmd VueCommand
 
-		// Сериализуем data если есть
-		if data, exists := message["data"]; exists {
-			dataBytes, err := msgpack.Marshal(data)
-			if err == nil {
-				vueCommand.Data = dataBytes
-			}
-		}
+	// Преобразуем map в структуру (упрощенный способ)
+	if cmd, ok := message["command"].(string); ok {
+		vueCmd.Command = cmd
+	}
+	if objID, ok := message["objectId"].(string); ok {
+		vueCmd.ObjectID = objID
+	}
+	if userID, ok := message["userId"].(string); ok {
+		vueCmd.UserID = userID
+	}
+	if data, ok := message["data"].(map[string]interface{}); ok {
+		vueCmd.Data = data
+	}
+	if timeStr, ok := message["time"].(string); ok {
+		vueCmd.Time = timeStr
+	}
 
-		select {
-		case messageChan <- vueCommand:
-			log.Printf("Command received from %s: %s", rwc.id, command)
-		default:
-			log.Printf("Command channel full, dropping command from %s", rwc.id)
-		}
+	// Обрабатываем команду sendCommand
+	if vueCmd.Command == "sendCommand" {
+		rwc.processSendCommand(vueCmd)
+	}
+
+	// Отправляем в канал для дальнейшей обработки
+	//messageChan <- vueCmd
+	select {
+	case messageChan <- vueCmd:
+		log.Printf("Command received from %s: %s", rwc.id, vueCmd)
+	default:
+		log.Printf("Command channel full, dropping command from %s", rwc.id)
 	}
 }
 
-func getString(m map[string]interface{}, key string) string {
-	if val, ok := m[key]; ok {
-		if str, ok := val.(string); ok {
-			return str
+func (rwc *RealWebSocketConnection) processSendCommand(vueCmd VueCommand) {
+	// Логируем все полученные данные для отладки
+	log.Printf("Raw VueCommand: %+v", vueCmd)
+
+	data := vueCmd.Data
+
+	// Прямое извлечение значений из data
+	if cmdValue, ok := data["cmdValue"]; ok {
+		var intCmdValue int64
+
+		// Обрабатываем разные возможные типы числа
+		switch v := cmdValue.(type) {
+		case int64:
+			intCmdValue = v
+		case int:
+			intCmdValue = int64(v)
+		case float64:
+			intCmdValue = int64(v)
+		case uint16:
+			intCmdValue = int64(v)
+		default:
+			log.Printf("Unknown type for cmdValue: %T", cmdValue)
+			return
 		}
+
+		codeCmd := (int(intCmdValue) >> 12) & 0xF
+		idObj := int(intCmdValue) & 0xFFF
+
+		objId, _ := data["objId"].(string)
+		objType, _ := data["objType"].(string)
+		cmdMess, _ := data["cmdMess"].(string)
+		cmdMessQuestion, _ := data["cmdMessQuestion"].(string)
+		cmdTagData := rwc.parseCmdTag(data["cmdTag"])
+
+		log.Printf("Parsed command: codeCmd=%d, idObj=%d, objId=%s, objType=%s",
+			codeCmd, idObj, objId, objType)
+		log.Printf("Message: %s, Question: %s", cmdMess, cmdMessQuestion)
+		log.Printf("Command tag: %+v", cmdTagData)
+
+	} else {
+		log.Printf("cmdValue not found in data")
 	}
-	return ""
+}
+
+// Функция для парсинга cmdTag
+func (rwc *RealWebSocketConnection) parseCmdTag(cmdTag interface{}) map[string]string {
+	result := make(map[string]string)
+
+	if cmdTag == nil {
+		return result
+	}
+
+	switch tag := cmdTag.(type) {
+
+	case map[string]interface{}:
+		for key, value := range tag {
+			if strValue, ok := value.(string); ok {
+				result[key] = strValue
+			} else {
+				result[key] = fmt.Sprintf("%v", value)
+			}
+		}
+
+	default:
+		log.Printf("Unknown cmdTag type: %T", cmdTag)
+	}
+
+	return result
 }

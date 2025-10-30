@@ -279,6 +279,7 @@ export const useObjectsStore = defineStore('objects', () => {
     const commandMessage = {
       command: command,
       objectId: objectId,
+      clientId: config.value.clientId,
       userId: config.value.userId,
       data: data,
       time: new Date().toISOString()

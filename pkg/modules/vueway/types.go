@@ -36,34 +36,6 @@ type WebSocketConnection interface {
 	GetID() string
 }
 
-// VueCommand - команда от Vue клиента
-/*type VueCommand struct {
-	ClientID string          `json:"clientId"`
-	UserID   string          `json:"userId"`
-	ObjectID string          `json:"objectId"`
-	Command  string          `json:"command"`
-	Data     json.RawMessage `json:"data"`
-	Time     time.Time       `json:"time"`
-}*/
-
-type VueCommand struct {
-	Command  string                 `json:"command" msgpack:"command"`
-	ObjectID string                 `json:"objectId" msgpack:"objectId"`
-	UserID   string                 `json:"userId" msgpack:"userId"`
-	ClientID string                 `json:"clientId"`
-	Data     map[string]interface{} `json:"data" msgpack:"data"`
-	Time     string                 `json:"time" msgpack:"time"`
-}
-
-type PendingCommand struct {
-	CmdTag          map[string]interface{} `json:"cmdTag" msgpack:"cmdTag"`
-	CmdValue        int                    `json:"cmdValue" msgpack:"cmdValue"`
-	CmdMess         string                 `json:"cmdMess" msgpack:"cmdMess"`
-	CmdMessQuestion string                 `json:"cmdMessQuestion" msgpack:"cmdMessQuestion"`
-	ObjId           string                 `json:"objId" msgpack:"objId"`
-	ObjType         string                 `json:"objType" msgpack:"objType"`
-}
-
 // ClientStats - статистика по клиентам
 type ClientStats struct {
 	TotalClients     int `json:"totalClients"`

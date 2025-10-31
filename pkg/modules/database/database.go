@@ -190,7 +190,8 @@ func (db *Database) processMessages() {
 
 				//db.processMessage(taskCtx, m)
 
-				log.Println("chanInputVue:", m)
+				//log.Println("chanInputVue:", m)
+				objects.CommandExecute(m)
 			}(msg)
 
 			//go db.processMessage(msg)

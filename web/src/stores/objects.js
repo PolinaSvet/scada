@@ -269,6 +269,29 @@ export const useObjectsStore = defineStore('objects', () => {
     console.log('🎮 Control closed')
   }
 
+  // Функция для кодирования сообщения
+  const encodeMessage = (type, data, source = 'vue-client') => {
+
+    //const serializedData = JSON.stringify(data)
+    const serializedData = data
+
+    const message = {
+      id: generateMessageId(), // Нужно реализовать генерацию ID
+      type: type,
+      data: serializedData,
+      init_dt: new Date().toISOString(),
+      update_dt: new Date().toISOString(),
+      source: source,
+      clientId: config.value.clientId
+    }
+    return message
+  }
+
+  // Генерация ID сообщения
+  const generateMessageId = () => {
+    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  }
+
   // ОТПРАВКА КОМАНД (через control WebSocket)
   const sendCommand = async (objectId, command, data = {}) => {
     if (connectionStatus.value.control !== 'connected') {
@@ -286,10 +309,14 @@ export const useObjectsStore = defineStore('objects', () => {
     }
     
     try {
-      const encodedMessage = encode(commandMessage)
+
+      // Упаковываем в структуру Message
+      const message = encodeMessage('command', commandMessage)
+
+      const encodedMessage = encode(message)
       controlConnection.value.send(encodedMessage)
       messagesSent.value++
-      console.log(`📤 Command sent: ${command} to ${objectId}`, commandMessage)
+      console.log(`📤 Command sent: ${command} to ${objectId}`, message)
       return { success: true }
     } catch (error) {
       console.error('❌ Error sending command:', error)

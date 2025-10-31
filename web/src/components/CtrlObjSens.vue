@@ -277,6 +277,7 @@ export default {
       pendingCommand.value = {
         cmdTag: stateInfo, 
         cmdValue: command, 
+        cmdType: commandType,
         cmdMess:  confirmationMessage.value,
         cmdMessQuestion: confirmationMessageQuestion.value,
         objId: props.id,

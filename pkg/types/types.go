@@ -23,7 +23,7 @@ const (
 )
 
 // Message - основная структура сообщения
-type Message struct {
+/*type Message struct {
 	ID   string          `json:"id"`
 	Type string          `json:"type"`
 	Data json.RawMessage `json:"data"`
@@ -32,6 +32,16 @@ type Message struct {
 	UpdateDT time.Time `json:"update_dt"`
 	Source   string    `json:"source"`
 	ClientID string    `json:"clientId"`
+}*/
+
+type Message struct {
+	ID       string          `json:"id" msgpack:"id"`
+	Type     string          `json:"type" msgpack:"type"`
+	Data     json.RawMessage `json:"data" msgpack:"data"`
+	InitDT   time.Time       `json:"init_dt" msgpack:"init_dt"`
+	UpdateDT time.Time       `json:"update_dt" msgpack:"update_dt"`
+	Source   string          `json:"source" msgpack:"source"`
+	ClientID string          `json:"clientId" msgpack:"clientId"`
 }
 
 // TagValue - значение тега

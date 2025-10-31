@@ -45,14 +45,14 @@ type VueWay struct {
 }
 
 func NewModule(init VueWayInit) *VueWay {
-
-	vw := &VueWay{ctx: init.Ctx,
+	vw := &VueWay{
+		ctx:            init.Ctx,
 		chanSystemMess: init.ChanSystemMess,
 		chanStatus:     init.ChanStatus,
 		сhanOutputDbs:  init.ChanOutputDbs,
 		сhanInputDbs:   init.ChanInputDbs,
 		сonfigFile:     init.ConfigFile,
-		startTime:      time.Now(), // ДОБАВЛЕНО
+		startTime:      time.Now(),
 	}
 
 	return vw
@@ -78,7 +78,7 @@ func (vw *VueWay) Start() {
 	// Инициализируем websocketManager
 	vw.websocketManager = NewWebSocketManager(
 		clientManager,
-		vw.сhanOutputDbs,
+		vw.сhanOutputDbs, // Теперь команды идут напрямую в chanOutputDbs
 		vw.сhanInputDbs,
 		vw.config.WebSocket,
 	)
@@ -103,43 +103,8 @@ func (vw *VueWay) Start() {
 	// Запускаем обработку обновлений от database
 	go vw.websocketManager.ProcessDatabaseUpdates(vw.ctx)
 
-	// Запускаем обработку команд от клиентов
-	go vw.processCommands()
-
 	log.Printf("VueWay started, max clients: %d", vw.config.MaxClients)
 	vw.sendMessStatus("<%v> module started", vw.config.ID)
-}
-
-// processCommands обрабатывает команды от клиентов
-func (vw *VueWay) processCommands() {
-	for {
-		select {
-		case <-vw.ctx.Done():
-			return
-		case command := <-vw.websocketManager.GetCommandChan():
-			vw.handleCommand(command)
-		}
-	}
-}
-
-// handleCommand обрабатывает отдельную команду
-func (vw *VueWay) handleCommand(command VueCommand) {
-	defer func() {
-		if r := recover(); r != nil {
-			vw.sendMessError("handleCommand panic: %v", r)
-		}
-	}()
-
-	vw.cntMsgGet.Add(1)
-
-	// Отправляем команду в database
-	if err := vw.websocketManager.SendCommandToDatabase(command); err != nil {
-		vw.sendMessError("Failed to send command to database: %v", err)
-		return
-	}
-
-	log.Printf("Command processed - Client: %s, User: %s, Object: %s, Command: %s",
-		command.ClientID, command.UserID, command.ObjectID, command.Command)
 }
 
 // === STATUS ==========================================================
@@ -206,7 +171,6 @@ func (vw *VueWay) sendStatus() {
 func (vw *VueWay) sendMessage(msgType string, format string, args ...interface{}) {
 	content := fmt.Sprintf(format, args...)
 
-	// Если канал не nil, отправляем сообщение
 	if vw.chanSystemMess != nil {
 		messageData := types.MessageData{
 			Message: content,
@@ -228,19 +192,15 @@ func (vw *VueWay) sendMessage(msgType string, format string, args ...interface{}
 			Source:   vw.config.ID,
 		}
 
-		// Неблокирующая отправка
 		select {
 		case vw.chanSystemMess <- msg:
-			// Сообщение отправлено
 		case <-time.After(100 * time.Millisecond):
 			log.Printf("WARNING: Message channel timeout for type: %s", msgType)
 		case <-vw.ctx.Done():
-			// Контекст отменен
 		}
 	}
 }
 
-// Специализированные методы для разных типов сообщений
 func (vw *VueWay) sendMessError(format string, args ...interface{}) {
 	vw.sendMessage(types.MessageTypeError, format, args...)
 }

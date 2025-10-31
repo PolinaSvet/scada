@@ -108,8 +108,8 @@ func (rwc *RealWebSocketConnection) GetID() string {
 	return rwc.id
 }
 
-// Listen слушает входящие сообщения с защитой от спама
-func (rwc *RealWebSocketConnection) Listen(messageChan chan<- VueCommand, maxMsgPerMinute int, onSpamDetected func()) {
+// Listen слушает входящие сообщения
+func (rwc *RealWebSocketConnection) Listen(messageChan chan<- types.Message, maxMsgPerMinute int, onSpamDetected func()) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("WebSocket listen panic: %v", r)
@@ -135,8 +135,6 @@ func (rwc *RealWebSocketConnection) Listen(messageChan chan<- VueCommand, maxMsg
 			return
 		}
 
-		//log.Println("XXXX", messageType, data)
-
 		// Проверяем защиту от спама
 		if time.Since(lastReset) > time.Minute {
 			messageCount = 0
@@ -155,127 +153,77 @@ func (rwc *RealWebSocketConnection) Listen(messageChan chan<- VueCommand, maxMsg
 
 		// Обрабатываем сообщение
 		if messageType == websocket.BinaryMessage {
-			// MessagePack сообщение
-			var message map[string]interface{}
-			if err := msgpack.Unmarshal(data, &message); err != nil {
-				log.Printf("Failed to unmarshal msgpack message: %v", err)
-				continue
-			}
-			rwc.processMessage(message, messageChan)
-		} else if messageType == websocket.TextMessage {
-			// JSON сообщение (для обратной совместимости)
-			var message map[string]interface{}
-			if err := rwc.conn.ReadJSON(&message); err != nil {
-				log.Printf("Failed to unmarshal JSON message: %v", err)
-				continue
-			}
-			rwc.processMessage(message, messageChan)
+			rwc.decodeMessagePack(data, messageChan)
+		} else {
+			log.Printf("Failed type message: %v", messageType)
 		}
 	}
 }
 
-func (rwc *RealWebSocketConnection) processMessage(message map[string]interface{}, messageChan chan<- VueCommand) {
-	// Базовый парсинг VueCommand
-	var vueCmd VueCommand
-
-	// Преобразуем map в структуру (упрощенный способ)
-	if cmd, ok := message["command"].(string); ok {
-		vueCmd.Command = cmd
-	}
-	if objID, ok := message["objectId"].(string); ok {
-		vueCmd.ObjectID = objID
-	}
-	if userID, ok := message["userId"].(string); ok {
-		vueCmd.UserID = userID
-	}
-	if data, ok := message["data"].(map[string]interface{}); ok {
-		vueCmd.Data = data
-	}
-	if timeStr, ok := message["time"].(string); ok {
-		vueCmd.Time = timeStr
+// Основной метод декодирования MessagePack
+func (rwc *RealWebSocketConnection) decodeMessagePack(data []byte, messageChan chan<- types.Message) {
+	// Декодируем как generic map
+	var rawMap map[string]interface{}
+	if err := msgpack.Unmarshal(data, &rawMap); err != nil {
+		log.Printf("Failed to unmarshal msgpack message: %v", err)
+		return
 	}
 
-	// Обрабатываем команду sendCommand
-	if vueCmd.Command == "sendCommand" {
-		rwc.processSendCommand(vueCmd)
-	}
+	// Преобразуем map в структуру Message
+	message := rwc.mapToMessage(rawMap)
 
-	// Отправляем в канал для дальнейшей обработки
-	//messageChan <- vueCmd
-	select {
-	case messageChan <- vueCmd:
-		log.Printf("Command received from %s: %s", rwc.id, vueCmd)
-	default:
-		log.Printf("Command channel full, dropping command from %s", rwc.id)
-	}
-}
+	// Обрабатываем только команды
+	if message.Type == "command" {
 
-func (rwc *RealWebSocketConnection) processSendCommand(vueCmd VueCommand) {
-	// Логируем все полученные данные для отладки
-	log.Printf("Raw VueCommand: %+v", vueCmd)
-
-	data := vueCmd.Data
-
-	// Прямое извлечение значений из data
-	if cmdValue, ok := data["cmdValue"]; ok {
-		var intCmdValue int64
-
-		// Обрабатываем разные возможные типы числа
-		switch v := cmdValue.(type) {
-		case int64:
-			intCmdValue = v
-		case int:
-			intCmdValue = int64(v)
-		case float64:
-			intCmdValue = int64(v)
-		case uint16:
-			intCmdValue = int64(v)
+		// Отправляем в канал для дальнейшей обработки
+		select {
+		case messageChan <- message:
+			log.Printf("Command sent to channel: %s", message.Type)
 		default:
-			log.Printf("Unknown type for cmdValue: %T", cmdValue)
-			return
+			log.Printf("Command channel full, dropping command from %s", rwc.id)
 		}
-
-		codeCmd := (int(intCmdValue) >> 12) & 0xF
-		idObj := int(intCmdValue) & 0xFFF
-
-		objId, _ := data["objId"].(string)
-		objType, _ := data["objType"].(string)
-		cmdMess, _ := data["cmdMess"].(string)
-		cmdMessQuestion, _ := data["cmdMessQuestion"].(string)
-		cmdTagData := rwc.parseCmdTag(data["cmdTag"])
-
-		log.Printf("Parsed command: codeCmd=%d, idObj=%d, objId=%s, objType=%s",
-			codeCmd, idObj, objId, objType)
-		log.Printf("Message: %s, Question: %s", cmdMess, cmdMessQuestion)
-		log.Printf("Command tag: %+v", cmdTagData)
-
 	} else {
-		log.Printf("cmdValue not found in data")
+		log.Printf("Unknown message type: %s", message.Type)
 	}
+
+	//rwc.processMessage(message, messageChan)
 }
 
-// Функция для парсинга cmdTag
-func (rwc *RealWebSocketConnection) parseCmdTag(cmdTag interface{}) map[string]string {
-	result := make(map[string]string)
+// Преобразование map в структуру Message
+func (rwc *RealWebSocketConnection) mapToMessage(rawMap map[string]interface{}) types.Message {
+	var message types.Message
 
-	if cmdTag == nil {
-		return result
+	if id, ok := rawMap["id"].(string); ok {
+		message.ID = id
+	}
+	if msgType, ok := rawMap["type"].(string); ok {
+		message.Type = msgType
+	}
+	if source, ok := rawMap["source"].(string); ok {
+		message.Source = source
+	}
+	if clientID, ok := rawMap["clientId"].(string); ok {
+		message.ClientID = clientID
 	}
 
-	switch tag := cmdTag.(type) {
-
-	case map[string]interface{}:
-		for key, value := range tag {
-			if strValue, ok := value.(string); ok {
-				result[key] = strValue
-			} else {
-				result[key] = fmt.Sprintf("%v", value)
-			}
+	// Обрабатываем data поле - конвертируем в json.RawMessage
+	if dataField, exists := rawMap["data"]; exists {
+		if dataBytes, err := json.Marshal(dataField); err == nil {
+			message.Data = json.RawMessage(dataBytes)
 		}
-
-	default:
-		log.Printf("Unknown cmdTag type: %T", cmdTag)
 	}
 
-	return result
+	// Обрабатываем временные метки
+	if initDT, ok := rawMap["init_dt"].(string); ok {
+		if t, err := time.Parse(time.RFC3339, initDT); err == nil {
+			message.InitDT = t
+		}
+	}
+	if updateDT, ok := rawMap["update_dt"].(string); ok {
+		if t, err := time.Parse(time.RFC3339, updateDT); err == nil {
+			message.UpdateDT = t
+		}
+	}
+
+	return message
 }

@@ -21,7 +21,7 @@ const (
 	RegisterState RegisterType = "state"
 )
 
-var Handlers = map[ObjectType]func(config *types.ObjectConfig, state interface{}, tagValue types.TagValue, alias string){
+var Handlers = map[ObjectType]func(config *types.ObjectConfig, alarmMess *[]types.AlarmMess, state interface{}, tagValue types.TagValue, alias string, oldValue interface{}){
 	TypeSensor: SensorUpdate,
 	//TypeDI:     DIUpdate,
 }
@@ -44,4 +44,22 @@ type VueObjectDiState struct {
 	InputValue   string                 `json:"inputValue"`
 	Error        uint                   `json:"error"`
 	Alias        map[string]interface{} `json:"alias"`
+}
+
+// === MESSAGE ==========================================================
+
+// Структура для хранения информации о состоянии сообщения
+type MessInfo struct {
+	MessTxtState0 string `json:"messTxtState0"`
+	MessTxtState1 string `json:"messTxtState1"`
+	MessColor0    string `json:"messColor0"`
+	MessColor1    string `json:"messColor1"`
+	MessType0     int    `json:"messType0"`
+	MessType1     int    `json:"messType1"`
+}
+
+// Структура для хранения информации о состоянии
+type StateInfo struct {
+	Color string
+	Text  string
 }

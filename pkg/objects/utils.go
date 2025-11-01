@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"server-system/pkg/types"
 	"strconv"
+	"time"
 )
 
 // === Alias ================================================================================
@@ -27,6 +28,81 @@ func UpdateAliasVal(config *types.ObjectConfig, registerType RegisterType, value
 	}
 	config.AliasVal[string(registerType)] = value
 }*/
+
+// === MESSAGE ================================================================================
+
+// Общая функция для обработки полей состояния (не битовых)
+func processStateField(alarmMess *[]types.AlarmMess, config *types.ObjectConfig, oldValue, newValue uint, mask int, messMap map[uint]MessInfo, timestamp time.Time) {
+	// Проверяем маску для этого поля
+	if mask != 0 {
+		return
+	}
+
+	if oldValue != newValue {
+		messInfo, exists := messMap[newValue]
+		if exists && messInfo.MessTxtState0 != "" {
+			message := types.AlarmMess{
+				ID:        config.ID,
+				Info:      config.Info,
+				Uso:       config.Uso,
+				MessColor: messInfo.MessColor0,
+				MessTxt:   messInfo.MessTxtState0,
+				MessType:  messInfo.MessType0,
+				Opermess:  config.Alarm["opermess"],
+				Timestamp: timestamp,
+			}
+			*alarmMess = append(*alarmMess, message)
+		}
+	}
+}
+
+// Общая функция для обработки битовых полей
+func processStateBitField(alarmMess *[]types.AlarmMess, config *types.ObjectConfig, oldState, newState uint, mask int, bitPos uint, messMap map[uint]MessInfo, timestamp time.Time) {
+	// Проверяем маску для этого бита
+	bitMask := 1 << bitPos
+	if mask&bitMask != 0 {
+		return
+	}
+
+	oldBitValue := (oldState >> bitPos) & 1
+	newBitValue := (newState >> bitPos) & 1
+
+	// Если значение бита изменилось
+	if oldBitValue != newBitValue {
+		messInfo, exists := messMap[bitPos]
+		if !exists {
+			return
+		}
+
+		var messColor string
+		var messText string
+		var messType int
+
+		if newBitValue == 1 {
+			messColor = messInfo.MessColor1
+			messText = messInfo.MessTxtState1
+			messType = messInfo.MessType1
+		} else {
+			messColor = messInfo.MessColor0
+			messText = messInfo.MessTxtState0
+			messType = messInfo.MessType0
+		}
+
+		if messText != "" {
+			message := types.AlarmMess{
+				ID:        config.ID,
+				Info:      config.Info,
+				Uso:       config.Uso,
+				MessColor: messColor,
+				MessTxt:   messText,
+				MessType:  messType,
+				Opermess:  config.Alarm["opermess"],
+				Timestamp: timestamp,
+			}
+			*alarmMess = append(*alarmMess, message)
+		}
+	}
+}
 
 // === Format Data ============================================================================
 

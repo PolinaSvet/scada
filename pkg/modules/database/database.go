@@ -285,17 +285,12 @@ func (db *Database) processTagValue(tagValue types.TagValue) {
 
 	// 4. Если значение изменилось, обновляем состояние связанных объектов
 	if valueChanged {
-
-		db.updateObjectState(tagValue.Alias, tagValue)
-
-		// Отправляем объект в пакетный процессор
-		//db.batchProcessor.Add(obj)
-		//log.Printf("Object updated and sent to batch processor: %s", obj.Info.Tag)
+		db.updateObjectState(tagValue.Alias, tagValue, oldValue)
 	}
 }
 
 // updateObjectState обновляет состояние объектов, связанных с тегом через алиас
-func (db *Database) updateObjectState(alias string, tagValue types.TagValue) {
+func (db *Database) updateObjectState(alias string, tagValue types.TagValue, oldValue interface{}) {
 	defer func() {
 		if r := recover(); r != nil {
 			db.sendMessError("updateObjectState panic for alias %s: %v", alias, r)
@@ -335,27 +330,16 @@ func (db *Database) updateObjectState(alias string, tagValue types.TagValue) {
 		// Вызываем обработчик с конкретным типом
 		if handler, exists := objects.Handlers[objects.ObjectType(ref.ObjectType)]; exists {
 			// Передаем конкретный тип состояния
-			handler(&config, stateInterface, tagValue, alias)
+			alarmMessages := []types.AlarmMess{}
+			handler(&config, &alarmMessages, stateInterface, tagValue, alias, oldValue)
+
+			log.Println(len(alarmMessages), alarmMessages)
 
 			// Сохраняем обновленные данные
 			//db.objectsManager.StoreConfig(ref.ObjectType, ref.ObjectKey, config)
 			db.objectsManager.StoreState(ref.ObjectType, ref.ObjectKey, stateInterface)
 
 			// Создаем stateForVue с конкретным типом состояния
-			/*stateForVue := struct {
-				ID        string      `json:"id"`
-				Type      string      `json:"type"`
-				ObjInfo   interface{} `json:"objInfo"`
-				ObjVue    interface{} `json:"objVue"`
-				Timestamp time.Time   `json:"timestamp"`
-			}{
-				ID:        ref.ObjectKey,
-				Type:      ref.ObjectType,
-				ObjInfo:   config,
-				ObjVue:    stateInterface,
-				Timestamp: tagValue.Timestamp,
-			}*/
-
 			stateForVue := &types.ObjectStateForVue{
 				ID:        ref.ObjectKey,
 				Type:      ref.ObjectType,
@@ -368,77 +352,6 @@ func (db *Database) updateObjectState(alias string, tagValue types.TagValue) {
 		}
 	}
 }
-
-/*
-// updateObjectState обновляет состояние объектов, связанных с тегом через алиас
-func (db *Database) updateObjectState(alias string, tagValue types.TagValue) {
-	defer func() {
-		if r := recover(); r != nil {
-			db.sendMessError("updateObjectState panic for alias %s: %v", alias, r)
-		}
-	}()
-
-	objectRefsInterface, exists := db.aliasIndex.Load(alias)
-	if !exists {
-		return
-	}
-
-	objectRefs, ok := objectRefsInterface.([]types.ObjectReference)
-	if !ok {
-		return
-	}
-
-	for _, ref := range objectRefs {
-		var objInterface interface{}
-		var exists bool
-
-		switch ref.ObjectType {
-		case string(objects.TypeSensor):
-			objInterface, exists = db.objSensors.Load(ref.ObjectKey)
-		case string(objects.TypeDI):
-			objInterface, exists = db.objDi.Load(ref.ObjectKey)
-		default:
-			continue
-		}
-
-		if !exists {
-			continue
-		}
-
-		obj, ok := objInterface.(types.ObjectConfig)
-		if !ok {
-			continue
-		}
-
-		// Вызываем обработчик из пакета objects
-		if handler, exists := objects.Handlers[objects.ObjectType(ref.ObjectType)]; exists {
-
-			state := &types.ObjectStateForVue{
-				ID:        ref.ObjectKey,
-				Type:      string(ref.ObjectType),
-				ObjInfo:   obj,
-				Timestamp: tagValue.Timestamp,
-				ObjVue:    types.VueObjectState{},
-			}
-
-			// Обрабатываем
-			handler(&obj, state, tagValue, alias)
-
-			// Сохраняем обновленный объект
-			switch ref.ObjectType {
-			case string(objects.TypeSensor):
-				db.objSensors.Store(ref.ObjectKey, obj)
-			case string(objects.TypeDI):
-				db.objDi.Store(ref.ObjectKey, obj)
-			}
-			//log.Println(state)
-			// Отправляем в batch
-			db.batchProcessor.Add(*state)
-		}
-	}
-
-}
-*/
 
 // === STATUS ==========================================================
 

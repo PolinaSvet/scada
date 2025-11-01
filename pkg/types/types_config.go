@@ -38,6 +38,7 @@ type ObjectConfig struct {
 	Unit       ObjectUnitConfig  `json:"unit"`
 	Uso        ObjectUsoConfig   `json:"uso"`
 	Alias      map[string]string `json:"alias"`
+	Alarm      map[string]int    `json:"alarm"`
 	Cmd        map[string]string `json:"cmd"`
 }
 
@@ -66,19 +67,16 @@ type ObjectUsoConfig struct {
 	Txt string `json:"txt"`
 }
 
-/*type VueObjectState struct {
-	StateColor   string                 `json:"stateColor"`
-	StateTxt     string                 `json:"stateTxt"`
-	State        uint                   `json:"state"`
-	Mask         bool                   `json:"mask"`
-	Imit         bool                   `json:"imit"`
-	Ack          bool                   `json:"ack"`
-	RealInput    bool                   `json:"realInput"`
-	ChainControl bool                   `json:"chainControl"`
-	InputValue   string                 `json:"inputValue"`
-	Error        uint                   `json:"error"`
-	Alias        map[string]interface{} `json:"alias"`
-}*/
+type AlarmMess struct {
+	ID        uint16           `json:"id"`
+	Info      ObjectInfoConfig `json:"info"`
+	Uso       ObjectUsoConfig  `json:"uso"`
+	MessColor string           `json:"messColor"`
+	MessTxt   string           `json:"messTxt"`
+	MessType  int              `json:"messType"`
+	Opermess  int              `json:"opermess"`
+	Timestamp time.Time        `json:"timestamp"`
+}
 
 type ObjectStateForVue struct {
 	ID        string       `json:"id"`

@@ -31,6 +31,12 @@
           "error": "alias_sensor_1",
           "value": "alias_sensor_2"
         },
+        "alarm": {
+          "enable": 1,
+          "opermess": 1,
+          "state": 0,
+          "error": 0
+        },
         "cmd": {
           "cmd0": "cmd_bs"
         }
@@ -65,6 +71,12 @@
           "state": "alias_sensor_3",
           "error": "alias_sensor_4",
           "value": "alias_sensor_5"
+        },
+        "alarm": {
+          "enable": 1,
+          "opermess": 1,
+          "state": 0,
+          "error": 0
         },
         "cmd": {
           "cmd0": "cmd_bs"
@@ -101,6 +113,12 @@
           "error": "alias_sensor_7",
           "value": "alias_sensor_8"
         },
+        "alarm": {
+          "enable": 1,
+          "opermess": 1,
+          "state": 0,
+          "error": 0
+        },
         "cmd": {
           "cmd0": "cmd_bs"
         }
@@ -136,6 +154,12 @@
           "error": "alias_sensor_10",
           "value": "alias_sensor_11"
         },
+        "alarm": {
+          "enable": 1,
+          "opermess": 1,
+          "state": 0,
+          "error": 0
+        },
         "cmd": {
           "cmd0": "cmd_bs"
         }
@@ -170,6 +194,12 @@
           "state": "alias_sensor_12",
           "error": "alias_sensor_13",
           "value": "alias_sensor_14"
+        },
+        "alarm": {
+          "enable": 1,
+          "opermess": 1,
+          "state": 0,
+          "error": 0
         },
         "cmd": {
           "cmd0": "cmd_bs"

@@ -2,6 +2,7 @@
 import { defineStore } from 'pinia'
 import { decode, encode } from '@msgpack/msgpack'
 import { ref, computed } from 'vue'
+import { addToAlarmStore } from '@/stores/alarmStore.js'
 
 export const useObjectsStore = defineStore('objects', () => {
   // === WebSocket Connections ===
@@ -112,7 +113,7 @@ export const useObjectsStore = defineStore('objects', () => {
       }
       
       processDecodedMessage(type, message)
-      console.log('XXXXXXXXX',type, message)
+      //console.log('XXXXXXXXX',type, message)
       
     } catch (error) {
       console.error('❌ Error processing message:', error)
@@ -126,34 +127,27 @@ export const useObjectsStore = defineStore('objects', () => {
         // ДАННЫЕ ОБЪЕКТОВ - основная логика
         if (message.type === 'data_batch' || message.type === 'updateObjectsBatch') {
           const objectsArray = message.data
-
-          console.log('sssss',objectsArray)
-          
+         
           if (Array.isArray(objectsArray)) {
             updateObjectsBatch(objectsArray)
             console.log(`📦 Received ${objectsArray.length} objects, subscriptions: ${activeSubscriptions.value.size}`)
           }
         }
         break
-        
+      
       case 'test':
-        // ТЕСТОВЫЕ ДАННЫЕ - просто в консоль
-        if (message.type === 'test_data') {
-          const testData = message.data
-          testMessages.value.unshift({
-            data: testData,
-            time: new Date().toLocaleTimeString(),
-            type: message.type
-          })
-          
-          // Ограничиваем историю тестов
-          if (testMessages.value.length > 20) {
-            testMessages.value = testMessages.value.slice(0, 20)
+          // ДАННЫЕ ОБЪЕКТОВ - основная логика
+          if (message.type === 'mess_batch' ) {
+            const objectsArray = message.data
+  
+            //console.log('mess_batch',objectsArray)
+            
+            if (Array.isArray(objectsArray)) {
+              updateMessBatch(objectsArray)
+              //console.log(`📦 mess_batch ${objectsArray.length}`)
+            }
           }
-          
-          console.log('🧪 Test data:', testData)
-        }
-        break
+          break  
         
       case 'control':
         // ОТВЕТЫ НА КОМАНДЫ - логируем
@@ -193,6 +187,19 @@ export const useObjectsStore = defineStore('objects', () => {
       activeSubscriptions.value.clear()
       console.log('🔌 WebSocket disconnected')
     }
+  }
+
+  // === ОСНОВНЫЕ МЕТОДЫ ДЛЯ РАБОТЫ С СООБЩЕНИЯМИ ===
+
+  // Обновление объектов (фильтруем по подпискам)
+  const updateMessBatch = (objectsArray) => {
+      objectsArray.forEach(obj => {
+        addToAlarmStore(obj)
+        /*obj.forEach(objItem => {
+          addToAlarmStore(objItem)
+        })*/
+
+      })
   }
 
   // === ОСНОВНЫЕ МЕТОДЫ ДЛЯ РАБОТЫ С ОБЪЕКТАМИ ===

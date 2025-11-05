@@ -9,6 +9,12 @@
         </button>
         <button class="control-btn icon-maximize" @click="maximizePanel" title="Максимально развернуть">
         </button>
+        <button class="control-btn icon-header" @click="toggleTableHeader" title="Изменить стиль отображения заголовка">
+        <span>{{ showTableHeader ? '📋' : '📄' }}</span>
+        </button>
+        <button class="control-btn icon-color" @click="handleColorToggle" title="Изменить стиль отображения цвета">
+        <span>{{ colorMode === 'text' ? '🔲' : '🔳' }}</span>
+        </button>
       </div>
       
       <!-- Текстовое поле с последним значением -->
@@ -21,46 +27,72 @@
     <div v-if="isExpanded" class="expanded-content">
       <div class="table-section">
         <table>
-          <thead>
+          <thead v-if="showTableHeader">
             <tr>
+              <th>№</th>
               <th>ID</th>
-              <th>Значение</th>
-              <th>Статус</th>
               <th>Время</th>
+              <th>Тег</th>
+              <th>Описание</th>
+              <th>Сообщение</th>
+              <th>Использование</th>
+              <th>Тип</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="sensor in recentSensors" :key="sensor.id">
-              <td>{{ sensor.id }}</td>
-              <td>{{ sensor.value.toFixed(1) }}</td>
-              <td :class="sensor.status">{{ sensor.status === 'normal' ? 'НОРМА' : 'АВАРИЯ' }}</td>
-              <td>{{ sensor.lastUpdate }}</td>
+            <tr 
+              v-for="alarm in displayAlarms" 
+              :key="alarm.uniqueId"
+              :style="getRowStyle(alarm)"
+            >
+              <td class="number-cell">{{ alarm.displayNumber }}</td>
+              <td class="id-cell">{{ alarm.id }}</td>
+              <td class="time-cell">{{ formatTime(alarm.timestamp, 'full') }}</td>
+              <td class="tag-cell">{{ alarm.info?.tag || '-' }}</td>
+              <td class="desc-cell">{{ alarm.info?.desc || '-' }}</td>
+              <td class="message-cell">{{ alarm.messTxt || '-' }}</td>
+              <td class="uso-cell">{{ alarm.uso?.txt || '-' }}</td>
+              <td class="type-cell">{{ getMessTypeText(alarm.messType) }}</td>
             </tr>
           </tbody>
         </table>
       </div>
       
       <div class="buttons-section">
-        <button class="action-btn">Обновить</button>
-        <button class="action-btn">Настройки</button>
-        <button class="action-btn">Экспорт</button>
-        <button class="action-btn">Фильтр</button>
-        <button class="action-btn">Сортировка</button>
+        <button class="action-btn" @click="confirmAlarms">
+          <span class="icon-confirm">✅</span> Очистить
+        </button>
+        <button class="action-btn" @click="handleSave">
+          <span class="icon-save">💾</span> Сохранить
+        </button>
       </div>
     </div>
   </footer>
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useLayoutStore } from '@/stores/layout'
+import { 
+  getAlarmMessages, 
+  getAlarmStats, 
+  clearAlarmStore 
+} from '@/stores/alarmStore.js'
+import {
+  colorMode,
+  toggleColorMode,
+  formatTime,
+  getMessTypeText,
+  getRowStyle,
+  saveAsHTML
+} from '@/utils/funcAlarmStore.js'
 
 export default {
   name: 'NavbarBottom',
   setup() {
     const layoutStore = useLayoutStore()
+    const showTableHeader = ref(true) // Показывать заголовки таблицы
     
-    const sensors = ref([])
     const lastUpdateTime = ref(new Date())
 
     // Используем состояние из store
@@ -75,80 +107,62 @@ export default {
       'maximized': panelState.value === 'maximized'
     }))
 
+    // Сообщения из хранилища
+    const displayAlarms = computed(() => getAlarmMessages.value)
+
+    // Статистика из хранилища
+    const alarmStats = computed(() => getAlarmStats.value)
+
     const statusText = computed(() => {
       const time = lastUpdateTime.value.toLocaleTimeString('ru-RU')
-      const count = sensors.value.length
-      const normalCount = sensors.value.filter(s => s.status === 'normal').length
-      const warningCount = sensors.value.filter(s => s.status === 'warning').length
+      const count = alarmStats.value.total
+      const normalCount = alarmStats.value.normal
+      const alarmCount = alarmStats.value.alarms
       
-      return `Обновлено: ${time} | Всего: ${count} | Норма: ${normalCount} | Аварии: ${warningCount}`
+      return `Обновлено: ${time} | Всего: ${count} | Норма: ${normalCount} | Аварии: ${alarmCount}`
     })
 
-    const recentSensors = computed(() => sensors.value.slice(0, 500))
-
-    // Методы управления панелью - теперь обновляют store
+    // Методы управления панелью
     const minimizePanel = () => {
       layoutStore.setBottomPanelState('minimized')
-      console.log('Нижняя панель свернута до 40px')
     }
 
     const expandTo200 = () => {
       layoutStore.setBottomPanelState('expanded200')
-      console.log('Нижняя панель развернута до 200px')
     }
 
     const maximizePanel = () => {
       layoutStore.setBottomPanelState('maximized')
-      console.log('Нижняя панель максимально развернута до 400px')
     }
 
-    // Форматирование времени для сенсоров
-    const formatTime = (date) => {
-      return date.toLocaleTimeString('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      })
+    // Обработчики кнопок
+    const handleColorToggle = () => {
+      toggleColorMode()
     }
 
-    // Инициализация тестовых данных
-    const initializeSensors = () => {
-      sensors.value = Array.from({ length: 250 }, (_, i) => ({
-        id: `SENSOR_${String(i + 1).padStart(3, '0')}`,
-        value: Math.random() * 100,
-        status: Math.random() > 0.3 ? 'normal' : 'warning',
-        lastUpdate: formatTime(new Date())
-      }))
+    const handleSave = () => {
+      saveAsHTML(displayAlarms.value)
+    }
+
+    // Переключение отображения заголовков таблицы
+    const toggleTableHeader = () => {
+      showTableHeader.value = !showTableHeader.value
+    }
+
+    // Кнопка подтверждения - очистка хранилища
+    const confirmAlarms = () => {
+      clearAlarmStore()
       lastUpdateTime.value = new Date()
+      console.log('Хранилище тревог очищено')
     }
 
-    // Имитация обновления данных
-    const startDataUpdates = () => {
-      return setInterval(() => {
-        // Обновляем несколько случайных сенсоров
-        const updatesCount = Math.floor(Math.random() * 3) + 1 // 1-3 обновления
-        for (let i = 0; i < updatesCount; i++) {
-          if (sensors.value.length > 0) {
-            const randomIndex = Math.floor(Math.random() * sensors.value.length)
-            sensors.value[randomIndex].value = Math.random() * 100
-            sensors.value[randomIndex].status = Math.random() > 0.3 ? 'normal' : 'warning'
-            sensors.value[randomIndex].lastUpdate = formatTime(new Date())
-          }
-        }
-        lastUpdateTime.value = new Date()
-      }, 2000) // Обновление каждые 2 секунды
-    }
+    // Следим за изменениями в хранилище для обновления времени
+    watch(displayAlarms, () => {
+      lastUpdateTime.value = new Date()
+    })
 
     onMounted(() => {
-      initializeSensors()
-      const updateInterval = startDataUpdates()
-
       expandTo200()
-      
-      // Очистка при размонтировании
-      onUnmounted(() => {
-        clearInterval(updateInterval)
-      })
     })
 
     return {
@@ -156,10 +170,19 @@ export default {
       isExpanded,
       panelClass,
       statusText,
-      recentSensors,
+      displayAlarms,
+      toggleTableHeader,
+      showTableHeader,
       minimizePanel,
       expandTo200,
-      maximizePanel
+      maximizePanel,
+      formatTime,
+      getMessTypeText,
+      getRowStyle,
+      confirmAlarms,
+      handleSave,
+      handleColorToggle,
+      colorMode
     }
   }
 }
@@ -167,4 +190,10 @@ export default {
 
 <style scoped>
 @import '@/assets/styles/navbar-bottom.css';
+
+/* Дополнительные стили для иконок кнопок */
+.icon-save, .icon-confirm, .icon-color {
+  margin-right: 5px;
+  font-size: 14px;
+}
 </style>

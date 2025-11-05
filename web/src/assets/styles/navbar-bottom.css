@@ -79,6 +79,16 @@
     font-size: 14px;
   }
   
+  .icon-color::before {
+    content: '';
+    font-size: 14px;
+  }
+
+  .icon-header::before {
+    content: '';
+    font-size: 14px;
+  }
+
   .icon-maximize::before {
     content: "⛶";
     font-size: 14px;
@@ -109,7 +119,7 @@
   }
   
   .table-section {
-    flex: 0 0 80%;
+    flex: 0 0 90%;
     overflow: auto;
     padding-right: 10px;
     height: 100%;
@@ -131,9 +141,9 @@
   }
   
   th {
-    background: rgba(0, 0, 0, 0.3);
+    background: #1A252F;
     font-weight: 600;
-    color: #42b883;
+    color: #afafaf;
   }
   
   .normal {
@@ -147,7 +157,7 @@
   }
   
   .buttons-section {
-    flex: 0 0 20%;
+    flex: 0 0 10%;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -194,21 +204,89 @@
   }
   
   /* Адаптивность для таблицы */
-  .table-section table {
+  /*.table-section table {
     min-width: 100%;
   }
-  
-  .table-section th:nth-child(1),
-  .table-section td:nth-child(1) {
-    width: 20%;
-  }
-  
-  .table-section th:nth-child(2),
-  .table-section td:nth-child(2) {
-    width: 30%;
-  }
-  
-  .table-section th:nth-child(3),
-  .table-section td:nth-child(3) {
-    width: 20%;
-  }
+
+/* Дополнительные стили для таблицы тревог */
+.table-section table {
+  min-width: 1300px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.table-section th:nth-child(1),
+.table-section td:nth-child(1) {
+  width: 3%;
+  text-align: center;
+}
+
+.table-section th:nth-child(2),
+.table-section td:nth-child(2) {
+  width: 5%;
+  text-align: center;
+}
+
+.table-section th:nth-child(3),
+.table-section td:nth-child(3) {
+  width: 15%;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.table-section th:nth-child(4),
+.table-section td:nth-child(4) {
+  width: 10%;
+}
+
+.table-section th:nth-child(5),
+.table-section td:nth-child(5) {
+  width: 15%;
+}
+
+.table-section th:nth-child(6),
+.table-section td:nth-child(6) {
+  width: 25%;
+}
+
+.table-section th:nth-child(7),
+.table-section td:nth-child(7) {
+  width: 15%;
+}
+
+.table-section th:nth-child(8),
+.table-section td:nth-child(8) {
+  width: 13%;
+  text-align: center;
+}
+
+/* Стили для строк таблицы */
+.table-section tbody tr {
+  transition: all 0.2s ease;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/*.table-section tbody tr:hover {
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 1;
+  position: relative;
+}*/
+
+/* Стили для ячеек */
+.number-cell, .id-cell, .time-cell, .type-cell {
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Стили для кнопок с иконками */
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}

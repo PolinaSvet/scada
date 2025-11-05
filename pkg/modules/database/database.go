@@ -36,7 +36,8 @@ type Database struct {
 	chanInputVue   <-chan types.Message
 
 	// пакетная обработка данных
-	batchProcessor *batch.BatchProcessor
+	batchProcessor     *batch.BatchProcessor
+	batchProcessorMess *batch.BatchProcessor
 
 	// статистика
 	cntMsgGet int
@@ -128,12 +129,22 @@ func (db *Database) Start() {
 		db.chanSystemMess,
 		db.config.BatchWriting,
 		db.config.ID,
+		"data_batch",
+	)
+
+	db.batchProcessorMess = batch.NewBatchProcessor(
+		db.chanOutputVue,
+		db.chanSystemMess,
+		db.config.BatchWriting,
+		db.config.ID,
+		"mess_batch",
 	)
 
 	// Запускаем обработчики в отдельных горутинах
 	go db.processStatus()
 	go db.processMessages()
-	go db.batchProcessor.Start(db.ctx) // Используем отдельный контекст
+	go db.batchProcessor.Start(db.ctx)
+	go db.batchProcessorMess.Start(db.ctx)
 
 	//log.Printf("[%v] module started", db.config.ID)
 	db.sendMessStatus("<%v> module started", db.config.ID)
@@ -333,7 +344,7 @@ func (db *Database) updateObjectState(alias string, tagValue types.TagValue, old
 			alarmMessages := []types.AlarmMess{}
 			handler(&config, &alarmMessages, stateInterface, tagValue, alias, oldValue)
 
-			log.Println(len(alarmMessages), alarmMessages)
+			//log.Println(len(alarmMessages), alarmMessages)
 
 			// Сохраняем обновленные данные
 			//db.objectsManager.StoreConfig(ref.ObjectType, ref.ObjectKey, config)
@@ -349,6 +360,7 @@ func (db *Database) updateObjectState(alias string, tagValue types.TagValue, old
 			}
 
 			db.batchProcessor.Add(stateForVue)
+			db.batchProcessorMess.Add(alarmMessages)
 		}
 	}
 }

@@ -89,6 +89,7 @@ func (vw *VueWay) Start() {
 		vw.chanSystemMess,
 		vw.config.BatchWriting,
 		vw.config.ID,
+		"data_batch",
 	)
 
 	// Запускаем отправку статусов

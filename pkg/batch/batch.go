@@ -17,6 +17,7 @@ type BatchProcessor struct {
 	systemMessChan chan<- types.Message
 	config         types.BatchConfig
 	moduleID       string
+	typeBatch      string
 
 	// Детектор "мертвых" каналов
 	stats struct {
@@ -30,7 +31,7 @@ type BatchProcessor struct {
 }
 
 func NewBatchProcessor(outputChan chan<- types.Message, systemMessChan chan<- types.Message,
-	config types.BatchConfig, moduleID string) *BatchProcessor {
+	config types.BatchConfig, moduleID string, typeBatch string) *BatchProcessor {
 
 	return &BatchProcessor{
 		buffer:         make([]interface{}, 0, config.BufferSize),
@@ -38,6 +39,7 @@ func NewBatchProcessor(outputChan chan<- types.Message, systemMessChan chan<- ty
 		systemMessChan: systemMessChan,
 		config:         config,
 		moduleID:       moduleID,
+		typeBatch:      typeBatch,
 	}
 }
 
@@ -144,7 +146,7 @@ func (bp *BatchProcessor) sendBatch(items []interface{}) {
 
 	msg := types.Message{
 		ID:       "batch_" + time.Now().Format("150405.000"),
-		Type:     "data_batch",
+		Type:     bp.typeBatch, //"data_batch",
 		Data:     data,
 		UpdateDT: time.Now(),
 		Source:   bp.moduleID,

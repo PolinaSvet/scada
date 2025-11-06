@@ -43,6 +43,7 @@ func processStateField(alarmMess *[]types.AlarmMess, config *types.ObjectConfig,
 		if exists && messInfo.MessTxtState0 != "" {
 			message := types.AlarmMess{
 				ID:        config.ID,
+				Type:      config.Type,
 				Info:      config.Info,
 				Uso:       config.Uso,
 				MessColor: messInfo.MessColor0,
@@ -91,6 +92,7 @@ func processStateBitField(alarmMess *[]types.AlarmMess, config *types.ObjectConf
 		if messText != "" {
 			message := types.AlarmMess{
 				ID:        config.ID,
+				Type:      config.Type,
 				Info:      config.Info,
 				Uso:       config.Uso,
 				MessColor: messColor,

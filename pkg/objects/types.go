@@ -56,10 +56,6 @@ type MessInfo struct {
 	MessColor1    string `json:"messColor1"`
 	MessType0     int    `json:"messType0"`
 	MessType1     int    `json:"messType1"`
-}
-
-// Структура для хранения информации о состоянии
-type StateInfo struct {
-	Color string
-	Text  string
+	StateTxt      string `json:"stateTxt"`
+	StateColor    string `json:"stateColor"`
 }

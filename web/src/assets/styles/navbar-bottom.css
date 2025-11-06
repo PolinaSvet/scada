@@ -256,7 +256,13 @@
 
 .table-section th:nth-child(8),
 .table-section td:nth-child(8) {
-  width: 13%;
+  width: 5%;
+  text-align: center;
+}
+
+.table-section th:nth-child(9),
+.table-section td:nth-child(9) {
+  width: 5%;
   text-align: center;
 }
 

@@ -48,10 +48,12 @@ export const getAlarmMessages = computed(() => {
 // Статистика для статусной строки
 export const getAlarmStats = computed(() => {
   const total = alarmMessStore.value.length
-  const normal = alarmMessStore.value.filter(msg => msg.messType !== 3).length
-  const alarms = alarmMessStore.value.filter(msg => msg.messType === 3).length
+  //const alarms = alarmMessStore.value.filter(msg => msg.messType === 3).length
+  const alarms = alarmMessStore.value.filter(msg => msg.messType >= 1000 && msg.messType <= 2000).length
+  const errors = alarmMessStore.value.filter(msg => msg.messType === 901).length
+  const normal = total - alarms
   
-  return { total, normal, alarms }
+  return { total, normal, alarms, errors }
 })
 
 // Экспортируем само хранилище для реактивности

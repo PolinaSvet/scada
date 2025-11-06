@@ -72,16 +72,6 @@ export const formatTime = (timestamp, format = 'default') => {
   }
 }
 
-// Получение текста типа сообщения
-export const getMessTypeText = (messType) => {
-  const types = {
-    1: 'Информация',
-    2: 'Авария',
-    3: 'Предупреждение',
-    4: 'Событие'
-  }
-  return types[messType] || `Тип ${messType}`
-}
 
 // Функция для вычисления контрастного цвета текста
 export const getContrastColor = (hexcolor) => {
@@ -174,7 +164,8 @@ const generateHTML = (alarms) => {
         <td>${alarm.info?.desc || '-'}</td>
         <td>${alarm.messTxt || '-'}</td>
         <td>${alarm.uso?.txt || '-'}</td>
-        <td>${getMessTypeText(alarm.messType)}</td>
+        <td>${alarm.messType}</td>
+        <td>${alarm.type}</td>
       </tr>`
     } else {
       const backgroundColor = alarm.messColor
@@ -188,7 +179,8 @@ const generateHTML = (alarms) => {
         <td>${alarm.info?.desc || '-'}</td>
         <td>${alarm.messTxt || '-'}</td>
         <td>${alarm.uso?.txt || '-'}</td>
-        <td>${getMessTypeText(alarm.messType)}</td>
+        <td>${alarm.messType}</td>
+        <td>${alarm.type}</td>
       </tr>`
     }
   }
@@ -258,7 +250,8 @@ const generateHTML = (alarms) => {
                 <th>Описание</th>
                 <th>Сообщение</th>
                 <th>Использование</th>
-                <th>Тип</th>
+                <th>Т.C.</th>
+                <th>Т.O.</th>
             </tr>
         </thead>
         <tbody>
@@ -274,7 +267,6 @@ export default {
   colorMode,
   toggleColorMode,
   formatTime,
-  getMessTypeText,
   getContrastColor,
   getRowStyle,
   saveAsHTML

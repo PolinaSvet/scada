@@ -124,9 +124,22 @@ func sensorErrorMessages(config *types.ObjectConfig, alarmMess *[]types.AlarmMes
 		return
 	}
 
+	// Выбираем карту в зависимости от ErrType
+	var errorBitMessMap map[uint]MessInfo
+	switch config.ErrType {
+	case 0:
+		errorBitMessMap = errorBitMessType0Map
+	case 1:
+		errorBitMessMap = errorBitMessType1Map
+	case 2:
+		errorBitMessMap = errorBitMessType2Map
+	default:
+		errorBitMessMap = errorBitMessType0Map
+	}
+
 	// Обрабатываем каждый бит от 0 до 15
 	for bit := uint(0); bit < 16; bit++ {
-		processStateBitField(alarmMess, config, oldError, newError, errorMask, bit, sensorErrorBitMessMap, timestamp)
+		processStateBitField(alarmMess, config, oldError, newError, errorMask, bit, errorBitMessMap, timestamp)
 	}
 }
 
@@ -190,12 +203,12 @@ func sensorUpdateStateColorAndText(config *types.ObjectConfig, state *VueObjectS
 		state.StateColor = config.State.ColorOn
 		state.StateTxt = config.State.TxtOn
 	default:
-		if stateInfo, exists := sensorStateInfo[stateValue]; exists {
-			state.StateColor = stateInfo.Color
-			state.StateTxt = stateInfo.Text
+		if stateInfo, exists := sensorStateMessMap[stateValue]; exists {
+			state.StateColor = stateInfo.MessColor0
+			state.StateTxt = stateInfo.MessTxtState0
 		} else {
-			state.StateColor = sensorStateInfo[0].Color
-			state.StateTxt = sensorStateInfo[0].Text
+			state.StateColor = sensorStateMessMap[0].MessColor0
+			state.StateTxt = sensorStateMessMap[0].MessTxtState0
 		}
 	}
 }
@@ -219,47 +232,42 @@ type VueObjectSensorsState struct {
 
 // === MAP ==========================================================
 
-// Объединенная мапа для состояний
-var sensorStateInfo = map[uint]StateInfo{
-	0: {"#C0C0C0", "НЕДОСТОВЕРНОСТЬ"},
-	1: {"#FF0000", "ДЕЖУРСТВО"},
-	2: {"#FFFF00", "НЕИСПРАВНОСТЬ"},
-	3: {"#FF0000", "ПОЖАР"},
-	4: {"#FF00FF", "ВНИМАНИЕ"},
-}
-
-// Мапы для хранения сообщений об ошибках
-var sensorErrorBitMessMap = map[uint]MessInfo{
-	0:  {MessTxtState0: "Ошибка бит 0 снята", MessTxtState1: "Ошибка бит 0 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	1:  {MessTxtState0: "Ошибка бит 1 снята", MessTxtState1: "Ошибка бит 1 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	2:  {MessTxtState0: "Ошибка бит 2 снята", MessTxtState1: "Ошибка бит 2 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	3:  {MessTxtState0: "Ошибка бит 3 снята", MessTxtState1: "Ошибка бит 3 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	4:  {MessTxtState0: "Ошибка бит 4 снята", MessTxtState1: "Ошибка бит 4 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	5:  {MessTxtState0: "Ошибка бит 5 снята", MessTxtState1: "Ошибка бит 5 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	6:  {MessTxtState0: "Ошибка бит 6 снята", MessTxtState1: "Ошибка бит 6 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	7:  {MessTxtState0: "Ошибка бит 7 снята", MessTxtState1: "Ошибка бит 7 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	8:  {MessTxtState0: "Ошибка бит 8 снята", MessTxtState1: "Ошибка бит 8 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	9:  {MessTxtState0: "Ошибка бит 9 снята", MessTxtState1: "Ошибка бит 9 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	10: {MessTxtState0: "Ошибка бит 10 снята", MessTxtState1: "Ошибка бит 10 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	11: {MessTxtState0: "Ошибка бит 11 снята", MessTxtState1: "Ошибка бит 11 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	12: {MessTxtState0: "Ошибка бит 12 снята", MessTxtState1: "Ошибка бит 12 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	13: {MessTxtState0: "Ошибка бит 13 снята", MessTxtState1: "Ошибка бит 13 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	14: {MessTxtState0: "Ошибка бит 14 снята", MessTxtState1: "Ошибка бит 14 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-	15: {MessTxtState0: "Ошибка бит 15 снята", MessTxtState1: "Ошибка бит 15 установлена", MessColor0: "#000000", MessColor1: "#FFFF00", MessType0: 0, MessType1: 1},
-}
-
 // Мапы для хранения сообщений о состояниях
 var sensorStateMessMap = map[uint]MessInfo{
-	0: {MessTxtState0: "НЕДОСТОВЕРНОСТЬ", MessColor0: "#C0C0C0", MessType0: 0},
-	1: {MessTxtState0: "ДЕЖУРСТВО", MessColor0: "#FF0000", MessType0: 0},
-	2: {MessTxtState0: "НЕИСПРАВНОСТЬ", MessColor0: "#FFFF00", MessType0: 0},
-	3: {MessTxtState0: "ПОЖАР", MessColor0: "#FF0000", MessType0: 0},
-	4: {MessTxtState0: "ВНИМАНИЕ", MessColor0: "#FF00FF", MessType0: 0},
+	0: {MessTxtState0: "НЕДОСТОВЕРНОСТЬ",
+		MessColor0: cStUnrel,
+		MessType0:  tStUnrel,
+		StateTxt:   "НЕДОСТОВЕРНОСТЬ",
+		StateColor: cStUnrel},
+	1: {MessTxtState0: "ДЕЖУРСТВО",
+		MessColor0: cStNorma,
+		MessType0:  tStNorma,
+		StateTxt:   "ДЕЖУРСТВО",
+		StateColor: cStNorma},
+	2: {MessTxtState0: "НЕИСПРАВНОСТЬ",
+		MessColor0: cMessErr,
+		MessType0:  tStErr,
+		StateTxt:   "НЕИСПРАВНОСТЬ",
+		StateColor: cStErr},
+	3: {MessTxtState0: "ПОЖАР",
+		MessColor0: cStFire,
+		MessType0:  tStFire,
+		StateTxt:   "ПОЖАР",
+		StateColor: cStFire},
+	4: {MessTxtState0: "ВНИМАНИЕ",
+		MessColor0: cStAtent,
+		MessType0:  tStAtent,
+		StateTxt:   "ВНИМАНИЕ",
+		StateColor: cStAtent},
 }
 
 var sensorStateBitMessMap = map[uint]MessInfo{
-	4: {MessTxtState0: "Имитация снята", MessTxtState1: "Имитация установлена", MessColor0: "#000000", MessColor1: "#FFA500", MessType0: 0, MessType1: 3},
-	5: {MessTxtState0: "Маска снята", MessTxtState1: "Маска установлена", MessColor0: "#000000", MessColor1: "#808080", MessType0: 0, MessType1: 4},
-	6: {MessTxtState0: "Квитирование снято", MessTxtState1: "Квитирование установлено", MessColor0: "#000000", MessColor1: "#008000", MessType0: 0, MessType1: 5},
-	7: {MessTxtState0: "Реальный ввод снят", MessTxtState1: "Реальный ввод установлен", MessColor0: "#000000", MessColor1: "#0000FF", MessType0: 0, MessType1: 6},
+	4: {MessTxtState0: "ИМИТАЦИЯ СНЯТА", MessColor0: cBlack, MessType0: tImitOff,
+		MessTxtState1: "ИМИТАЦИЯ УСТАНОВЛЕНА", MessColor1: cMessImitOn, MessType1: tImitOn},
+	5: {MessTxtState0: "МАСКА СНЯТА", MessColor0: cBlack, MessType0: tMaskOff,
+		MessTxtState1: "МАСКА УСТАНОВЛЕНА", MessColor1: cMessMaskOn, MessType1: tMaskOn},
+	6: {MessTxtState0: "КВИТИРОВАНИЕ СНЯТО", MessColor0: cBlack, MessType0: tAckOff,
+		MessTxtState1: "КВИТИРОВАНИЕ УСТАНОВЛЕНО", MessColor1: cMessAckOn, MessType1: tAckOn},
+	7: {MessTxtState0: "РЕАЛЬНЫЙ СИГНАЛ СНЯТ", MessColor0: cBlack, MessType0: tRealOff,
+		MessTxtState1: "РЕАЛЬНЫЙ СИГНАЛ УСТАНОВЛЕН", MessColor1: cBlack, MessType1: tRealOn},
 }

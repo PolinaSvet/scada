@@ -69,6 +69,7 @@ type ObjectUsoConfig struct {
 
 type AlarmMess struct {
 	ID        uint16           `json:"id"`
+	Type      uint16           `json:"type"`
 	Info      ObjectInfoConfig `json:"info"`
 	Uso       ObjectUsoConfig  `json:"uso"`
 	MessColor string           `json:"messColor"`

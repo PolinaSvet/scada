@@ -35,8 +35,9 @@
               <th>Тег</th>
               <th>Описание</th>
               <th>Сообщение</th>
-              <th>Использование</th>
-              <th>Тип</th>
+              <th>Диагностика</th>
+              <th>Т.C.</th>
+              <th>Т.O.</th>
             </tr>
           </thead>
           <tbody>
@@ -52,7 +53,8 @@
               <td class="desc-cell">{{ alarm.info?.desc || '-' }}</td>
               <td class="message-cell">{{ alarm.messTxt || '-' }}</td>
               <td class="uso-cell">{{ alarm.uso?.txt || '-' }}</td>
-              <td class="type-cell">{{ getMessTypeText(alarm.messType) }}</td>
+              <td class="type-cell">{{ alarm.messType }}</td>
+              <td class="type-cell">{{  alarm.type }}</td>
             </tr>
           </tbody>
         </table>
@@ -82,7 +84,6 @@ import {
   colorMode,
   toggleColorMode,
   formatTime,
-  getMessTypeText,
   getRowStyle,
   saveAsHTML
 } from '@/utils/funcAlarmStore.js'
@@ -116,10 +117,11 @@ export default {
     const statusText = computed(() => {
       const time = lastUpdateTime.value.toLocaleTimeString('ru-RU')
       const count = alarmStats.value.total
-      const normalCount = alarmStats.value.normal
+      //const normalCount = alarmStats.value.normal
       const alarmCount = alarmStats.value.alarms
+      const errorCount = alarmStats.value.errors;
       
-      return `Обновлено: ${time} | Всего: ${count} | Норма: ${normalCount} | Аварии: ${alarmCount}`
+      return `Обновлено: ${time} | Всего: ${count} | Неисправность: ${errorCount} | Пожар: ${alarmCount}`
     })
 
     // Методы управления панелью
@@ -177,7 +179,6 @@ export default {
       expandTo200,
       maximizePanel,
       formatTime,
-      getMessTypeText,
       getRowStyle,
       confirmAlarms,
       handleSave,

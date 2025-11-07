@@ -25,102 +25,15 @@ export class SvgScreenLoader {
     this.resizeObserver = null
     this.controlComponents = new Map()
   }
-/* */
-  forceComponentsVisibility() {
-    this.dynamicComponents.forEach(comp => {
-      if (comp.component.container) {
-        const container = comp.component.container
-        container.style.display = 'block'
-        container.style.visibility = 'visible'
-        container.style.opacity = '1'
-        container.style.zIndex = '10'
-        
-        // Принудительный reflow
-        void container.offsetHeight
-      }
-    })
-    
-    console.log(`🔧 Forced visibility for ${this.dynamicComponents.length} components`)
-  }
-
-  // Добавьте метод ожидания загрузки всех компонентов
-  waitForAllComponents() {
-    return new Promise((resolve) => {
-      const checkComponents = () => {
-        const allLoaded = this.dynamicComponents.every(comp => {
-          return comp.component?.container && comp.component.instance
-        })
-        
-        if (allLoaded) {
-          resolve(true)
-        } else {
-          setTimeout(checkComponents, 50)
-        }
-      }
-      
-      checkComponents()
-    })
-  }
-
-  // Добавьте в класс SvgScreenLoader
-debugComponents() {
-  console.log('=== COMPONENTS DEBUG ===')
-  console.log(`Total components in memory: ${this.dynamicComponents.length}`)
-  
-  const visibleComponents = this.dynamicComponents.filter(comp => {
-    const container = comp.component?.container
-    if (!container) return false
-    
-    const style = window.getComputedStyle(container)
-    const isVisible = style.display !== 'none' && 
-                     style.visibility !== 'hidden' && 
-                     style.opacity !== '0' &&
-                     container.offsetWidth > 0 &&
-                     container.offsetHeight > 0
-    
-    return isVisible
-  })
-  
-  console.log(`Visible components: ${visibleComponents.length}`)
-  
-  this.dynamicComponents.forEach((comp, index) => {
-    const container = comp.component?.container
-    const style = container ? window.getComputedStyle(container) : null
-    
-    console.log(`Component ${index}:`, {
-      id: comp.id,
-      objectId: comp.objectId,
-      type: comp.type,
-      containerExists: !!container,
-      display: style?.display,
-      visibility: style?.visibility,
-      opacity: style?.opacity,
-      width: container?.offsetWidth,
-      height: container?.offsetHeight,
-      position: comp.coords
-    })
-  })
-}
-/* */
 
   // Основной метод загрузки SVG и создания компонентов
   async loadSvgScreen(svgRaw, containerRef, sensorsContainerRef) {
     try {
       containerRef.innerHTML = svgRaw
       const screenObjects = await this.parseAnchorsAndCreateComponents(containerRef, sensorsContainerRef)
-
-      // Ждем полной загрузки всех компонентов
-      await this.waitForAllComponents()
-
-       // Принудительно обновляем видимость
-      setTimeout(() => {
-        this.forceComponentsVisibility()
-        this.debugComponents() // Для отладки
-      }, 300)
-
       return screenObjects
     } catch (error) {
-      console.error('? Error loading SVG screen:', error)
+      console.error('❌ Error loading SVG screen:', error)
       throw error
     }
   }
@@ -131,7 +44,7 @@ debugComponents() {
       setTimeout(async () => {
         const svgElement = containerRef?.querySelector('svg')
         if (!svgElement) {
-          console.error('? SVG element not found')
+          console.error('❌ SVG element not found')
           resolve([])
           return
         }
@@ -139,52 +52,44 @@ debugComponents() {
         this.setupResizeObserver(svgElement, sensorsContainerRef)
 
         const anchors = svgElement.querySelectorAll('[data-type]')
-        console.log(`?? Found ${anchors.length} anchors in SVG`)
+        console.log(`🔍 Found ${anchors.length} anchors in SVG`)
 
         const screenObjects = []
 
-        // Создаем компоненты для ВСЕХ anchor элементов
         for (const anchor of anchors) {
           const objectId = anchor.getAttribute('data-id')
           const objectType = anchor.getAttribute('data-type')
-          const anchorId = anchor.getAttribute('id') // Используем уникальный id элемента
           
           if (!objectId || !objectType) {
-            console.warn('?? Anchor missing data-id or data-type:', anchor)
+            console.warn('⚠️ Anchor missing data-id or data-type:', anchor)
             continue
           }
 
           try {
-            // Передаем anchorId для создания уникального компонента
             await this.createComponentForAnchor(
               objectId, 
               objectType, 
-              anchorId, // Уникальный идентификатор элемента
               anchor, 
               svgElement, 
               sensorsContainerRef
             )
-            screenObjects.push({
-              objectId, // data-id для привязки данных
-              anchorId, // уникальный id элемента
-              objectType
-            })
+            screenObjects.push(objectId)
           } catch (error) {
-            console.error(`? Error creating component for ${objectId}:`, error)
+            console.error(`❌ Error creating component for ${objectId}:`, error)
           }
         }
 
         // Создаем компоненты управления после создания всех объектов
         await this.createControlComponents()
 
-        console.log(`? Created ${this.dynamicComponents.length} dynamic components`)
+        console.log(`✅ Created ${this.dynamicComponents.length} dynamic components`)
         resolve(screenObjects)
       }, 100)
     })
   }
 
   // Создание компонента для якоря
-  async createComponentForAnchor(objectId, objectType, anchorId, anchor, svgElement, sensorsContainerRef) {
+  async createComponentForAnchor(objectId, objectType, anchor, svgElement, sensorsContainerRef) {
     // Получаем координаты и размеры якоря через getBoundingClientRect()
     const rect = anchor.getBoundingClientRect()
     const svgRect = svgElement.getBoundingClientRect()
@@ -195,30 +100,23 @@ debugComponents() {
     const width = rect.width
     const height = rect.height
 
-    // Создаем уникальный идентификатор компонента
-    const componentId = anchorId || `${objectId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-
-    console.log(`?? Created ${objectType}: ${objectId} (component: ${componentId}) at [${x}, ${y}] ${width}x${height}`)
+    console.log(`📍 Created ${objectType}: ${objectId} at [${x}, ${y}] ${width}x${height}`)
 
     const component = await this.createDynamicComponent(
       objectId, 
       objectType, 
-      componentId, // Уникальный идентификатор компонента
       x, y, width, height, 
       sensorsContainerRef
     )
 
     if (component) {
       this.dynamicComponents.push({
-        id: componentId, // Уникальный идентификатор компонента
-        objectId: objectId, // data-id для привязки данных
+        id: objectId,
         type: objectType,
         coords: { x, y, width, height },
         component,
         anchorElement: anchor
       })
-
-      console.log(componentId)
 
       if (this.options.showAnchorPlaceholder) {
         this.replaceAnchorWithPlaceholder(anchor)
@@ -229,12 +127,12 @@ debugComponents() {
   }
 
   // Создание динамического компонента
-  async createDynamicComponent(objectId, objectType, componentId, x, y, width, height, sensorsContainerRef) {
+  async createDynamicComponent(objectId, objectType, x, y, width, height, sensorsContainerRef) {
     if (!sensorsContainerRef) return null
 
     const componentLoader = COMPONENT_MAP[objectType]
     if (!componentLoader) {
-      console.warn(`?? No component mapped for type: ${objectType}`)
+      console.warn(`⚠️ No component mapped for type: ${objectType}`)
       return null
     }
 
@@ -243,23 +141,19 @@ debugComponents() {
 
     const componentContainer = document.createElement('div')
     componentContainer.className = `dynamic-component ${objectType}`
-    componentContainer.dataset.componentId = componentId // Сохраняем идентификатор компонента
-    componentContainer.dataset.objectId = objectId // Сохраняем data-id для привязки данных
     componentContainer.style.position = 'absolute'
     componentContainer.style.left = `${x}px`
     componentContainer.style.top = `${y}px`
     componentContainer.style.width = `${width}px`
     componentContainer.style.height = `${height}px`
     componentContainer.style.pointerEvents = 'auto'
-    componentContainer.style.zIndex = '10' // Добавляем z-index
 
     sensorsContainerRef.appendChild(componentContainer)
 
     const AppComponent = {
       render() {
         return h(Component, {
-          id: objectId, // data-id для привязки данных
-          componentId: componentId, // уникальный идентификатор компонента
+          id: objectId,
           x: 0,
           y: 0,
           w: width,
@@ -300,20 +194,12 @@ debugComponents() {
 
   // Обновление позиций компонентов при изменении размеров
   updateComponentsPosition(svgElement, sensorsContainerRef) {
-    // Получаем все anchor элементы
-    const anchors = svgElement.querySelectorAll('[data-type]')
-    
-    anchors.forEach(anchor => {
-      const anchorId = anchor.getAttribute('id')
-      const objectId = anchor.getAttribute('data-id')
+    this.dynamicComponents.forEach(comp => {
+      // Находим соответствующий anchor
+      const anchors = svgElement.querySelectorAll(`[data-id="${comp.id}"]`)
+      if (anchors.length === 0) return
       
-      // Находим компонент по anchorId или objectId
-      const component = this.dynamicComponents.find(comp => 
-        comp.id === anchorId || comp.objectId === objectId
-      )
-      
-      if (!component) return
-      
+      const anchor = anchors[0]
       const rect = anchor.getBoundingClientRect()
       const svgRect = svgElement.getBoundingClientRect()
       
@@ -323,33 +209,23 @@ debugComponents() {
       const height = rect.height
 
       // Обновляем позицию контейнера
-      if (component.component.container) {
-        component.component.container.style.left = `${x}px`
-        component.component.container.style.top = `${y}px`
-        component.component.container.style.width = `${width}px`
-        component.component.container.style.height = `${height}px`
+      if (comp.component.container) {
+        comp.component.container.style.left = `${x}px`
+        comp.component.container.style.top = `${y}px`
+        comp.component.container.style.width = `${width}px`
+        comp.component.container.style.height = `${height}px`
       }
 
       // Обновляем координаты
-      component.coords = { x, y, width, height }
+      comp.coords = { x, y, width, height }
     })
-  }
-
-  // Получение всех компонентов по data-id
-  getComponentsByObjectId(objectId) {
-    return this.dynamicComponents.filter(comp => comp.objectId === objectId)
-  }
-
-  // Получение компонента по его уникальному идентификатору
-  getComponentById(componentId) {
-    return this.dynamicComponents.find(comp => comp.id === componentId)
   }
 
   // Получение компонента управления по типу объекта
   async getControlComponent(objectType) {
     const controlLoader = CONTROL_MAP[objectType]
     if (!controlLoader) {
-      console.warn(`?? No control component mapped for type: ${objectType}`)
+      console.warn(`⚠️ No control component mapped for type: ${objectType}`)
       return null
     }
     
@@ -382,10 +258,10 @@ debugComponents() {
     return this.controlComponents
   }
 
-  // Получение типа объекта по data-id
+  // Получение типа объекта по ID
   getObjectType(objectId) {
-    const components = this.getComponentsByObjectId(objectId)
-    return components.length > 0 ? components[0].type : null
+    const component = this.dynamicComponents.find(comp => comp.id === objectId)
+    return component ? component.type : null
   }
 
   // Получение компонента управления для объекта
@@ -412,7 +288,7 @@ debugComponents() {
 
     this.dynamicComponents = []
     this.controlComponents.clear()
-    console.log('?? SVG Screen Loader cleaned up')
+    console.log('🧹 SVG Screen Loader cleaned up')
   }
 }
 

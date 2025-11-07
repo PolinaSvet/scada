@@ -7,13 +7,15 @@ export const useLayoutStore = defineStore('layout', () => {
   const currentScreen = ref('dashboard')
   const leftPanelState = ref('expanded')
   const bottomPanelState = ref('minimized')
-  const screenViewMode = ref('autoScale')
+  const screenViewMode = ref('scroll')
   const screenBaseSize = ref({ width: 1632, height: 622 })
-  //const screenBaseSize = ref({ width: 2000, height: 1500 })
+  //const screenBaseSize = ref({ width: 1460, height: 735 })
+  //const screenBaseSize = ref({ width: 100, height: 100 })
   
   const setCurrentScreen = (screenName) => {
     if (SCREENS_CONFIG[screenName]) {
       currentScreen.value = screenName
+      
     } else {
       console.warn(`Экран "${screenName}" не найден в конфигурации`)
       currentScreen.value = 'dashboard'
@@ -30,6 +32,10 @@ export const useLayoutStore = defineStore('layout', () => {
 
   const toggleScreenViewMode = () => {
     screenViewMode.value = screenViewMode.value === 'autoScale' ? 'scroll' : 'autoScale'
+  }
+
+  const scrollScreenViewMode = () => {
+    screenViewMode.value = 'scroll' 
   }
 
   // Текущая конфигурация экрана
@@ -65,6 +71,7 @@ export const useLayoutStore = defineStore('layout', () => {
     setCurrentScreen,
     setLeftPanelState,
     setBottomPanelState,
-    toggleScreenViewMode
+    toggleScreenViewMode,
+    scrollScreenViewMode
   }
 })

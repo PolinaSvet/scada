@@ -12,7 +12,7 @@
           <div class="ctrl-obj-grid">
             <div class="ctrl-obj-sens-container">
               <!-- Исправляем передачу props -->
-              <ObjSens :id="id" :x="10" :y="10" :w="100" :h="80" />
+              <ObjSens :id="id" :x="10" :y="5" :w="100" :h="100" />
             </div>
             <div class="ctrl-obj-status-container">
               <div class="ctrl-status-text" :style="{ backgroundColor: computedData.stateColor }">

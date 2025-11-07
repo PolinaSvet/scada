@@ -130,7 +130,7 @@ export const useObjectsStore = defineStore('objects', () => {
          
           if (Array.isArray(objectsArray)) {
             updateObjectsBatch(objectsArray)
-            console.log(`📦 Received ${objectsArray.length} objects, subscriptions: ${activeSubscriptions.value.size}`)
+            //console.log(`📦 Received ${objectsArray.length} objects, subscriptions: ${activeSubscriptions.value.size}`)
           }
         }
         break

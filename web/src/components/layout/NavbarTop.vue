@@ -10,16 +10,6 @@
       <!-- Центральная часть - навигация/статус -->
       <div class="navbar-center">
         <div class="screen-title">{{ currentScreenTitle }}</div>
-        <div class="system-status">
-          <div class="status-item">
-            <span>Объекты:</span>
-            <strong>{{ objectCount }}</strong>
-          </div>
-          <div class="status-item">
-            <span>Аварии:</span>
-            <strong style="color: #ff4444">{{ alarmCount }}</strong>
-          </div>
-        </div>
       </div>
 
       <!-- Правая часть - пользователь и управление -->
@@ -46,8 +36,6 @@ export default {
     const layoutStore = useLayoutStore()
     
     const connectionStatus = ref('online')
-    const objectCount = ref(156)
-    const alarmCount = ref(3)
 
     // Используем центральную конфигурацию для заголовка
     const currentScreenTitle = computed(() => 
@@ -64,8 +52,6 @@ export default {
         const randomStatus = statuses[Math.floor(Math.random() * statuses.length)]
         connectionStatus.value = randomStatus
         
-        objectCount.value = 150 + Math.floor(Math.random() * 20)
-        alarmCount.value = Math.floor(Math.random() * 5)
       }, 10000)
     }
 
@@ -78,8 +64,6 @@ export default {
 
     return {
       connectionStatus,
-      objectCount,
-      alarmCount,
       currentScreenTitle,
       toggleMenu
     }

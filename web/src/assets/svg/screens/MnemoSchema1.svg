@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
-   width="800"
-   height="600"
+   width="1650"
+   height="730"
+   viewBox="0 0 436.56249 193.14583"
    version="1.1"
-   id="svg11"
-   sodipodi:docname="MnemoSchema1.svg"
+   id="svg1"
    inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="MnemoSchema1.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs11" />
   <sodipodi:namedview
-     id="namedview11"
+     id="namedview1"
      pagecolor="#ffffff"
      bordercolor="#000000"
      borderopacity="0.25"
@@ -21,129 +22,672 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="1.3583333"
-     inkscape:cx="399.75461"
-     inkscape:cy="300.00001"
+     inkscape:document-units="mm"
+     inkscape:zoom="1"
+     inkscape:cx="514.5"
+     inkscape:cy="341.5"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg11" />
-  <!-- Статический фон -->
-  <rect
-     width="100%"
-     height="100%"
-     fill="#1e3a5f"
-     id="rect1"
-     style="fill:#e6e6e6" />
-  <!-- Статические элементы -->
-  <text
-     x="400"
-     y="30"
-     text-anchor="middle"
-     fill="white"
-     font-size="20"
-     id="text1"
-     style="fill:#1a1a1a">Мнемосхема цеха 1</text>
-  <!-- Трубы, линии и т.д. -->
-  <path
-     d="M100,100 L700,100 L700,500 L100,500 Z"
-     fill="none"
-     stroke="#666"
-     stroke-width="2"
-     id="path1" />
-  <!-- Якоря для динамических объектов -->
-  <!-- data-type="obj-sensor-anchor" - тип компонента -->
-  <!-- data-id="ScreenSensors1_sensor_0" - ID объекта -->
-  <rect
-     x="119.07976"
-     y="122.02454"
-     width="100"
-     height="100"
-     fill="transparent"
-     stroke="transparent"
-     data-type="obj-sensor-anchor"
-     data-id="sensor_0"
-     style="fill:#008080" />
-  <rect
-     x="258.77301"
-     y="118.34356"
-     width="50"
-     height="50"
-     fill="transparent"
-     stroke="transparent"
-     data-type="obj-sensor-anchor"
-     data-id="sensor_1"
-     style="fill:#808000" />
-  <rect
-     x="531.71777"
-     y="116.13497"
-     width="150"
-     height="80"
-     fill="transparent"
-     stroke="transparent"
-     data-type="obj-sensor-anchor"
-     data-id="sensor_2"
-     style="fill:#ffd5d5" />
-  <rect
-     x="150"
-     y="250"
-     width="100"
-     height="100"
-     fill="transparent"
-     stroke="transparent"
-     data-type="obj-sensor-anchor"
-     data-id="sensor_3"
-     style="fill:#000080" />
-  <rect
-     x="331.65643"
-     y="118.95705"
-     width="50"
-     height="50"
-     fill="transparent"
-     stroke="transparent"
-     data-type="obj-sensor-anchor"
-     data-id="sensor_4"
-     style="fill:#ffff00" />
-  <rect
-     x="311.28833"
-     y="322.82208"
-     width="120"
-     height="150"
-     fill="transparent"
-     stroke="transparent"
-     data-type="obj-sensor-anchor"
-     data-id="sensor_5"
-     style="fill:#0000ff" />
-  <rect
-     x="118.34356"
-     y="377.97546"
-     width="100"
-     height="100"
-     fill="transparent"
-     stroke="transparent"
-     data-type="obj-sensor-anchor"
-     data-id="sensor_6"
-     style="fill:#008000" />
-  <rect
-     x="292.63803"
-     y="190.9816"
-     width="50"
-     height="50"
-     fill="transparent"
-     stroke="transparent"
-     data-type="obj-sensor-anchor"
-     data-id="sensor_7"
-     style="fill:#008080" />
-  <rect
-     x="521.28833"
-     y="325"
-     width="150"
-     height="150"
-     fill="transparent"
-     stroke="transparent"
-     data-type="obj-sensor-anchor"
-     data-id="sensor_8"
-     style="fill:#d3bc5f" />
+     inkscape:current-layer="layer1"
+     showgrid="true">
+    <inkscape:grid
+       id="grid1"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="2.6458333"
+       spacingy="2.6458332"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="true"
+       visible="true" />
+    <inkscape:grid
+       id="grid2"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="1.3229166"
+       spacingy="1.3229166"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="false"
+       visible="true"
+       dotted="false" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1">
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect2"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1"
+       radius="0"
+       unit="px"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="rect2"
+       style="fill:#7e7e7e;fill-opacity:1;stroke:#010101;stroke-width:1.30122;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       d="M 12.82144,26.579773 V 172.00811 h 0.346748 v 0.032 H 131.82348 v -2.76778 H 121.48251 V 153.4583 h -2.57452 v 15.81403 H 15.393892 V 119.0625 H 118.95811 v 18.29397 h 2.47169 v -31.29628 h -2.47169 V 116.2575 H 15.393892 V 82.179997 H 119.0625 v 10.19731 h 2.4722 V 61.081026 h -2.4722 V 79.375 H 15.393892 V 28.982727 H 118.77621 v 15.828491 h 2.59054 V 28.982727 h 50.55299 v 15.828491 h 2.59106 V 28.982727 H 275.17028 V 78.781238 H 174.67823 V 61.081026 h -2.4722 v 31.296281 h 2.4722 V 81.578483 H 275.17028 V 116.25182 H 174.57384 v -10.19163 h -2.4722 v 31.29628 h 2.4722 v -18.28829 h 100.59644 v 50.11994 H 174.62603 v -15.72979 h -2.57452 v 15.72979 h -12.83487 v 2.81378 h 115.95364 v 0.006 h 2.57194 V 26.579773 H 277.59184 15.393892 13.350606 Z" />
+    <g
+       id="g12"
+       transform="translate(5.9226391,24.538558)">
+      <rect
+         style="fill:#4d4d4d;fill-opacity:1;stroke:#010101;stroke-width:0.392;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         id="rect3"
+         width="6.9866595"
+         height="5"
+         x="11.058753"
+         y="6.0316701" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.492;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         x="13.229155"
+         y="10.054165"
+         id="text6"><tspan
+           sodipodi:role="line"
+           id="tspan6"
+           style="fill:#ffffff;stroke:#000000;stroke-width:0.492;stroke-dasharray:none;stroke-opacity:1"
+           x="13.229155"
+           y="10.054165">1</tspan></text>
+    </g>
+    <g
+       id="g13"
+       transform="translate(-10.995856,70.606915)">
+      <rect
+         style="fill:#4d4d4d;fill-opacity:1;stroke:#010101;stroke-width:0.392;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         id="rect3-0"
+         width="6.987"
+         height="5"
+         x="27.977249"
+         y="13.160583" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.492001;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         x="30.1625"
+         y="16.933327"
+         id="text7"><tspan
+           sodipodi:role="line"
+           id="tspan7"
+           style="stroke-width:0.492"
+           x="30.1625"
+           y="16.933327">2</tspan></text>
+    </g>
+    <g
+       id="g14"
+       transform="translate(-27.664607,106.96026)">
+      <rect
+         style="fill:#4d4d4d;fill-opacity:1;stroke:#010101;stroke-width:0.392;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         id="rect3-6"
+         width="6.9866595"
+         height="5"
+         x="44.646"
+         y="13.68975" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.492001;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         x="47.09584"
+         y="17.462494"
+         id="text8"><tspan
+           sodipodi:role="line"
+           id="tspan8"
+           style="stroke-width:0.492"
+           x="47.09584"
+           y="17.462494">3</tspan></text>
+    </g>
+    <g
+       id="g15"
+       transform="translate(117.16481,16.615895)">
+      <rect
+         style="fill:#4d4d4d;fill-opacity:1;stroke:#010101;stroke-width:0.392;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         id="rect3-2"
+         width="6.9866595"
+         height="5"
+         x="58.933498"
+         y="13.954333" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.492001;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         x="61.118759"
+         y="17.727079"
+         id="text9"><tspan
+           sodipodi:role="line"
+           id="tspan9"
+           style="stroke-width:0.492"
+           x="61.118759"
+           y="17.727079">4</tspan></text>
+    </g>
+    <g
+       id="g16"
+       transform="translate(101.72183,69.994394)">
+      <rect
+         style="fill:#4d4d4d;fill-opacity:1;stroke:#010101;stroke-width:0.392;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         id="rect3-3"
+         width="6.9866595"
+         height="5"
+         x="74.543915"
+         y="13.425167" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.492001;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         x="76.913116"
+         y="17.269291"
+         id="text10"><tspan
+           sodipodi:role="line"
+           id="tspan10"
+           style="stroke-width:0.492"
+           x="76.913116"
+           y="17.269291">5</tspan></text>
+    </g>
+    <g
+       id="g17"
+       transform="translate(80.450754,107.14131)">
+      <rect
+         style="fill:#4d4d4d;fill-opacity:1;stroke:#010101;stroke-width:0.392;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         id="rect3-01"
+         width="6.9866595"
+         height="5"
+         x="95.710587"
+         y="13.425167" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.492001;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         x="97.983963"
+         y="17.269291"
+         id="text11"><tspan
+           sodipodi:role="line"
+           id="tspan11"
+           style="stroke-width:0.492"
+           x="97.983963"
+           y="17.269291">6</tspan></text>
+    </g>
+    <g
+       id="g18"
+       transform="translate(11.104084,17.148888)">
+      <rect
+         style="fill:#4d4d4d;fill-opacity:1;stroke:#010101;stroke-width:0.392;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         id="rect3-5"
+         width="6.9866595"
+         height="5"
+         x="111.85017"
+         y="13.160583" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.492001;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+         x="114.19661"
+         y="17.039846"
+         id="text12"><tspan
+           sodipodi:role="line"
+           id="tspan12"
+           style="stroke-width:0.492"
+           x="114.19661"
+           y="17.039846">7</tspan></text>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="129.11667"
+       y="16.668749"
+       id="text18"><tspan
+         sodipodi:role="line"
+         id="tspan18"
+         style="font-size:5.64444px;fill:#333333;stroke-width:0;stroke-dasharray:none"
+         x="129.11667"
+         y="16.668749">ПЛАН 1 ЭТАЖА</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="319.67178"
+       y="17.69952"
+       id="text19"><tspan
+         sodipodi:role="line"
+         id="tspan19"
+         style="stroke-width:0"
+         x="319.67178"
+         y="17.69952">ЭКСПЛИКАЦИЯ ПОМЕЩЕНИЙ</tspan></text>
+    <rect
+       style="fill:#dcdcdc;fill-opacity:1;stroke:#000000;stroke-width:0.163233;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect19"
+       width="79.18924"
+       height="145.7276"
+       x="317.6041"
+       y="26.368502" />
+    <rect
+       style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:0.16349;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect19-0"
+       width="79.202156"
+       height="13.591026"
+       x="317.59103"
+       y="26.125982" />
+    <rect
+       style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:0.20037;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect19-0-6"
+       width="13.132719"
+       height="145.95372"
+       x="317.59735"
+       y="26.144423" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:3.17537e-11;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect19-0-7"
+       width="79.277931"
+       x="317.59702"
+       y="53.040676"
+       height="0.1" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2.56286e-07;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect19-0-7-3"
+       width="79.375008"
+       x="317.49994"
+       y="66.169853"
+       height="0.10000467" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2.56152e-07;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect19-0-7-9"
+       width="79.293396"
+       x="317.49994"
+       y="79.399017"
+       height="0.10000372" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:3.95716e-10;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect19-0-7-2"
+       width="79.375008"
+       x="317.49994"
+       y="-92.728188"
+       height="0.099999763"
+       transform="scale(1,-1)" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.92279e-07;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect19-0-7-38"
+       width="79.20092"
+       x="317.59241"
+       y="105.90094"
+       height="0.1" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2.56295e-07;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect19-0-7-5"
+       width="79.375015"
+       x="317.49994"
+       y="119.08651"
+       height="0.10001168" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2.56287e-07;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect19-0-7-7"
+       width="79.375015"
+       x="317.49994"
+       y="132.31567"
+       height="0.1000062" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2.56149e-07;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect19-0-7-1"
+       width="79.293388"
+       x="317.49994"
+       y="145.54485"
+       height="0.10000072" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2.56142e-07;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect19-0-7-6"
+       width="79.293388"
+       x="317.49994"
+       y="158.77402"
+       height="0.099995233" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:3.73566e-07;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="rect19-0-7-18"
+       width="79.265633"
+       x="317.60931"
+       y="39.598755"
+       height="0.1" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="321.27228"
+       y="34.40332"
+       id="text25"><tspan
+         sodipodi:role="line"
+         id="tspan25"
+         style="fill:#333333;stroke-width:0;stroke-dasharray:none"
+         x="321.27228"
+         y="34.40332">№</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="343.68967"
+       y="34.472313"
+       id="text26"><tspan
+         sodipodi:role="line"
+         id="tspan26"
+         style="font-size:4.23333px;stroke-width:0"
+         x="343.68967"
+         y="34.472313">НАИМЕНОВАНИЕ</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="333.0835"
+       y="47.736618"
+       id="text27"><tspan
+         sodipodi:role="line"
+         id="tspan27"
+         style="stroke-width:0"
+         x="333.0835"
+         y="47.736618">ПРИЕМНАЯ</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="333.37494"
+       y="60.978188"
+       id="text28"><tspan
+         sodipodi:role="line"
+         id="tspan28"
+         style="stroke-width:0"
+         x="333.37494"
+         y="60.978188">БУХГАЛТЕРИЯ</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="333.22614"
+       y="74.283836"
+       id="text29"><tspan
+         sodipodi:role="line"
+         id="tspan29"
+         style="stroke-width:0"
+         x="333.22614"
+         y="74.283836">ЭЛЕКТРОЩИТОВАЯ</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="333.37494"
+       y="87.436523"
+       id="text30"><tspan
+         sodipodi:role="line"
+         id="tspan30"
+         style="stroke-width:0"
+         x="333.37494"
+         y="87.436523">КАБИНЕТ СПИЦИАЛИСТОВ</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="333.37494"
+       y="100.66568"
+       id="text30-5"><tspan
+         sodipodi:role="line"
+         id="tspan30-3"
+         style="stroke-width:0"
+         x="333.37494"
+         y="100.66568">КАБИНЕТ СПИЦИАЛИСТОВ</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="333.37494"
+       y="113.89485"
+       id="text30-4"><tspan
+         sodipodi:role="line"
+         id="tspan30-38"
+         style="stroke-width:0"
+         x="333.37494"
+         y="113.89485">КАБИНЕТ СПИЦИАЛИСТОВ</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="333.0835"
+       y="127.2005"
+       id="text31"><tspan
+         sodipodi:role="line"
+         id="tspan31"
+         style="stroke-width:0"
+         x="333.0835"
+         y="127.2005">КОРИДОР</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93889px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="323.16092"
+       y="47.749023"
+       id="text32"><tspan
+         sodipodi:role="line"
+         id="tspan32"
+         style="font-size:4.93889px;stroke-width:0"
+         x="323.16092"
+         y="47.749023">1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.9389px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="323.13199"
+       y="60.978188"
+       id="text33"><tspan
+         sodipodi:role="line"
+         id="tspan33"
+         style="stroke-width:0"
+         x="323.13199"
+         y="60.978188">2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.9389px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="323.14645"
+       y="74.151886"
+       id="text34"><tspan
+         sodipodi:role="line"
+         id="tspan34"
+         style="stroke-width:0"
+         x="323.14645"
+         y="74.151886">3</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.9389px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="322.7048"
+       y="87.42205"
+       id="text35"><tspan
+         sodipodi:role="line"
+         id="tspan35"
+         style="stroke-width:0"
+         x="322.7048"
+         y="87.42205">4</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.9389px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="323.16092"
+       y="100.61022"
+       id="text36"><tspan
+         sodipodi:role="line"
+         id="tspan36"
+         style="stroke-width:0"
+         x="323.16092"
+         y="100.61022">5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.9389px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="322.58905"
+       y="113.83939"
+       id="text37"><tspan
+         sodipodi:role="line"
+         id="tspan37"
+         style="stroke-width:0"
+         x="322.58905"
+         y="113.83939">6</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.9389px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#333333;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       x="322.59628"
+       y="127.10955"
+       id="text38"><tspan
+         sodipodi:role="line"
+         id="tspan38"
+         style="stroke-width:0"
+         x="322.59628"
+         y="127.10955">7</tspan></text>
+    <rect
+       x="26.458334"
+       y="39.687504"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_0"
+       style="fill:#7e8080;stroke-width:0.264583;fill-opacity:0.06"
+       id="rect2-0" />
+    <rect
+       x="79.375"
+       y="39.6875"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_1"
+       style="fill:#808080;stroke-width:0.264583;fill-opacity:0.05809129"
+       id="rect2-0-9" />
+    <rect
+       x="26.458334"
+       y="87.3125"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_0"
+       style="fill:#808080;stroke-width:0.264583;fill-opacity:0.05809129"
+       id="rect2-0-2" />
+    <rect
+       x="79.375"
+       y="87.312492"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_1"
+       style="fill:#808080;stroke-width:0.264583;fill-opacity:0.05809129"
+       id="rect2-0-9-2" />
+    <rect
+       x="26.458334"
+       y="132.29166"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_0"
+       style="fill:#808080;stroke-width:0.264583;fill-opacity:0.05809129"
+       id="rect2-0-90" />
+    <rect
+       x="79.374992"
+       y="132.29166"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_1"
+       style="fill:#808080;stroke-width:0.264583;fill-opacity:0.05809129"
+       id="rect2-0-9-7" />
+    <rect
+       x="185.20833"
+       y="39.6875"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_6"
+       style="fill:#808080;stroke-width:0.264583;fill-opacity:0.05809129"
+       id="rect2-0-8" />
+    <rect
+       x="238.125"
+       y="39.687496"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_7"
+       style="fill:#808080;stroke-width:0.264583;fill-opacity:0.05809129"
+       id="rect2-0-9-6" />
+    <rect
+       x="185.20833"
+       y="87.3125"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_8"
+       style="fill:#808080;stroke-width:0.264583;fill-opacity:0.05809129"
+       id="rect2-0-25" />
+    <rect
+       x="238.125"
+       y="87.312492"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_9"
+       style="fill:#808080;stroke-width:0.264583;fill-opacity:0.05809129"
+       id="rect2-0-9-8" />
+    <rect
+       x="185.20834"
+       y="132.29166"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_10"
+       style="fill:#808080;stroke-width:0.264583;fill-opacity:0.05809129"
+       id="rect2-0-5" />
+    <rect
+       x="238.12502"
+       y="132.29166"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_11"
+       style="fill:#808080;stroke-width:0.264583;fill-opacity:0.05809129"
+       id="rect2-0-9-3" />
+    <rect
+       x="132.29167"
+       y="39.687496"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_0"
+       style="fill:#808080;stroke-width:0.264583;fill-opacity:0.05809129"
+       id="rect2-0-6" />
+    <rect
+       x="132.29167"
+       y="87.312492"
+       width="26.458332"
+       height="26.458332"
+       fill="transparent"
+       stroke="transparent"
+       data-type="obj-sensor-anchor"
+       data-id="sensor_1"
+       style="fill:#808080;stroke-width:0.264583;fill-opacity:0.05809129"
+       id="rect2-0-9-1" />
+  </g>
 </svg>

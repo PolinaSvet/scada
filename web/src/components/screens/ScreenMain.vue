@@ -58,10 +58,10 @@ export default {
     }
 
     onMounted(async () => {
-      console.log('🖥️ ScreenSensors2 mounted')
+      console.log('🖥️ ScreenMain mounted')
       
       try {
-        const svgSchema = getScreenSvgSchema('ScreenSensors2')
+        const svgSchema = getScreenSvgSchema('ScreenMain')
         
         if (svgSchema && svgContainer.value && sensorsContainer.value) {
           // Загружаем SVG и создаем компоненты

@@ -32,7 +32,7 @@
         class="nav-button"
         :class="[panelState, { active: currentScreen === screen.id }]"
         @click="switchScreen(screen.id)"
-        :title="screen.label"
+        :title="screen.title"
       >
         <span class="nav-icon">{{ screen.icon }}</span>
         <span class="nav-label">{{ screen.label }}</span>
@@ -124,6 +124,7 @@ export default {
     }
 
     const switchScreen = (screenId) => {
+      layoutStore.scrollScreenViewMode()
       layoutStore.setCurrentScreen(screenId)
     }
 

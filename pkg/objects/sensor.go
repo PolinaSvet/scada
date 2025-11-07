@@ -204,11 +204,11 @@ func sensorUpdateStateColorAndText(config *types.ObjectConfig, state *VueObjectS
 		state.StateTxt = config.State.TxtOn
 	default:
 		if stateInfo, exists := sensorStateMessMap[stateValue]; exists {
-			state.StateColor = stateInfo.MessColor0
-			state.StateTxt = stateInfo.MessTxtState0
+			state.StateColor = stateInfo.StateColor
+			state.StateTxt = stateInfo.StateTxt
 		} else {
-			state.StateColor = sensorStateMessMap[0].MessColor0
-			state.StateTxt = sensorStateMessMap[0].MessTxtState0
+			state.StateColor = sensorStateMessMap[0].StateColor
+			state.StateTxt = sensorStateMessMap[0].StateTxt
 		}
 	}
 }

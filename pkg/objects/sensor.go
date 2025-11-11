@@ -6,66 +6,8 @@ import (
 	"time"
 )
 
-/*
 // UpdateSensor основной обработчик для сенсоров
-func SensorUpdate(config *types.ObjectConfig, stateInterface interface{}, tagValue types.TagValue, alias string, oldValue interface{}) {
-	// Находим тип регистра по алиасу
-	registerType := GetRegisterTypeByAlias(config, alias)
-	if registerType == "" {
-		return
-	}
-
-	// Преобразуем к конкретному типу
-	state, ok := stateInterface.(*VueObjectSensorsState)
-	if !ok {
-		return
-	}
-
-	// Выбираем логику обработки
-	switch registerType {
-	case RegisterValue:
-		sensorUpdateInputValue(config, state, tagValue, oldValue)
-	case RegisterError:
-		sensorUpdateError(state, tagValue, oldValue)
-	case RegisterState:
-		sensorUpdateState(config, state, tagValue, oldValue)
-	default:
-
-	}
-
-}
-
-// обновляет значение ввода
-func sensorUpdateInputValue(config *types.ObjectConfig, state *VueObjectSensorsState, tagValue types.TagValue, oldValue interface{}) {
-	state.RawRegInput = tagValue.Value
-	state.InputValue = FormatValueWithUnit(tagValue.Value, config.Unit)
-}
-
-// обновляет поле ошибки
-func sensorUpdateError(state *VueObjectSensorsState, tagValue types.TagValue, oldValue interface{}) {
-	state.RawRegError = tagValue.Value
-	state.Error = SafeConvertToUint(tagValue.Value, types.DataTypeUINT16)
-}
-
-// обновляет битовые поля состояния
-func sensorUpdateState(config *types.ObjectConfig, state *VueObjectSensorsState, tagValue types.TagValue, oldValue interface{}) {
-	state.RawRegState = tagValue.Value
-	stateVal := SafeConvertToUint(tagValue.Value, types.DataTypeUINT16)
-
-	// Разбираем битовые поля
-	state.State = stateVal % 16
-	state.Mask = (stateVal%64)/32 > 0
-	state.Imit = (stateVal%32)/16 > 0
-	state.Ack = (stateVal%128)/64 > 0
-	state.RealInput = (stateVal%256)/128 > 0
-
-	// Устанавливаем цвет и текст состояния
-	sensorUpdateStateColorAndText(config, state)
-
-}*/
-
-// UpdateSensor основной обработчик для сенсоров
-func SensorUpdate(config *types.ObjectConfig, alarmMess *[]types.AlarmMess, stateInterface interface{}, tagValue types.TagValue, alias string, oldValue interface{}) {
+func SensorUpdate(config *types.ObjectConfig, alarmMess *[]types.AlarmMessDBType, stateInterface interface{}, tagValue types.TagValue, alias string, oldValue interface{}) {
 	// Находим тип регистра по алиасу
 	registerType := GetRegisterTypeByAlias(config, alias)
 	if registerType == "" {
@@ -100,7 +42,7 @@ func sensorUpdateInputValue(config *types.ObjectConfig, state *VueObjectSensorsS
 // === ERROR ==========================================================
 
 // обновляет поле ошибки
-func sensorUpdateError(config *types.ObjectConfig, alarmMess *[]types.AlarmMess, state *VueObjectSensorsState, tagValue types.TagValue, oldValue interface{}) {
+func sensorUpdateError(config *types.ObjectConfig, alarmMess *[]types.AlarmMessDBType, state *VueObjectSensorsState, tagValue types.TagValue, oldValue interface{}) {
 	oldError := SafeConvertToUint(oldValue, types.DataTypeUINT16)
 	newError := SafeConvertToUint(tagValue.Value, types.DataTypeUINT16)
 
@@ -114,7 +56,7 @@ func sensorUpdateError(config *types.ObjectConfig, alarmMess *[]types.AlarmMess,
 }
 
 // Обрабатывает сообщения об ошибках
-func sensorErrorMessages(config *types.ObjectConfig, alarmMess *[]types.AlarmMess, oldError, newError uint, timestamp time.Time) {
+func sensorErrorMessages(config *types.ObjectConfig, alarmMess *[]types.AlarmMessDBType, oldError, newError uint, timestamp time.Time) {
 	errorMask, hasErrorConfig := config.Alarm["error"]
 	if !hasErrorConfig {
 		return
@@ -146,7 +88,7 @@ func sensorErrorMessages(config *types.ObjectConfig, alarmMess *[]types.AlarmMes
 // === STATE ==========================================================
 
 // обновляет битовые поля состояния
-func sensorUpdateState(config *types.ObjectConfig, alarmMess *[]types.AlarmMess, state *VueObjectSensorsState, tagValue types.TagValue, oldValue interface{}) {
+func sensorUpdateState(config *types.ObjectConfig, alarmMess *[]types.AlarmMessDBType, state *VueObjectSensorsState, tagValue types.TagValue, oldValue interface{}) {
 	oldState := SafeConvertToUint(oldValue, types.DataTypeUINT16)
 	newState := SafeConvertToUint(tagValue.Value, types.DataTypeUINT16)
 
@@ -170,7 +112,7 @@ func sensorUpdateState(config *types.ObjectConfig, alarmMess *[]types.AlarmMess,
 }
 
 // Обрабатывает сообщения о состояниях
-func sensorStateMessages(config *types.ObjectConfig, alarmMess *[]types.AlarmMess, oldState, newState uint, timestamp time.Time) {
+func sensorStateMessages(config *types.ObjectConfig, alarmMess *[]types.AlarmMessDBType, oldState, newState uint, timestamp time.Time) {
 
 	stateMask, hasStateConfig := config.Alarm["state"]
 	if !hasStateConfig {

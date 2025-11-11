@@ -1,0 +1,35 @@
+{
+  "limit_time_ms": 1000,
+  "status_time_s": 30,
+  "id": "historian",
+  "alarm": {
+    "enable": true,
+    "connect_settings": {
+      "type": "pgsql",
+      "host": "localhost",
+      "port": 5432,
+      "user": "postgres",
+      "password": "root",
+      "dbname": "dbScada",
+      "sslmode": "disable"
+    },
+    "new_table": {
+      "enable": true,
+      "name": "alarm",
+      "every": "none",
+      "duration_day": 30
+    }
+  },
+  "trend": {
+    "enable": true,
+    "connect_settings": {
+      "type": "pgsql",
+      "host": "localhost",
+      "port": 5432,
+      "user": "user",
+      "password": "enc:U2FsdGVkX1+WvFJzW1kQy8K5t6M8V9p7R2XbL3aN4cO0=",
+      "dbname": "dbname",
+      "sslmode": "disable"
+    }
+  }
+}

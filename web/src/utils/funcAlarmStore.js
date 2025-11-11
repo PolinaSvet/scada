@@ -104,11 +104,11 @@ export const getContrastColor = (hexcolor) => {
 
 // Стиль строки в зависимости от режима цвета
 export const getRowStyle = (alarm) => {
-  if (!alarm.messColor) return {}
+  if (!alarm.color) return {}
   
   if (colorMode.value === 'text') {
     // В режиме текста добавляем контрастный фон
-    const textColor = alarm.messColor
+    const textColor = alarm.color
     const backgroundColor = '#F3F3F3'
     return { 
       color: textColor,
@@ -116,8 +116,8 @@ export const getRowStyle = (alarm) => {
       fontWeight: 'bold'
     }
   } else {
-    // В режиме фона используем messColor как фон и контрастный текст
-    const backgroundColor = alarm.messColor
+    // В режиме фона используем color как фон и контрастный текст
+    const backgroundColor = alarm.color
     const textColor = getContrastColor(backgroundColor)
     return {
       backgroundColor: backgroundColor,
@@ -153,34 +153,34 @@ const generateHTML = (alarms) => {
   // Определяем стили в зависимости от режима цвета
   const getRowHTML = (alarm) => {
     if (colorMode.value === 'text') {
-      const textColor = alarm.messColor
+      const textColor = alarm.color
       const backgroundColor = getContrastColor(textColor) === '#F3F3F3' ? '#000000' : '#F3F3F3'
       return `
       <tr style="color: ${textColor}; background-color: ${backgroundColor}; font-weight: bold;">
         <td>${alarm.displayNumber || '-'}</td>
-        <td>${alarm.id}</td>
-        <td class="timestamp">${formatTime(alarm.timestamp)}</td>
-        <td>${alarm.info?.tag || '-'}</td>
-        <td>${alarm.info?.desc || '-'}</td>
-        <td>${alarm.messTxt || '-'}</td>
-        <td>${alarm.uso?.txt || '-'}</td>
-        <td>${alarm.messType}</td>
-        <td>${alarm.type}</td>
+        <td>${alarm.code}</td>
+        <td class="timestamp">${alarm.dt_txt}</td>
+        <td>${alarm.tag || '-'}</td>
+        <td>${alarm.mess_name || '-'}</td>
+        <td>${alarm.mess_state || '-'}</td>
+        <td>${alarm.uso_txt || '-'}</td>
+        <td>${alarm.severity}</td>
+        <td>${alarm.type_obj}</td>
       </tr>`
     } else {
-      const backgroundColor = alarm.messColor
+      const backgroundColor = alarm.color
       const textColor = getContrastColor(backgroundColor)
       return `
       <tr style="background-color: ${backgroundColor}; color: ${textColor}; font-weight: bold;">
         <td>${alarm.displayNumber || '-'}</td>
-        <td>${alarm.id}</td>
-        <td class="timestamp">${formatTime(alarm.timestamp)}</td>
-        <td>${alarm.info?.tag || '-'}</td>
-        <td>${alarm.info?.desc || '-'}</td>
-        <td>${alarm.messTxt || '-'}</td>
-        <td>${alarm.uso?.txt || '-'}</td>
-        <td>${alarm.messType}</td>
-        <td>${alarm.type}</td>
+        <td>${alarm.code}</td>
+        <td class="timestamp">${alarm.dt_txt}</td>
+        <td>${alarm.tag || '-'}</td>
+        <td>${alarm.mess_name || '-'}</td>
+        <td>${alarm.mess_state || '-'}</td>
+        <td>${alarm.uso_txt || '-'}</td>
+        <td>${alarm.severity}</td>
+        <td>${alarm.type_obj}</td>
       </tr>`
     }
   }

@@ -341,7 +341,7 @@ func (db *Database) updateObjectState(alias string, tagValue types.TagValue, old
 		// Вызываем обработчик с конкретным типом
 		if handler, exists := objects.Handlers[objects.ObjectType(ref.ObjectType)]; exists {
 			// Передаем конкретный тип состояния
-			alarmMessages := []types.AlarmMess{}
+			alarmMessages := []types.AlarmMessDBType{}
 			handler(&config, &alarmMessages, stateInterface, tagValue, alias, oldValue)
 
 			//log.Println(len(alarmMessages), alarmMessages)

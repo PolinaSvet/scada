@@ -32,7 +32,7 @@ func UpdateAliasVal(config *types.ObjectConfig, registerType RegisterType, value
 // === MESSAGE ================================================================================
 
 // Общая функция для обработки полей состояния (не битовых)
-func processStateField(alarmMess *[]types.AlarmMess, config *types.ObjectConfig, oldValue, newValue uint, mask int, messMap map[uint]MessInfo, timestamp time.Time) {
+func processStateField(alarmMess *[]types.AlarmMessDBType, config *types.ObjectConfig, oldValue, newValue uint, mask int, messMap map[uint]MessInfo, timestamp time.Time) {
 	// Проверяем маску для этого поля
 	if mask != 0 {
 		return
@@ -41,16 +41,22 @@ func processStateField(alarmMess *[]types.AlarmMess, config *types.ObjectConfig,
 	if oldValue != newValue {
 		messInfo, exists := messMap[newValue]
 		if exists && messInfo.MessTxtState0 != "" {
-			message := types.AlarmMess{
-				ID:        config.ID,
-				Type:      config.Type,
-				Info:      config.Info,
-				Uso:       config.Uso,
-				MessColor: messInfo.MessColor0,
-				MessTxt:   messInfo.MessTxtState0,
-				MessType:  messInfo.MessType0,
+			message := types.AlarmMessDBType{
+				IdObj:     config.ID,
+				TypeObj:   config.Type,
+				Tag:       config.Info.Tag,
+				UsoID:     int(config.Uso.ID),
+				UsoTxt:    config.Uso.Txt,
+				Color:     messInfo.MessColor0,
+				MessFull:  config.Info.Desc + ": " + messInfo.MessTxtState0,
+				MessName:  config.Info.Desc,
+				MessState: messInfo.MessTxtState0,
+				Severity:  messInfo.MessType0,
 				Opermess:  config.Alarm["opermess"],
-				Timestamp: timestamp,
+				Code:      777777,
+				Users:     "test_user",
+				Dt:        int64(timestamp.Nanosecond()),
+				DtTxt:     TimeToPostgresFormat(timestamp),
 			}
 			*alarmMess = append(*alarmMess, message)
 		}
@@ -58,7 +64,7 @@ func processStateField(alarmMess *[]types.AlarmMess, config *types.ObjectConfig,
 }
 
 // Общая функция для обработки битовых полей
-func processStateBitField(alarmMess *[]types.AlarmMess, config *types.ObjectConfig, oldState, newState uint, mask int, bitPos uint, messMap map[uint]MessInfo, timestamp time.Time) {
+func processStateBitField(alarmMess *[]types.AlarmMessDBType, config *types.ObjectConfig, oldState, newState uint, mask int, bitPos uint, messMap map[uint]MessInfo, timestamp time.Time) {
 	// Проверяем маску для этого бита
 	bitMask := 1 << bitPos
 	if mask&bitMask != 0 {
@@ -90,21 +96,40 @@ func processStateBitField(alarmMess *[]types.AlarmMess, config *types.ObjectConf
 		}
 
 		if messText != "" {
-			message := types.AlarmMess{
-				ID:        config.ID,
-				Type:      config.Type,
-				Info:      config.Info,
-				Uso:       config.Uso,
-				MessColor: messColor,
-				MessTxt:   messText,
-				MessType:  messType,
+			message := types.AlarmMessDBType{
+				IdObj:     config.ID,
+				TypeObj:   config.Type,
+				Tag:       config.Info.Tag,
+				UsoID:     int(config.Uso.ID),
+				UsoTxt:    config.Uso.Txt,
+				Color:     messColor,
+				MessFull:  config.Info.Desc + ": " + messText,
+				MessName:  config.Info.Desc,
+				MessState: messText,
+				Severity:  messType,
 				Opermess:  config.Alarm["opermess"],
-				Timestamp: timestamp,
+				Code:      777777,
+				Users:     "test_user",
+				Dt:        int64(timestamp.Nanosecond()),
+				DtTxt:     TimeToPostgresFormat(timestamp),
 			}
 			*alarmMess = append(*alarmMess, message)
 		}
 	}
 }
+
+// === Format Time ============================================================================
+
+// TimeToPostgresFormat конвертирует time.Time в формат DD.MM.YYYY HH24:MI:SS.MS
+func TimeToPostgresFormat(t time.Time) string {
+	return t.Format("02.01.2006 15:04:05.000")
+}
+
+/*
+	Millisecond: t.Nanosecond() / 1e6,
+    Microsecond: t.Nanosecond() / 1e3,
+    Nanosecond:  t.Nanosecond(),
+*/
 
 // === Format Data ============================================================================
 

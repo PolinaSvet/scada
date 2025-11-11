@@ -21,7 +21,7 @@ const (
 	RegisterState RegisterType = "state"
 )
 
-var Handlers = map[ObjectType]func(config *types.ObjectConfig, alarmMess *[]types.AlarmMess, state interface{}, tagValue types.TagValue, alias string, oldValue interface{}){
+var Handlers = map[ObjectType]func(config *types.ObjectConfig, alarmMess *[]types.AlarmMessDBType, state interface{}, tagValue types.TagValue, alias string, oldValue interface{}){
 	TypeSensor: SensorUpdate,
 	//TypeDI:     DIUpdate,
 }

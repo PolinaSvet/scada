@@ -67,18 +67,6 @@ type ObjectUsoConfig struct {
 	Txt string `json:"txt"`
 }
 
-type AlarmMess struct {
-	ID        uint16           `json:"id"`
-	Type      uint16           `json:"type"`
-	Info      ObjectInfoConfig `json:"info"`
-	Uso       ObjectUsoConfig  `json:"uso"`
-	MessColor string           `json:"messColor"`
-	MessTxt   string           `json:"messTxt"`
-	MessType  int              `json:"messType"`
-	Opermess  int              `json:"opermess"`
-	Timestamp time.Time        `json:"timestamp"`
-}
-
 type ObjectStateForVue struct {
 	ID        string       `json:"id"`
 	Type      string       `json:"type"`
@@ -95,3 +83,55 @@ type BatchConfig struct {
 	DelayBetweenPackMs int `json:"delay_between_pack_ms"`
 	MaxPackSize        int `json:"max_pack_size"`
 }
+
+// AlarmMess - конфигурация сообщений
+// =========================================================
+// AlarmMessGetType параметры для запроса данных алармов
+type AlarmMessGetType struct {
+	DtStart      int64  `json:"dt_start"`
+	DtEnd        int64  `json:"dt_end"`
+	TagFind      string `json:"tag_find"`
+	MessFullFind string `json:"mess_full_find"`
+	UsoTxtFind   string `json:"uso_txt_find"`
+	SeverityFind int    `json:"severity_find"`
+	OpermessFind int    `json:"opermess_find"`
+	KvitFind     int    `json:"kvit_find"`
+	PageNum      int    `json:"page_num"`
+}
+
+// AlarmMessDBType соответствует структуре из БД
+type AlarmMessDBType struct {
+	ID          int64  `json:"id"`
+	IdObj       uint16 `json:"id_obj"`
+	TypeObj     uint16 `json:"type_obj"`
+	Code        int64  `json:"code"`
+	Dt          int64  `json:"dt"`
+	DtTxt       string `json:"dt_txt"`
+	Tag         string `json:"tag"`
+	MessFull    string `json:"mess_full"`
+	MessName    string `json:"mess_name"`
+	MessState   string `json:"mess_state"`
+	UsoID       int    `json:"uso_id"`
+	UsoTxt      string `json:"uso_txt"`
+	Users       string `json:"users"`
+	Severity    int    `json:"severity"`
+	Opermess    int    `json:"opermess"`
+	Color       string `json:"color"`
+	Kvit        bool   `json:"kvit"`
+	DtKvit      int64  `json:"dt_kvit"`
+	DtKvitTxt   string `json:"dt_kvit_txt"`
+	CurrentPage int    `json:"current_page"`
+	TotalPages  int    `json:"total_pages"`
+}
+
+/*type AlarmMess struct {
+	ID        uint16           `json:"id"`
+	Type      uint16           `json:"type"`
+	Info      ObjectInfoConfig `json:"info"`
+	Uso       ObjectUsoConfig  `json:"uso"`
+	MessColor string           `json:"messColor"`
+	MessTxt   string           `json:"messTxt"`
+	MessType  int              `json:"messType"`
+	Opermess  int              `json:"opermess"`
+	Timestamp time.Time        `json:"timestamp"`
+}*/

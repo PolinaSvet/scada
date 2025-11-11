@@ -47,14 +47,14 @@
               :style="getRowStyle(alarm)"
             >
               <td class="number-cell">{{ alarm.displayNumber }}</td>
-              <td class="id-cell">{{ alarm.id }}</td>
-              <td class="time-cell">{{ formatTime(alarm.timestamp, 'full') }}</td>
-              <td class="tag-cell">{{ alarm.info?.tag || '-' }}</td>
-              <td class="desc-cell">{{ alarm.info?.desc || '-' }}</td>
+              <td class="id-cell">{{ alarm.code }}</td>
+              <td class="time-cell">{{ alarm.dt_txt}}</td>
+              <td class="tag-cell">{{ alarm.tag || '-' }}</td>
+              <td class="desc-cell">{{ alarm.mess_name || '-' }}</td>
               <td class="message-cell">{{ alarm.messTxt || '-' }}</td>
-              <td class="uso-cell">{{ alarm.uso?.txt || '-' }}</td>
-              <td class="type-cell">{{ alarm.messType }}</td>
-              <td class="type-cell">{{  alarm.type }}</td>
+              <td class="uso-cell">{{ alarm.mess_state || '-' }}</td>
+              <td class="type-cell">{{ alarm.severity }}</td>
+              <td class="type-cell">{{  alarm.type_obj }}</td>
             </tr>
           </tbody>
         </table>

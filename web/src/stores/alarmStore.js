@@ -48,8 +48,8 @@ export const getAlarmMessages = computed(() => {
 // Статистика для статусной строки
 export const getAlarmStats = computed(() => {
   const total = alarmMessStore.value.length
-  const alarms = alarmMessStore.value.filter(msg => msg.messType >= 1000 && msg.messType < 1100).length
-  const errors = alarmMessStore.value.filter(msg => msg.messType === 901).length
+  const alarms = alarmMessStore.value.filter(msg => msg.severity >= 1000 && msg.severity < 1100).length
+  const errors = alarmMessStore.value.filter(msg => msg.severity === 901).length
   const normal = total - alarms
   
   return { total, normal, alarms, errors }
@@ -136,14 +136,14 @@ export const getAlarmStatsInfo = computed(() => {
   const groups = {}
   
   alarmMessStore.value.forEach(msg => {
-    const messType = msg.messType
+    const messType = msg.severity
     
     if (!groups[messType]) {
       const category = getMessTypeCategory(messType)
       groups[messType] = {
         messType: messType,
         count: 0,
-        messColor: msg.messColor || getCategoryColor(category),
+        messColor: msg.color || getCategoryColor(category),
         name: getMessTypeName(messType),
         category: category,
         categoryName: getCategoryName(category),
@@ -155,7 +155,7 @@ export const getAlarmStatsInfo = computed(() => {
   })
   
   // Преобразуем объект в массив и сортируем по messType
-  return Object.values(groups).sort((a, b) => a.messType - b.messType)
+  return Object.values(groups).sort((a, b) => a.severity - b.severity)
 })
 
 // Группировка по категориям
@@ -163,7 +163,7 @@ export const getAlarmStatsByCategory = computed(() => {
   const categories = {}
   
   alarmMessStore.value.forEach(msg => {
-    const category = getMessTypeCategory(msg.messType)
+    const category = getMessTypeCategory(msg.severity)
     
     if (!categories[category]) {
       categories[category] = {
@@ -179,7 +179,7 @@ export const getAlarmStatsByCategory = computed(() => {
     categories[category].count++
     
     // Также считаем по типам внутри категории
-    const messType = msg.messType
+    const messType = msg.severity
     if (!categories[category].types[messType]) {
       categories[category].types[messType] = {
         messType: messType,

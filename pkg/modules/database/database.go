@@ -217,8 +217,22 @@ func (db *Database) processMessages() {
 
 				//db.processMessage(taskCtx, m)
 
-				//log.Println("chanInputVue:", m)
-				objects.CommandExecute(m)
+				//log.Printf("xxx: %+v", m)
+				switch m.Source {
+				case "sendCommand":
+					objects.CommandExecute(m)
+
+				case "alarms_get_data":
+					select {
+					case db.chanOutputDbsA <- m:
+					case <-db.ctx.Done():
+						return
+					default:
+
+					}
+
+				}
+
 			}(msg)
 
 			//go db.processMessage(msg)

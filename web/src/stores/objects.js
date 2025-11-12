@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { decode, encode } from '@msgpack/msgpack'
 import { ref, computed } from 'vue'
 import { addToAlarmStore } from '@/stores/alarmStore.js'
+import { addMessHistBatch } from '@/stores/alarmStoreHist.js'
 
 export const useObjectsStore = defineStore('objects', () => {
   // === WebSocket Connections ===
@@ -147,6 +148,15 @@ export const useObjectsStore = defineStore('objects', () => {
               //console.log(`📦 mess_batch ${objectsArray.length}`)
             }
           }
+
+          if (message.type === 'alarms_set_data' ) {
+            const objectsArray = message.data
+            console.log('alarms_set_data',message.data)
+            if (Array.isArray(objectsArray)) {
+              console.log(`📦 mess_hist ${objectsArray.length}`)
+              updateMessHistBatch(objectsArray)
+            }
+          }
           break  
         
       case 'control':
@@ -191,16 +201,17 @@ export const useObjectsStore = defineStore('objects', () => {
 
   // === ОСНОВНЫЕ МЕТОДЫ ДЛЯ РАБОТЫ С СООБЩЕНИЯМИ ===
 
-  // Обновление объектов (фильтруем по подпискам)
+  // Обновление объектов (сообщения)
   const updateMessBatch = (objectsArray) => {
       objectsArray.forEach(obj => {
         addToAlarmStore(obj)
-        /*obj.forEach(objItem => {
-          addToAlarmStore(objItem)
-        })*/
-
       })
   }
+
+  // Обновление объектов (исторические сообщения)
+  const updateMessHistBatch = (objectsArray) => {
+    addMessHistBatch(objectsArray)
+  } 
 
   // === ОСНОВНЫЕ МЕТОДЫ ДЛЯ РАБОТЫ С ОБЪЕКТАМИ ===
   
@@ -277,7 +288,7 @@ export const useObjectsStore = defineStore('objects', () => {
   }
 
   // Функция для кодирования сообщения
-  const encodeMessage = (type, data, source = 'vue-client') => {
+  const encodeMessage = (type, data, source) => {
 
     //const serializedData = JSON.stringify(data)
     const serializedData = data
@@ -300,7 +311,7 @@ export const useObjectsStore = defineStore('objects', () => {
   }
 
   // ОТПРАВКА КОМАНД (через control WebSocket)
-  const sendCommand = async (objectId, command, data = {}) => {
+  const sendCommand = async (objectId, command,command_source, data = {}) => {
     if (connectionStatus.value.control !== 'connected') {
       console.error('❌ Control WebSocket not connected')
       return { success: false, error: 'Control channel not connected' }
@@ -318,7 +329,7 @@ export const useObjectsStore = defineStore('objects', () => {
     try {
 
       // Упаковываем в структуру Message
-      const message = encodeMessage('command', commandMessage)
+      const message = encodeMessage(command, commandMessage,command_source)
 
       const encodedMessage = encode(message)
       controlConnection.value.send(encodedMessage)

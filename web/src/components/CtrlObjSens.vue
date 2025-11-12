@@ -289,7 +289,7 @@ export default {
 
     const handleConfirm = () => {
       if (pendingCommand.value) {
-        objectsStore.sendCommand(props.id,'sendCommand', pendingCommand.value)
+        objectsStore.sendCommand(props.id,'command','sendCommand', pendingCommand.value)
         //alert(JSON.stringify(pendingCommand.value, null, 2))
       }
       closeConfirmation()

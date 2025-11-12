@@ -8,16 +8,6 @@ import (
 	"server-system/pkg/types"
 )
 
-// VueCommand - команда от Vue клиента
-type VueCommand struct {
-	Command  string                 `json:"command" msgpack:"command"`
-	ObjectID string                 `json:"objectId" msgpack:"objectId"`
-	UserID   string                 `json:"userId" msgpack:"userId"`
-	ClientID string                 `json:"clientId" msgpack:"clientId"`
-	Data     map[string]interface{} `json:"data" msgpack:"data"`
-	Time     string                 `json:"time" msgpack:"time"`
-}
-
 type PendingCommand struct {
 	CmdTag          map[string]interface{} `json:"cmdTag" msgpack:"cmdTag"`
 	CmdValue        int                    `json:"cmdValue" msgpack:"cmdValue"`
@@ -33,7 +23,7 @@ func CommandExecute(message types.Message) {
 
 	// Обрабатываем только команды
 	if message.Type == "command" {
-		var vueCmd VueCommand
+		var vueCmd types.VueCommand
 
 		// Декодируем данные из json.RawMessage
 		if err := json.Unmarshal(message.Data, &vueCmd); err != nil {
@@ -53,7 +43,7 @@ func CommandExecute(message types.Message) {
 	}
 }
 
-func processSendCommand(vueCmd VueCommand) {
+func processSendCommand(vueCmd types.VueCommand) {
 	// Логируем все полученные данные для отладки
 	//log.Printf("Raw VueCommand: %+v", vueCmd)
 

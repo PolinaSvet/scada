@@ -2,6 +2,7 @@ package historian
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -56,23 +57,6 @@ func (a *AlarmDB) Close() error {
 	return nil
 }
 
-/*// InsertBatch вставляет батч алармов в БД
-func (a *AlarmDB) InsertBatch(ctx context.Context, alarms []types.AlarmMessDBType) (int, error) {
-	if len(alarms) == 0 {
-		return 0, nil
-	}
-
-	var insertedCount int
-	query := `SELECT sinkross_insert_mess_batch($1)`
-
-	err := a.pool.QueryRow(ctx, query, alarms).Scan(&insertedCount)
-	if err != nil {
-		return 0, fmt.Errorf("failed to insert alarm batch: %w", err)
-	}
-
-	return insertedCount, nil
-}*/
-
 // InsertBatch вставляет батч алармов в БД
 func (a *AlarmDB) InsertBatch(ctx context.Context, alarms []types.AlarmMessDBType) (int, error) {
 	if len(alarms) == 0 {
@@ -82,7 +66,6 @@ func (a *AlarmDB) InsertBatch(ctx context.Context, alarms []types.AlarmMessDBTyp
 	var insertedCount int
 	query := `SELECT sinkross_insert_mess_batch($1)`
 
-	// Преобразуем в JSON
 	jsonData, err := json.Marshal(alarms)
 	if err != nil {
 		return 0, fmt.Errorf("failed to marshal alarms to JSON: %w", err)
@@ -97,29 +80,27 @@ func (a *AlarmDB) InsertBatch(ctx context.Context, alarms []types.AlarmMessDBTyp
 }
 
 // GetData получает данные алармов из БД
-func (a *AlarmDB) GetData(ctx context.Context, params types.AlarmMessGetType) ([]types.AlarmMessDBType, error) {
-	query := `SELECT * FROM sinkross_histmess_getdata($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+func (a *AlarmDB) GetData(ctx context.Context, jsonData []byte) ([]types.AlarmMessDBType, error) {
+	if len(jsonData) == 0 || string(jsonData) == "{}" {
+		return nil, fmt.Errorf("empty JSON data")
+	}
 
-	rows, err := a.pool.Query(ctx, query,
-		params.DtStart,
-		params.DtEnd,
-		params.TagFind,
-		params.MessFullFind,
-		params.UsoTxtFind,
-		params.SeverityFind,
-		params.OpermessFind,
-		params.KvitFind,
-		params.PageNum,
-	)
+	query := `SELECT * FROM sinkross_histmess_getdata_json($1)`
 
+	rows, err := a.pool.Query(ctx, query, jsonData)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query alarm data: %w", err)
+		return nil, fmt.Errorf("failed to query alarm data with JSON: %w", err)
 	}
 	defer rows.Close()
 
 	var results []types.AlarmMessDBType
 	for rows.Next() {
 		var alarm types.AlarmMessDBType
+
+		var kvit sql.NullBool // Для boolean поля который может быть NULL
+		var dtKvit sql.NullInt64
+		var dtKvitTxt sql.NullString
+
 		err := rows.Scan(
 			&alarm.ID,
 			&alarm.Code,
@@ -135,15 +116,31 @@ func (a *AlarmDB) GetData(ctx context.Context, params types.AlarmMessGetType) ([
 			&alarm.Severity,
 			&alarm.Opermess,
 			&alarm.Color,
-			&alarm.Kvit,
-			&alarm.DtKvit,
-			&alarm.DtKvitTxt,
+			&kvit,      // Сканируем как boolean
+			&dtKvit,    // Сканируем как nullable int64
+			&dtKvitTxt, // Сканируем как nullable string
 			&alarm.CurrentPage,
 			&alarm.TotalPages,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan alarm row: %w", err)
 		}
+
+		// Преобразуем NULL значения
+		alarm.Kvit = kvit.Bool
+
+		if dtKvit.Valid {
+			alarm.DtKvit = dtKvit.Int64
+		} else {
+			alarm.DtKvit = 0
+		}
+
+		if dtKvitTxt.Valid {
+			alarm.DtKvitTxt = dtKvitTxt.String
+		} else {
+			alarm.DtKvitTxt = ""
+		}
+
 		results = append(results, alarm)
 	}
 

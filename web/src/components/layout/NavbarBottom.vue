@@ -15,6 +15,8 @@
         <button class="control-btn icon-color" @click="handleColorToggle" title="Изменить стиль отображения цвета">
         <span>{{ colorMode === 'text' ? '🔲' : '🔳' }}</span>
         </button>
+        <button class="control-btn icon-maximize" @click="alarms_get_data" title="alarms_get_data">
+        </button>
       </div>
       
       <!-- Текстовое поле с последним значением -->
@@ -88,6 +90,8 @@ import {
   saveAsHTML
 } from '@/utils/funcAlarmStore.js'
 
+import { useObjectsStore } from '@/stores/objects'
+
 export default {
   name: 'NavbarBottom',
   setup() {
@@ -95,6 +99,8 @@ export default {
     const showTableHeader = ref(true) // Показывать заголовки таблицы
     
     const lastUpdateTime = ref(new Date())
+    const objectsStore = useObjectsStore()
+    const pendingCommand = ref(null)
 
     // Используем состояние из store
     const panelState = computed(() => layoutStore.bottomPanelState)
@@ -151,6 +157,36 @@ export default {
       showTableHeader.value = !showTableHeader.value
     }
 
+    const alarms_get_data = () => {
+
+      const filterParams = {
+        dtStart: Date.now() - 24 * 60 * 60 * 1000, // последние 24 часа
+        dtEnd: Date.now(),
+        tagFind: 'TAG_1',
+        pageNum: 1
+      }
+
+      pendingCommand.value = {
+        dtStart: filterParams.dtStart || null,
+        dtEnd: filterParams.dtEnd || null,
+        tagFind: filterParams.tagFind || '',
+        messFullFind: filterParams.messFullFind || '',
+        usoTxtFind: filterParams.usoTxtFind || '',
+        severityFind: filterParams.severityFind || 0,
+        opermessFind: filterParams.opermessFind || 0,
+        kvitFind: filterParams.kvitFind || 0,
+        pageNum: filterParams.pageNum || 1
+      }
+
+      objectsStore.sendCommand(
+        'alarms_system', // objectId
+        'command', // command alarms_get_data
+        'alarms_get_data', // command_source
+        pendingCommand.value // данные фильтров
+      )
+    }
+    
+
     // Кнопка подтверждения - очистка хранилища
     const confirmAlarms = () => {
       clearAlarmStore()
@@ -183,6 +219,7 @@ export default {
       confirmAlarms,
       handleSave,
       handleColorToggle,
+      alarms_get_data,
       colorMode
     }
   }

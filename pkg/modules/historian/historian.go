@@ -158,7 +158,7 @@ func (hist *Historian) processMessage(ctx context.Context, msg types.Message) {
 			hist.sendMessError("processMessage panic: %v", r)
 		}
 	}()
-
+	log.Println("xxxxxxxxxxxxx: ", msg.Type, msg.Source)
 	switch msg.Type {
 	case "alarms_batch":
 		log.Println("alarms_batch received: ", msg.UpdateDT)
@@ -168,11 +168,20 @@ func (hist *Historian) processMessage(ctx context.Context, msg types.Message) {
 			}
 		}
 
-	case "alarms_get_data":
-		log.Println("alarms_get_data received: ", msg.UpdateDT)
-		if hist.alarmProcessor != nil {
-			if err := hist.alarmProcessor.ProcessGetData(ctx, msg.Data, hist.chanOutputVue, hist.config.ID); err != nil {
-				hist.sendMessError("failed to process alarm get data: %v", err)
+	case "command":
+		if msg.Source == "alarms_get_data" {
+			log.Println("alarms_get_data received: ", msg.UpdateDT)
+
+			var vueCmd types.VueCommand
+			if err := json.Unmarshal(msg.Data, &vueCmd); err != nil {
+				log.Printf("failed to unmarshal VueCommand: %v, raw data: %s", err, string(msg.Data))
+				return
+			}
+
+			if hist.alarmProcessor != nil {
+				if err := hist.alarmProcessor.ProcessGetData(ctx, vueCmd.Data, hist.chanOutputVue, hist.config.ID); err != nil {
+					hist.sendMessError("failed to process alarm get data: %v", err)
+				}
 			}
 		}
 

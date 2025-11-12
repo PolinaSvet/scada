@@ -124,6 +124,16 @@ type AlarmMessDBType struct {
 	TotalPages  int    `json:"total_pages"`
 }
 
+// VueCommand - команда от Vue клиента
+type VueCommand struct {
+	Command  string                 `json:"command" msgpack:"command"`
+	ObjectID string                 `json:"objectId" msgpack:"objectId"`
+	UserID   string                 `json:"userId" msgpack:"userId"`
+	ClientID string                 `json:"clientId" msgpack:"clientId"`
+	Data     map[string]interface{} `json:"data" msgpack:"data"`
+	Time     string                 `json:"time" msgpack:"time"`
+}
+
 /*type AlarmMess struct {
 	ID        uint16           `json:"id"`
 	Type      uint16           `json:"type"`

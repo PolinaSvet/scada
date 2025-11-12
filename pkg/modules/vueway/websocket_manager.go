@@ -225,6 +225,9 @@ func (wm *WebSocketManager) handleDatabaseMessage(msg types.Message) {
 	case "mess_batch":
 		wm.SendMessToClientByID(msg.ClientID, msg)
 		log.Println("mess_batch: ", msg.UpdateDT)
+	case "alarms_set_data":
+		wm.SendMessToClientByID(msg.ClientID, msg)
+		log.Println("mess_batch: ", msg.UpdateDT)
 
 	}
 

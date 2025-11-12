@@ -106,7 +106,49 @@ func (ap *AlarmProcessor) ProcessBatch(ctx context.Context, data []byte) error {
 }
 
 // ProcessGetData обрабатывает запрос данных алармов
-func (ap *AlarmProcessor) ProcessGetData(ctx context.Context, data []byte, outputChan chan<- types.Message, moduleID string) error {
+func (ap *AlarmProcessor) ProcessGetData(ctx context.Context, data map[string]interface{}, outputChan chan<- types.Message, moduleID string) error {
+	if !ap.config.Enable {
+		return fmt.Errorf("alarm processing is disabled")
+	}
+
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return fmt.Errorf("failed to marshal data: %w", err)
+	}
+
+	// Передаем сырые JSON данные напрямую в БД
+	results, err := ap.db.GetData(ctx, jsonData)
+	if err != nil {
+		return fmt.Errorf("failed to get alarm data: %w", err)
+	}
+
+	// Отправляем результаты в канал
+	responseData, err := json.Marshal(results)
+	if err != nil {
+		return fmt.Errorf("failed to marshal alarm response: %w", err)
+	}
+
+	msg := types.Message{
+		Type:     "alarms_set_data",
+		Data:     responseData,
+		InitDT:   time.Now(),
+		UpdateDT: time.Now(),
+		Source:   moduleID,
+	}
+
+	select {
+	case outputChan <- msg:
+		log.Printf("alarm data sent: %d records", len(results))
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+		return fmt.Errorf("output channel is full")
+	}
+
+	return nil
+}
+
+/*func (ap *AlarmProcessor) ProcessGetData(ctx context.Context, data []byte, outputChan chan<- types.Message, moduleID string) error {
 	if !ap.config.Enable {
 		return fmt.Errorf("alarm processing is disabled")
 	}
@@ -145,4 +187,4 @@ func (ap *AlarmProcessor) ProcessGetData(ctx context.Context, data []byte, outpu
 	}
 
 	return nil
-}
+}*/

@@ -20,6 +20,8 @@ type DatabaseInit struct {
 	ChanInputGen   <-chan types.Message
 	ChanOutputVue  chan<- types.Message
 	ChanInputVue   <-chan types.Message
+	ChanOutputDbsA chan<- types.Message
+	ChanOutputDbsT chan<- types.Message
 	ConfigFile     string
 }
 
@@ -34,10 +36,13 @@ type Database struct {
 	chanInputGen   <-chan types.Message
 	chanOutputVue  chan<- types.Message
 	chanInputVue   <-chan types.Message
+	chanOutputDbsA chan<- types.Message
+	chanOutputDbsT chan<- types.Message
 
 	// пакетная обработка данных
-	batchProcessor     *batch.BatchProcessor
-	batchProcessorMess *batch.BatchProcessor
+	batchProcessor      *batch.BatchProcessor
+	batchProcessorMess  *batch.BatchProcessor
+	batchProcessorHistA *batch.BatchProcessor
 
 	// статистика
 	cntMsgGet int
@@ -74,6 +79,8 @@ func NewModule(init DatabaseInit) *Database {
 		chanInputGen:   init.ChanInputGen,
 		chanOutputVue:  init.ChanOutputVue,
 		chanInputVue:   init.ChanInputVue,
+		chanOutputDbsA: init.ChanOutputDbsA,
+		chanOutputDbsT: init.ChanOutputDbsT,
 		сonfigFile:     init.ConfigFile,
 	}
 
@@ -140,11 +147,20 @@ func (db *Database) Start() {
 		"mess_batch",
 	)
 
+	db.batchProcessorHistA = batch.NewBatchProcessor(
+		db.chanOutputDbsA,
+		db.chanSystemMess,
+		db.config.BatchWriting,
+		db.config.ID,
+		"alarms_batch",
+	)
+
 	// Запускаем обработчики в отдельных горутинах
 	go db.processStatus()
 	go db.processMessages()
 	go db.batchProcessor.Start(db.ctx)
 	go db.batchProcessorMess.Start(db.ctx)
+	go db.batchProcessorHistA.Start(db.ctx)
 
 	//log.Printf("[%v] module started", db.config.ID)
 	db.sendMessStatus("<%v> module started", db.config.ID)
@@ -360,7 +376,10 @@ func (db *Database) updateObjectState(alias string, tagValue types.TagValue, old
 			}
 
 			db.batchProcessor.Add(stateForVue)
-			db.batchProcessorMess.Add(alarmMessages)
+			if len(alarmMessages) > 0 {
+				db.batchProcessorMess.Add(alarmMessages)
+				db.batchProcessorHistA.Add(alarmMessages)
+			}
 		}
 	}
 }

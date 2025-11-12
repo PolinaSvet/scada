@@ -41,12 +41,14 @@ func (ap *AlarmProcessor) Close() error {
 	return nil
 }
 
+/*
 // ProcessBatch обрабатывает батч алармов
 func (ap *AlarmProcessor) ProcessBatch(ctx context.Context, data []byte) error {
 	if !ap.config.Enable {
 		return fmt.Errorf("alarm processing is disabled")
 	}
 
+	log.Println(data)
 	var alarms []types.AlarmMessDBType
 	if err := json.Unmarshal(data, &alarms); err != nil {
 		return fmt.Errorf("failed to unmarshal alarm batch: %w", err)
@@ -62,6 +64,44 @@ func (ap *AlarmProcessor) ProcessBatch(ctx context.Context, data []byte) error {
 	}
 
 	log.Printf("alarm batch processed: %d/%d messages inserted", inserted, len(alarms))
+	return nil
+}*/
+
+// ProcessBatch обрабатывает батч алармов
+func (ap *AlarmProcessor) ProcessBatch(ctx context.Context, data []byte) error {
+	if !ap.config.Enable {
+		return fmt.Errorf("alarm processing is disabled")
+	}
+
+	// Распарсиваем данные как массив интерфейсов, поскольку BatchProcessor отправляет []interface{}
+	var rawItems []interface{}
+	if err := json.Unmarshal(data, &rawItems); err != nil {
+		return fmt.Errorf("failed to unmarshal raw batch: %w", err)
+	}
+
+	if len(rawItems) == 0 {
+		return nil
+	}
+
+	// Конвертируем []interface{} в []types.AlarmMessDBType
+	for i, rawItem := range rawItems {
+
+		itemData, err := json.Marshal(rawItem)
+		if err != nil {
+			return fmt.Errorf("failed to marshal item %d: %w", i, err)
+		}
+
+		var alarm []types.AlarmMessDBType
+		if err := json.Unmarshal(itemData, &alarm); err != nil {
+			return fmt.Errorf("failed to unmarshal item %d into AlarmMessDBType: %w", i, err)
+		}
+
+		_, err = ap.db.InsertBatch(ctx, alarm)
+		if err != nil {
+			return fmt.Errorf("failed to insert alarm batch: %w", err)
+		}
+
+	}
 	return nil
 }
 

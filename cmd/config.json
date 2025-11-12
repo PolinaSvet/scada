@@ -26,6 +26,10 @@
     "vueway": {
       "enabled": true,
       "config_file": "configs/config_vueway.json"
+    },
+    "historian": {
+      "enabled": true,
+      "config_file": "configs/config_historian.json"
     }
   }
 }

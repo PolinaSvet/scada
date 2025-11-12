@@ -2,6 +2,7 @@ package historian
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -55,7 +56,7 @@ func (a *AlarmDB) Close() error {
 	return nil
 }
 
-// InsertBatch вставляет батч алармов в БД
+/*// InsertBatch вставляет батч алармов в БД
 func (a *AlarmDB) InsertBatch(ctx context.Context, alarms []types.AlarmMessDBType) (int, error) {
 	if len(alarms) == 0 {
 		return 0, nil
@@ -65,6 +66,29 @@ func (a *AlarmDB) InsertBatch(ctx context.Context, alarms []types.AlarmMessDBTyp
 	query := `SELECT sinkross_insert_mess_batch($1)`
 
 	err := a.pool.QueryRow(ctx, query, alarms).Scan(&insertedCount)
+	if err != nil {
+		return 0, fmt.Errorf("failed to insert alarm batch: %w", err)
+	}
+
+	return insertedCount, nil
+}*/
+
+// InsertBatch вставляет батч алармов в БД
+func (a *AlarmDB) InsertBatch(ctx context.Context, alarms []types.AlarmMessDBType) (int, error) {
+	if len(alarms) == 0 {
+		return 0, nil
+	}
+
+	var insertedCount int
+	query := `SELECT sinkross_insert_mess_batch($1)`
+
+	// Преобразуем в JSON
+	jsonData, err := json.Marshal(alarms)
+	if err != nil {
+		return 0, fmt.Errorf("failed to marshal alarms to JSON: %w", err)
+	}
+
+	err = a.pool.QueryRow(ctx, query, jsonData).Scan(&insertedCount)
 	if err != nil {
 		return 0, fmt.Errorf("failed to insert alarm batch: %w", err)
 	}

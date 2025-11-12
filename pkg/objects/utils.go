@@ -55,7 +55,7 @@ func processStateField(alarmMess *[]types.AlarmMessDBType, config *types.ObjectC
 				Opermess:  config.Alarm["opermess"],
 				Code:      777777,
 				Users:     "test_user",
-				Dt:        int64(timestamp.Nanosecond()),
+				Dt:        timestamp.UnixNano(),
 				DtTxt:     TimeToPostgresFormat(timestamp),
 			}
 			*alarmMess = append(*alarmMess, message)
@@ -110,7 +110,7 @@ func processStateBitField(alarmMess *[]types.AlarmMessDBType, config *types.Obje
 				Opermess:  config.Alarm["opermess"],
 				Code:      777777,
 				Users:     "test_user",
-				Dt:        int64(timestamp.Nanosecond()),
+				Dt:        timestamp.UnixNano(),
 				DtTxt:     TimeToPostgresFormat(timestamp),
 			}
 			*alarmMess = append(*alarmMess, message)
@@ -126,9 +126,23 @@ func TimeToPostgresFormat(t time.Time) string {
 }
 
 /*
-	Millisecond: t.Nanosecond() / 1e6,
-    Microsecond: t.Nanosecond() / 1e3,
-    Nanosecond:  t.Nanosecond(),
+	timestamp := time.Now()
+
+    // Секунды (с начала эпохи Unix)
+    seconds := timestamp.Unix()          // int64
+    fmt.Printf("Секунды: %d\n", seconds)
+
+    // Миллисекунды
+    milliseconds := timestamp.UnixMilli() // int64
+    fmt.Printf("Миллисекунды: %d\n", milliseconds)
+
+    // Микросекунды
+    microseconds := timestamp.UnixMicro() // int64
+    fmt.Printf("Микросекунды: %d\n", microseconds)
+
+    // Наносекунды
+    nanoseconds := timestamp.UnixNano()   // int64
+    fmt.Printf("Наносекунды: %d\n", nanoseconds)
 */
 
 // === Format Data ============================================================================

@@ -33,6 +33,7 @@ func (hist *Historian) loadConfig(filename string) error {
 	return nil
 }
 
+// "password": "enc:U2FsdGVkX1+WvFJzW1kQy8K5t6M8V9p7R2XbL3aN4cO0=",
 // decryptPasswords дешифрует пароли в конфигурации
 func (hist *Historian) decryptPasswords(config *HistorianConfig) error {
 	if config.Alarm.Enable {

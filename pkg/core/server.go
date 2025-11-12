@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"server-system/pkg/modules/database"
+	"server-system/pkg/modules/historian"
 	"server-system/pkg/modules/vueway"
 	"server-system/pkg/types"
 	"sync"
@@ -23,6 +24,9 @@ func DataInit() {
 	chanGenToDbs := make(chan types.Message, bufferSize)
 	chanDbsToVue := make(chan types.Message, bufferSize)
 	chanVueToDbs := make(chan types.Message, bufferSize)
+	chanDbsToHtA := make(chan types.Message, bufferSize)
+	chanDbsToHtT := make(chan types.Message, bufferSize)
+
 	chanSystemMess := make(chan types.Message, bufferSize)
 	chanStatus := make(chan types.Message, bufferSize)
 
@@ -54,6 +58,8 @@ func DataInit() {
 		ChanInputGen:   chanGenToDbs,
 		ChanOutputVue:  chanDbsToVue,
 		ChanInputVue:   chanVueToDbs,
+		ChanOutputDbsA: chanDbsToHtA,
+		ChanOutputDbsT: chanDbsToHtT,
 		ConfigFile:     config["modules"].(map[string]interface{})["database"].(map[string]interface{})["config_file"].(string),
 	}
 
@@ -85,16 +91,25 @@ func DataInit() {
 		}()
 	}
 
-	// test for reading data
-	/*wg.Add(1)
-	go func() {
-		defer wg.Done()
+	// 6. Запуск historian модуля
+	histInit := historian.HistorianInit{
+		Ctx:            ctx,
+		ChanSystemMess: chanSystemMess,
+		ChanStatus:     chanStatus,
+		ChanInputDbsA:  chanDbsToHtA,
+		ChanInputDbsT:  chanDbsToHtT,
+		ChanOutputVue:  chanDbsToVue,
+		ConfigFile:     config["modules"].(map[string]interface{})["historian"].(map[string]interface{})["config_file"].(string),
+	}
 
-		//for _ = range chanDbsToVue {
-		for msg := range chanDbsToVue {
-			log.Println("get msg from chanDbsToVue", msg.InitDT, msg.ID, len(msg.Data))
-		}
-	}()*/
+	hist := historian.NewModule(histInit)
+	if hist != nil {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			hist.Start()
+		}()
+	}
 
 	log.Println("Server started")
 	wg.Wait()
@@ -122,40 +137,27 @@ func handleSystemMessage(msg types.Message) {
 	// Используем константы из types пакета
 	switch msg.Type {
 	case types.MessageTypeError:
-		log.Printf("🚨 ERROR [%s]: %s", msg.Source, messageData.Message)
+		log.Printf("🚨 ERROR [%s] %s", msg.Source, messageData.Message)
 
 	case types.MessageTypeAlarm:
-		log.Printf("🔴 ALARM [%s]: %s", msg.Source, messageData.Message)
+		log.Printf("🔴 ALARM [%s] %s", msg.Source, messageData.Message)
 
 	case types.MessageTypeWarning:
-		log.Printf("🟡 WARNING [%s]: %s", msg.Source, messageData.Message)
+		log.Printf("🟡 WARNING [%s] %s", msg.Source, messageData.Message)
 
 	case types.MessageTypeInfo:
-		log.Printf("🔵 INFO [%s]: %s", msg.Source, messageData.Message)
+		log.Printf("🔵 INFO [%s] %s", msg.Source, messageData.Message)
 
 	case types.MessageTypeDebug:
-		log.Printf("⚪ DEBUG [%s]: %s", msg.Source, messageData.Message)
+		log.Printf("⚪ DEBUG [%s] %s", msg.Source, messageData.Message)
 
 	case types.MessageTypeStatus:
-		log.Printf("🟢 STATUS [%s]: %s", msg.Source, messageData.Message)
+		log.Printf("🟢 STATUS [%s] %s", msg.Source, messageData.Message)
 
 	default:
 		log.Printf("❓ UNKNOWN [%s] Type: %s, Data: %s", msg.Source, msg.Type, messageData.Message)
 	}
 }
-
-/*
-func handleErrors(ctx context.Context, errorChan <-chan types.Message) {
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case errMsg := <-errorChan:
-			log.Printf("ERROR: %s", string(errMsg.Data))
-			// Сохранение в файл...
-		}
-	}
-}*/
 
 func handleStatus(ctx context.Context, statusChan <-chan types.Message) {
 	for {

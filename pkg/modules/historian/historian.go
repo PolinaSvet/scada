@@ -15,7 +15,8 @@ type HistorianInit struct {
 	Ctx            context.Context
 	ChanSystemMess chan<- types.Message
 	ChanStatus     chan<- types.Message
-	ChanInputDbs   <-chan types.Message
+	ChanInputDbsA  <-chan types.Message
+	ChanInputDbsT  <-chan types.Message
 	ChanOutputVue  chan<- types.Message
 	ConfigFile     string
 }
@@ -28,7 +29,8 @@ type Historian struct {
 	// каналы
 	chanSystemMess chan<- types.Message
 	chanStatus     chan<- types.Message
-	chanInputDbs   <-chan types.Message
+	chanInputDbsA  <-chan types.Message
+	chanInputDbsT  <-chan types.Message
 	chanOutputVue  chan<- types.Message
 
 	// обработчики
@@ -46,7 +48,8 @@ func NewModule(init HistorianInit) *Historian {
 		ctx:            init.Ctx,
 		chanSystemMess: init.ChanSystemMess,
 		chanStatus:     init.ChanStatus,
-		chanInputDbs:   init.ChanInputDbs,
+		chanInputDbsA:  init.ChanInputDbsA,
+		chanInputDbsT:  init.ChanInputDbsT,
 		chanOutputVue:  init.ChanOutputVue,
 		сonfigFile:     init.ConfigFile,
 		startTime:      time.Now(),
@@ -93,7 +96,7 @@ func (hist *Historian) initializeProcessors() error {
 		log.Printf("alarm processor initialized")
 	}
 
-	defer hist.Stop()
+	//defer hist.Stop()
 
 	// TODO: Инициализировать обработчик трендов
 
@@ -112,9 +115,9 @@ func (hist *Historian) processMessages() {
 		select {
 		case <-hist.ctx.Done():
 			return
-		case msg, ok := <-hist.chanInputDbs:
+		case msg, ok := <-hist.chanInputDbsA:
 			if !ok {
-				hist.sendMessError("historian: chanInputDbs channel closed")
+				hist.sendMessError("historian: chanInputDbsA channel closed")
 				return
 			}
 
@@ -126,7 +129,24 @@ func (hist *Historian) processMessages() {
 
 				hist.processMessage(taskCtx, m)
 			}(msg)
+		case msg, ok := <-hist.chanInputDbsT:
+			if !ok {
+				hist.sendMessError("historian: chanInputDbsT channel closed")
+				return
+			}
+
+			hist.cntMsgGet.Add(1)
+
+			log.Println("chanInputDbsT", msg)
+
+			/*go func(m types.Message) {
+				taskCtx, cancel := context.WithTimeout(hist.ctx, time.Duration(hist.config.LimitTimeMs)*time.Millisecond)
+				defer cancel()
+
+				hist.processMessage(taskCtx, m)
+			}(msg)*/
 		}
+
 	}
 }
 

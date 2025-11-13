@@ -238,7 +238,7 @@ export class SvgScreenLoader {
       componentContainer.style.width = `${width}px`
       componentContainer.style.height = `${height}px`
       componentContainer.style.pointerEvents = 'auto'
-      componentContainer.style.zIndex = '1000'
+      componentContainer.style.zIndex = '0'
       componentContainer.style.background = 'transparent'
       componentContainer.style.display = 'block'
       componentContainer.style.visibility = 'visible'

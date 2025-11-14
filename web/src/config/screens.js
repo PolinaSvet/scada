@@ -60,7 +60,7 @@ export const SCREENS_CONFIG = {
   alarmsHist: {
     id: 'alarmsHist',
     label: 'ИСТОРИЯ',
-    icon: '🚨',
+    icon: '📋',
     title: 'ЖУРНАЛ ИСТОРИЧЕСКИХ СОБЫТИЙ',
     component: ScreenAlarmsHist
   }

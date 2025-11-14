@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { decode, encode } from '@msgpack/msgpack'
 import { ref, computed } from 'vue'
 import { addToAlarmStore } from '@/stores/alarmStore.js'
-import { addMessHistBatch } from '@/stores/alarmStoreHist.js'
+import { addMessHistBatch, clearAlarmHistStore } from '@/stores/alarmStoreHist.js'
 
 export const useObjectsStore = defineStore('objects', () => {
   // === WebSocket Connections ===
@@ -155,6 +155,8 @@ export const useObjectsStore = defineStore('objects', () => {
             if (Array.isArray(objectsArray)) {
               console.log(`📦 mess_hist ${objectsArray.length}`)
               updateMessHistBatch(objectsArray)
+            }else{
+              clearAlarmHistStore()
             }
           }
           break  

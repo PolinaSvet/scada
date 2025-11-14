@@ -135,7 +135,7 @@ export default {
       width: `${props.w}px`,
       height: `${props.h}px`,
       cursor: 'pointer',
-      zIndex: 10
+      zIndex: 1000
     }))
 
     

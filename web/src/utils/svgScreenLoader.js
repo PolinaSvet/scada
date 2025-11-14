@@ -238,7 +238,7 @@ export class SvgScreenLoader {
       componentContainer.style.width = `${width}px`
       componentContainer.style.height = `${height}px`
       componentContainer.style.pointerEvents = 'auto'
-      componentContainer.style.zIndex = '0'
+      componentContainer.style.zIndex = '1000'
       componentContainer.style.background = 'transparent'
       componentContainer.style.display = 'block'
       componentContainer.style.visibility = 'visible'
@@ -396,7 +396,7 @@ export class SvgScreenLoader {
         container.style.display = 'block'
         container.style.visibility = 'visible'
         container.style.opacity = '1'
-        container.style.zIndex = (1000 + index).toString()
+        container.style.zIndex = '1000' //(1000 + index).toString()
         container.style.background = 'transparent'
         
         // Принудительный reflow

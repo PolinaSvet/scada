@@ -1,9 +1,9 @@
 <template>
   <main class="main-container" :style="containerStyle" ref="mainContainerRef">
-    <!-- Индикатор режима -->
+    <!-- Индикатор режима 
     <div class="mode-indicator">
       {{ isAutoScaleMode ? `Автомасштаб: ${Math.round(zoomLevel * 100)}%` : 'Скроллбары' }}
-    </div>
+    </div>-->
 
     <transition name="fade" mode="out-in">
       <div 

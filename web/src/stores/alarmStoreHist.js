@@ -24,7 +24,7 @@ export const clearAlarmHistStore = () => {
 
 // Получение исторических сообщений для отображения (последние сверху)
 export const getAlarmHistMessages = computed(() => {
-  return [...alarmStoreHist.value].reverse().map((msg, index) => ({
+  return [...alarmStoreHist.value].map((msg, index) => ({
     ...msg,
     displayNumber: alarmStoreHist.value.length - index // Номер записи
   }))

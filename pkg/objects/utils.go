@@ -3,6 +3,7 @@ package objects
 
 import (
 	"fmt"
+	"math/rand"
 	"server-system/pkg/types"
 	"strconv"
 	"time"
@@ -53,9 +54,9 @@ func processStateField(alarmMess *[]types.AlarmMessDBType, config *types.ObjectC
 				MessState: messInfo.MessTxtState0,
 				Severity:  messInfo.MessType0,
 				Opermess:  config.Alarm["opermess"],
-				Code:      777777,
+				Code:      int64(rand.Intn(100000)),
 				Users:     "test_user",
-				Dt:        timestamp.UnixNano(),
+				Dt:        timestamp.UTC().UnixMilli(),
 				DtTxt:     TimeToPostgresFormat(timestamp),
 			}
 			*alarmMess = append(*alarmMess, message)
@@ -108,9 +109,9 @@ func processStateBitField(alarmMess *[]types.AlarmMessDBType, config *types.Obje
 				MessState: messText,
 				Severity:  messType,
 				Opermess:  config.Alarm["opermess"],
-				Code:      777777,
+				Code:      int64(rand.Intn(100000)),
 				Users:     "test_user",
-				Dt:        timestamp.UnixNano(),
+				Dt:        timestamp.UTC().UnixMilli(),
 				DtTxt:     TimeToPostgresFormat(timestamp),
 			}
 			*alarmMess = append(*alarmMess, message)

@@ -160,6 +160,7 @@
 }
 
 /* Контейнер таблицы */
+
 .table-container {
   flex-grow: 1;
   background: white;
@@ -173,6 +174,9 @@
   flex: 1;
   overflow-y: auto;
   border: 1px solid #ddd;
+
+  height: 100vh;
+  display: flex;
 }
 
 .alarms-table {
@@ -207,6 +211,7 @@
 .alarms-table tr:hover {
   background-color: #f8f9fa;
 }
+
 
 /* Стили ячеек */
 .number-cell {
@@ -398,6 +403,305 @@
   background: #a8a8a8;
 }
 
+/* Дополнительные стили для новых элементов */
+.top-pagination {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.page-input-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #495057;
+}
+
+.page-input {
+  width: 60px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.filter-txt-color {
+  color: #495057;
+}
+
+.filters-section-compact {
+  margin-bottom: 15px;
+}
+
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.filter-main-btn {
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.filter-main-btn:hover {
+  background: #0056b3;
+}
+
+.filter-txt-status {
+  padding: 6px 6px;
+  font-size: 14px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  background: #f6f7f8;
+  color: #000000;
+}
+
+.filter-status {
+  padding: 6px 12px;
+  background: #e9ecef;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #495057;
+  min-width: 100px;
+  width: 200px;
+  cursor: help;
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Кастомный тултип через data-атрибут */
+.filter-status:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: normal;
+  width: 300px;
+  z-index: 1000;
+  pointer-events: none;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  line-height: 1.4;
+}
+
+.filter-status:not(.has-filters) {
+  background: #e9ecef;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+}
+
+.filter-status.has-filters {
+  background: #9fcdff;
+  color: #000000;
+  border: 1px solid #007bff;
+  font-weight: 500;
+}
+
+/* Стили для диалогового окна фильтров */
+.filter-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.filter-dialog {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filter-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+}
+
+.filter-dialog-header h3 {
+  margin: 0;
+  color: #495057;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  color: #495057;
+  background: #e9ecef;
+  border-radius: 50%;
+}
+
+.filter-dialog-content {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.filter-group-dialog {
+  margin-bottom: 20px;
+}
+
+.filter-group-dialog label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.checkbox-label-dialog {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-weight: normal;
+}
+
+.checkbox-label-dialog input[type="checkbox"] {
+  margin: 0;
+}
+
+.checkbox-label-dialog span {
+  min-width: 120px;
+}
+
+.date-time-inputs,
+.date-inputs {
+  margin-left: 25px;
+  margin-top: 10px;
+}
+
+.date-input-group {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-input-group label {
+  min-width: 80px;
+  margin: 0;
+  font-weight: normal;
+}
+
+.date-input-group input {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.checkbox-filters-dialog {
+  margin-left: 0;
+}
+
+.checkbox-filters-dialog .checkbox-label-dialog {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.checkbox-filters-dialog input[type="text"],
+.checkbox-filters-dialog select {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.filter-dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-top: 1px solid #e9ecef;
+  background: #f8f9fa;
+  border-radius: 0 0 8px 8px;
+}
+
+.dialog-action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.dialog-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.dialog-btn.primary {
+  background: #007bff;
+  color: white;
+}
+
+.dialog-btn.primary:hover {
+  background: #0056b3;
+}
+
+.dialog-btn.secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.dialog-btn.secondary:hover {
+  background: #545b62;
+}
+
 /* Адаптивность */
 @media (max-width: 1200px) {
   .screen-hist-alarms {
@@ -423,7 +727,7 @@
     gap: 10px;
   }
 }
-
+/*
 @media (max-width: 768px) {
   .control-buttons {
     justify-content: center;
@@ -442,6 +746,33 @@
     padding: 4px;
   }
 }
+
+@media (max-width: 768px) {
+  .filter-dialog {
+    width: 95%;
+    margin: 10px;
+  }
+  
+  .date-input-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-dialog-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .dialog-action-buttons {
+    width: 100%;
+  }
+  
+  .dialog-btn {
+    flex: 1;
+  }
+
+  
+}*/
 
 
 

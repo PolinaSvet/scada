@@ -1,9 +1,7 @@
 <template>
   <div class="screen-hist-alarms">
-
-    <!-- Пагинация - перенесена вверх pagination-section top-pagination-->
+    <!-- Панель управления -->
     <div class="controls-section">
-
       <div class="pagination-controls">
         <button class="control-btn" @click="refreshData" title="Обновить данные">
           🔄 Обновить
@@ -20,7 +18,6 @@
       </div>
 
       <div class="pagination-controls">
-
         <button class="pagination-btn" @click="goToPage(1)" :disabled="currentPage === 1">
          ⏮️ 1
         </button>
@@ -63,7 +60,6 @@
           </button>
         </div>
       </div>
-
     </div>
 
     <!-- Основная таблица -->
@@ -123,6 +119,7 @@
       <div v-if="displayAlarms.length === 0" class="no-data-message">
         <p>🗑️ Нет исторических данных для отображения</p>
         <p>Используйте кнопку "Обновить" для загрузки данных</p>
+        <p>или изменить фильтр: {{activeFiltersText}}</p>
       </div>
     </div>
 
@@ -134,29 +131,25 @@
           <button class="close-btn" @click="showControlDialog = false">×</button>
         </div>
 
-          <div class="controls-section">
-            <div class="control-buttons">
-              <button class="control-btn" @click="toggleTableHeader" title="Переключить заголовок таблицы">
+        <div class="controls-section">
+          <div class="control-buttons">
+            <button class="control-btn" @click="toggleTableHeader" title="Переключить заголовок таблицы">
               {{ showTableHeader ? '📋' : '📄' }} Заголовок
-              </button>
-              <button class="control-btn" @click="toggleColumnVisibility" title="Показать/скрыть дополнительные колонки">
-                {{ showAllColumns ? '👁️' : '👁️‍🗨️' }} Колонки
-              </button>
-              <button class="control-btn" @click="handleColorToggle" title="Изменить стиль цветов">
-                {{ colorMode === 'text' ? '🎨' : '📝' }} Цвета
-              </button>
-              <button class="control-btn" @click="exportData" title="Экспортировать данные">
-                💾 Экспорт
-              </button>
-              <button class="control-btn" @click="clearData" title="Очистить данные">
-                🗑️ Очистить
-              </button>
-            </div>
+            </button>
+            <button class="control-btn" @click="toggleColumnVisibility" title="Показать/скрыть дополнительные колонки">
+              {{ showAllColumns ? '👁️' : '👁️‍🗨️' }} Колонки
+            </button>
+            <button class="control-btn" @click="handleColorToggle" title="Изменить стиль цветов">
+              {{ colorMode === 'text' ? '🎨' : '📝' }} Цвета
+            </button>
+            <button class="control-btn" @click="exportData" title="Экспортировать данные">
+              💾 Экспорт
+            </button>
+            <button class="control-btn" @click="clearData" title="Очистить данные">
+              🗑️ Очистить
+            </button>
           </div>
-
-        <div class="filter-dialog-actions">
         </div>
-      
       </div>
     </div>
 
@@ -173,7 +166,7 @@
           <div class="filter-group-dialog">
             <label class="checkbox-label-dialog">
               <input type="checkbox" v-model="dialogFilters.dateTimeRangeEnabled">
-              <span>Период даты/времени</span>
+              <span> Период даты/времени</span>
             </label>
             <div class="date-time-inputs" v-if="dialogFilters.dateTimeRangeEnabled">
               <div class="date-input-group">
@@ -191,7 +184,7 @@
           <div class="filter-group-dialog">
             <label class="checkbox-label-dialog">
               <input type="checkbox" v-model="dialogFilters.dateDayEnabled">
-              <span>За определенный день</span>
+              <span> За определенный день</span>
             </label>
             <div class="date-inputs" v-if="dialogFilters.dateDayEnabled">
               <div class="date-input-group">
@@ -245,7 +238,6 @@
 
         <div class="filter-txt-status" :class="{ 'has-filters': hasActiveFilters }">
           <span v-if="hasActiveFilters">Активные фильтры: {{ activeFiltersText }}</span>
-          <span v-else></span>
         </div>
 
         <div class="filter-dialog-actions">
@@ -263,7 +255,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -276,7 +267,6 @@ import {
 import {
   colorMode,
   toggleColorMode,
-  formatTime,
   getRowStyle,
   saveAsHTML
 } from '@/utils/funcAlarmStore.js'
@@ -286,16 +276,17 @@ export default {
   name: 'ScreenHistAlarms',
   setup() {
     const objectsStore = useObjectsStore()
+    
+    // Состояние интерфейса
     const showTableHeader = ref(true)
     const showAllColumns = ref(false)
-    const lastUpdateTime = ref(new Date())
     const currentPage = ref(1)
     const totalPages = ref(1)
     const pageInput = ref(1)
     const showFilterDialog = ref(false)
     const showControlDialog = ref(false)
 
-    // Основные фильтры (активные)
+    // Фильтры (активные)
     const filters = ref({
       dateTimeRangeEnabled: false,
       dateDayEnabled: false,
@@ -317,14 +308,18 @@ export default {
       kvitFind: 0
     })
 
-    // Диалоговые фильтры (для редактирования)
+    // Фильтры для диалога
     const dialogFilters = ref({ ...filters.value })
     const dialogFilterValues = ref({ ...filterValues.value })
 
-    // Данные из исторического хранилища
+    // Данные
     const displayAlarms = computed(() => getAlarmHistMessages.value)
 
-    // Обновляем пагинацию при изменении данных
+    // Вычисляемые свойства
+    const activeFiltersText = computed(() => getCommandData(1))
+    const hasActiveFilters = computed(() => activeFiltersText.value.length > 0)
+
+    // Watchers
     watch(displayAlarms, (newAlarms) => {
       if (newAlarms.length > 0) {
         const firstAlarm = newAlarms[0]
@@ -334,122 +329,86 @@ export default {
       }
     })
 
-    // Текст активных фильтров для статуса
-    const activeFiltersText = computed(() => {
-      return getCommandData(1)
-    })
-
-    const hasActiveFilters = computed(() => {
-      return activeFiltersText.value.length > 0
-    })
-
-    // Статусная строка
-    const statusText = computed(() => {
-      const time = lastUpdateTime.value.toLocaleTimeString('ru-RU')
-      const count = displayAlarms.value.length
-      return `Обновлено: ${time} | Записей: ${count} | Страница: ${currentPage.value}/${totalPages.value}`
-    })
-
+    // Методы
     const getCommandData = (type = 0) => {
       const commandData = {
-        pageNum: currentPage.value
+        page_num: currentPage.value
       }
 
-      // Добавляем фильтры даты/времени
+      // Фильтры даты/времени
       if (filters.value.dateTimeRangeEnabled && filterValues.value.dateTimeStart && filterValues.value.dateTimeEnd) {
-        commandData.dtStart = new Date(filterValues.value.dateTimeStart).getTime()
-        commandData.dtEnd = new Date(filterValues.value.dateTimeEnd).getTime()
-      } else if (filters.value.dateDayEnabled && filterValues.value.dateDay) {
-        const dayStart = new Date(filterValues.value.dateDay)
-        dayStart.setHours(0, 0, 0, 0)
-        const dayEnd = new Date(filterValues.value.dateDay)
-        dayEnd.setHours(23, 59, 59, 999)
-        commandData.dtStart = dayStart.getTime()
-        commandData.dtEnd = dayEnd.getTime()
-      } /*else {
-        // По умолчанию - сегодня
-        const todayStart = new Date()
-        todayStart.setHours(0, 0, 0, 0)
-        const now = Date.now()
-        commandData.dtStart = todayStart.getTime()
-        commandData.dtEnd = now
-      }*/
+        commandData.dt_start = new Date(filterValues.value.dateTimeStart).getTime()
+        commandData.dt_end = new Date(filterValues.value.dateTimeEnd).getTime()
+      }
 
-      // Добавляем остальные активные фильтры
+      if (filters.value.dateDayEnabled && filterValues.value.dateDay) {
+        const dayStart = new Date(filterValues.value.dateDay + 'T00:00:00')
+        const dayEnd = new Date(filterValues.value.dateDay + 'T23:59:59.999')
+        commandData.dt_start = dayStart.getTime()
+        commandData.dt_end = dayEnd.getTime()
+      }
+
+      // Остальные фильтры
       if (filters.value.tagFind && filterValues.value.tagFind) {
-        commandData.tagFind = filterValues.value.tagFind
+        commandData.tag_find = filterValues.value.tagFind
       }
       if (filters.value.messFullFind && filterValues.value.messFullFind) {
-        commandData.messFullFind = filterValues.value.messFullFind
+        commandData.mess_full_find = filterValues.value.messFullFind
       }
       if (filters.value.usoTxtFind && filterValues.value.usoTxtFind) {
-        commandData.usoTxtFind = filterValues.value.usoTxtFind
+        commandData.uso_txt_find = filterValues.value.usoTxtFind
       }
       if (filters.value.severityFind && filterValues.value.severityFind > 0) {
-        commandData.severityFind = filterValues.value.severityFind
+        commandData.severity_find = filterValues.value.severityFind
       }
       if (filters.value.kvitFind && filterValues.value.kvitFind > 0) {
-        commandData.kvitFind = filterValues.value.kvitFind
+        commandData.kvit_find = filterValues.value.kvitFind
       }
 
-      // Форматируем вывод в зависимости от типа
-      if (type === 0) {
-        // Возвращаем как есть (объект)
-        return commandData
-      } else {
-        // Форматируем в строку в одну линию
-        const formattedData = []
-        
-        if (filters.value.dateTimeRangeEnabled || filters.value.dateDayEnabled){
-          if (commandData.dtStart && commandData.dtEnd) {
-            const startDate = new Date(commandData.dtStart).toLocaleString('ru-RU')
-            const endDate = new Date(commandData.dtEnd).toLocaleString('ru-RU')
-            formattedData.push(`period: ${startDate} - ${endDate}`)
-          }
-        }
-        
-        if (commandData.tagFind) formattedData.push(`tag: "${commandData.tagFind}"`)
-        if (commandData.messFullFind) formattedData.push(`message: "${commandData.messFullFind}"`)
-        if (commandData.usoTxtFind) formattedData.push(`diagnostic: "${commandData.usoTxtFind}"`)
-        if (commandData.severityFind && commandData.severityFind > 0) {
-          const severityText = getSeverityText(commandData.severityFind)
-          formattedData.push(`severity: ${severityText}`)
-        }
-        if (commandData.kvitFind && commandData.kvitFind > 0) {
-          const kvitText = commandData.kvitFind === 1 ? 'неквитированные' : 'квитированные'
-          formattedData.push(`kvit: ${kvitText}`)
-        }
+      if (type === 0) return commandData
 
-        if (formattedData.length>0){
-          formattedData.push(`pageNum: ${commandData.pageNum}`)
-        }
-        
-        return formattedData.join(' | ')
+      // Форматирование для отображения
+      const formattedData = []
+      
+      if ((filters.value.dateTimeRangeEnabled || filters.value.dateDayEnabled) && commandData.dt_start && commandData.dt_end) {
+        const startDate = new Date(commandData.dt_start).toLocaleString('ru-RU')
+        const endDate = new Date(commandData.dt_end).toLocaleString('ru-RU')
+        formattedData.push(`period: ${startDate} - ${endDate}`)
       }
-  }
+      
+      if (commandData.tag_find) formattedData.push(`tag: "${commandData.tag_find}"`)
+      if (commandData.mess_full_find) formattedData.push(`message: "${commandData.mess_full_find}"`)
+      if (commandData.uso_txt_find) formattedData.push(`diagnostic: "${commandData.uso_txt_find}"`)
+      
+      if (commandData.severity_find && commandData.severity_find > 0) {
+        const severityText = getSeverityText(commandData.severity_find)
+        formattedData.push(`severity: ${severityText}`)
+      }
+      
+      if (commandData.kvit_find && commandData.kvit_find > 0) {
+        const kvitText = commandData.kvit_find === 1 ? 'неквитированные' : 'квитированные'
+        formattedData.push(`kvit: ${kvitText}`)
+      }
 
-  // Вспомогательная функция для получения текста тревоги
-  const getSeverityText = (severity) => {
-    switch (severity) {
-      case 901: return 'Неисправность'
-      case 1001: return 'Пожар'
-      case 1101: return 'Внимание'
-      default: return 'Все'
+      if (formattedData.length > 0) {
+        formattedData.push(`pageNum: ${commandData.page_num}`)
+      }
+      
+      return formattedData.join(' | ')
     }
-  }
 
-    // Функции управления
+    const getSeverityText = (severity) => {
+      switch (severity) {
+        case 901: return 'Неисправность'
+        case 1001: return 'Пожар'
+        case 1101: return 'Внимание'
+        default: return 'Все'
+      }
+    }
+
     const refreshData = () => {
       const commandData = getCommandData(0)
-      
-      objectsStore.sendCommand(
-        'alarms_system',
-        'command',
-        'alarms_get_data',
-        commandData
-      )
-      
-      lastUpdateTime.value = new Date()
+      objectsStore.sendCommand('alarms_system', 'command', 'alarms_get_data', commandData)
     }
 
     const toggleTableHeader = () => {
@@ -470,8 +429,6 @@ export default {
 
     const clearData = () => {
       clearAlarmHistStore()
-      lastUpdateTime.value = new Date()
-      console.log('Исторические данные очищены')
     }
 
     const goToPage = (page) => {
@@ -486,7 +443,6 @@ export default {
       goToPage(pageInput.value)
     }
 
-    // Функции для диалога фильтров
     const applyFilters = () => {
       filters.value = { ...dialogFilters.value }
       filterValues.value = { ...dialogFilterValues.value }
@@ -497,14 +453,12 @@ export default {
     }
 
     const cancelFilters = () => {
-      // Восстанавливаем исходные значения
       dialogFilters.value = { ...filters.value }
       dialogFilterValues.value = { ...filterValues.value }
       showFilterDialog.value = false
     }
 
     const clearAllFilters = () => {
-      // Сбрасываем все чекбоксы и значения
       dialogFilters.value = {
         dateTimeRangeEnabled: false,
         dateDayEnabled: false,
@@ -526,7 +480,6 @@ export default {
         kvitFind: 0
       }
 
-      // Применяем очистку сразу
       filters.value = { ...dialogFilters.value }
       filterValues.value = { ...dialogFilterValues.value }
       showFilterDialog.value = false
@@ -535,23 +488,25 @@ export default {
       refreshData()
     }
 
-    // Инициализация дат при монтировании
+    const getLocalDateTimeString = (date) => {
+      return date.toISOString().slice(0, 16)
+    }
+
+    // Инициализация
     onMounted(() => {
-      // Устанавливаем текущую дату для фильтров
       const now = new Date()
       const today = now.toISOString().split('T')[0]
       
       filterValues.value.dateDay = today
       dialogFilterValues.value.dateDay = today
       
-      // Устанавливаем период по умолчанию (сегодня)
       const todayStart = new Date()
       todayStart.setHours(0, 0, 0, 0)
       const todayEnd = new Date()
-      todayEnd.setHours(23, 59, 59, 999)
+      todayEnd.setHours(23, 59, 0, 0)
       
-      filterValues.value.dateTimeStart = todayStart.toISOString().slice(0, 16)
-      filterValues.value.dateTimeEnd = todayEnd.toISOString().slice(0, 16)
+      filterValues.value.dateTimeStart = getLocalDateTimeString(todayStart)
+      filterValues.value.dateTimeEnd = getLocalDateTimeString(todayEnd)
       dialogFilterValues.value.dateTimeStart = filterValues.value.dateTimeStart
       dialogFilterValues.value.dateTimeEnd = filterValues.value.dateTimeEnd
       
@@ -559,6 +514,7 @@ export default {
     })
 
     return {
+      // Состояние
       displayAlarms,
       showTableHeader,
       showAllColumns,
@@ -570,10 +526,14 @@ export default {
       dialogFilters,
       dialogFilterValues,
       showFilterDialog,
+      showControlDialog,
       colorMode,
-      statusText,
+      
+      // Вычисляемые свойства
       activeFiltersText,
       hasActiveFilters,
+      
+      // Методы
       refreshData,
       toggleTableHeader,
       toggleColumnVisibility,
@@ -585,9 +545,7 @@ export default {
       applyFilters,
       cancelFilters,
       clearAllFilters,
-      formatTime,
       getRowStyle,
-      showControlDialog,
       getCommandData
     }
   }
@@ -595,335 +553,5 @@ export default {
 </script>
 
 <style scoped>
-/* Основные стили вынесены в отдельный CSS файл */
 @import '@/assets/styles/screen-alarms-hist.css';
-
-/* Дополнительные стили для новых элементов */
-
-
-.top-pagination {
-  margin-bottom: 15px;
-  padding: 10px;
-  background: #f5f5f5;
-  border-radius: 4px;
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.page-input-group {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: #495057;
-}
-
-.page-input {
-  width: 60px;
-  padding: 4px 8px;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-  text-align: center;
-}
-
-.filter-txt-color {
-  color: #495057;
-}
-
-.filters-section-compact {
-  margin-bottom: 15px;
-}
-
-.filter-controls {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.filter-main-btn {
-  padding: 8px 16px;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.filter-main-btn:hover {
-  background: #0056b3;
-}
-
-.filter-txt-status {
-  padding: 6px 6px;
-  font-size: 14px;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-wrap: break-word;
-  background: #f6f7f8;
-  color: #000000;
-}
-
-.filter-status {
-  padding: 6px 12px;
-  background: #e9ecef;
-  border-radius: 4px;
-  font-size: 14px;
-  color: #495057;
-  min-width: 100px;
-  width: 200px;
-  cursor: help;
-  position: relative;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Кастомный тултип через data-атрибут */
-.filter-status:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: normal;
-  width: 300px;
-  z-index: 1000;
-  pointer-events: none;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  line-height: 1.4;
-}
-
-.filter-status:not(.has-filters) {
-  background: #e9ecef;
-  color: #6c757d;
-  border: 1px solid #dee2e6;
-}
-
-.filter-status.has-filters {
-  background: #9fcdff;
-  color: #000000;
-  border: 1px solid #007bff;
-  font-weight: 500;
-}
-
-/* Стили для диалогового окна фильтров */
-.filter-dialog-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.filter-dialog {
-  background: white;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.filter-dialog-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #e9ecef;
-  background: #f8f9fa;
-  border-radius: 8px 8px 0 0;
-}
-
-.filter-dialog-header h3 {
-  margin: 0;
-  color: #495057;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #6c757d;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.close-btn:hover {
-  color: #495057;
-  background: #e9ecef;
-  border-radius: 50%;
-}
-
-.filter-dialog-content {
-  padding: 20px;
-  overflow-y: auto;
-  flex: 1;
-}
-
-.filter-group-dialog {
-  margin-bottom: 20px;
-}
-
-.filter-group-dialog label {
-  display: block;
-  margin-bottom: 10px;
-  font-weight: 500;
-  color: #495057;
-}
-
-.checkbox-label-dialog {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-  font-weight: normal;
-}
-
-.checkbox-label-dialog input[type="checkbox"] {
-  margin: 0;
-}
-
-.checkbox-label-dialog span {
-  min-width: 120px;
-}
-
-.date-time-inputs,
-.date-inputs {
-  margin-left: 25px;
-  margin-top: 10px;
-}
-
-.date-input-group {
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.date-input-group label {
-  min-width: 80px;
-  margin: 0;
-  font-weight: normal;
-}
-
-.date-input-group input {
-  padding: 6px 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.checkbox-filters-dialog {
-  margin-left: 0;
-}
-
-.checkbox-filters-dialog .checkbox-label-dialog {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.checkbox-filters-dialog input[type="text"],
-.checkbox-filters-dialog select {
-  flex: 1;
-  padding: 6px 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.filter-dialog-actions {
-  display: flex;
-  justify-content: space-between;
-  padding: 16px 20px;
-  border-top: 1px solid #e9ecef;
-  background: #f8f9fa;
-  border-radius: 0 0 8px 8px;
-}
-
-.dialog-action-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.dialog-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
-}
-
-.dialog-btn.primary {
-  background: #007bff;
-  color: white;
-}
-
-.dialog-btn.primary:hover {
-  background: #0056b3;
-}
-
-.dialog-btn.secondary {
-  background: #6c757d;
-  color: white;
-}
-
-.dialog-btn.secondary:hover {
-  background: #545b62;
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-  .filter-dialog {
-    width: 95%;
-    margin: 10px;
-  }
-  
-  .date-input-group {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .filter-dialog-actions {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .dialog-action-buttons {
-    width: 100%;
-  }
-  
-  .dialog-btn {
-    flex: 1;
-  }
-
-  
-}
 </style>

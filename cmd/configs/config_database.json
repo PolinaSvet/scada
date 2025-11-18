@@ -9,13 +9,20 @@
     "max_pack_size": 5000
   },
   "database_config_path": "configs/objects/database.json",
+  "trend_config": {
+    "enable": true,
+    "config_path": "configs/objects/trend.json",
+    "save_time_ms": 1000,
+    "save_type": 2,
+    "batch_size": 1000
+  },
   "objects": {
     "sensor": {
-      "enabled": true,
+      "enable": true,
       "config_file": "configs/objects/objsensor.json"
     },
     "di": {
-      "enabled": true,
+      "enable": true,
       "config_file": "configs/objects/objdi.json"
     }
   }

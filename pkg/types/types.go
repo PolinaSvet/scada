@@ -49,18 +49,10 @@ type TagValue struct {
 	Tag       string      `json:"tag"`
 	Alias     string      `json:"alias"`
 	Value     interface{} `json:"value"`
-	Quality   QualityCode `json:"quality"`
+	Quality   int         `json:"quality"`
 	Timestamp time.Time   `json:"timestamp"`
 	DataType  DataType    `json:"data_type"`
 }
-
-type QualityCode int
-
-const (
-	QualityGood QualityCode = iota
-	QualityBad
-	QualityUncertain
-)
 
 type DataType string
 

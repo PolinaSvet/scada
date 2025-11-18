@@ -41,32 +41,6 @@ func (ap *AlarmProcessor) Close() error {
 	return nil
 }
 
-/*
-// ProcessBatch обрабатывает батч алармов
-func (ap *AlarmProcessor) ProcessBatch(ctx context.Context, data []byte) error {
-	if !ap.config.Enable {
-		return fmt.Errorf("alarm processing is disabled")
-	}
-
-	log.Println(data)
-	var alarms []types.AlarmMessDBType
-	if err := json.Unmarshal(data, &alarms); err != nil {
-		return fmt.Errorf("failed to unmarshal alarm batch: %w", err)
-	}
-
-	if len(alarms) == 0 {
-		return nil
-	}
-
-	inserted, err := ap.db.InsertBatch(ctx, alarms)
-	if err != nil {
-		return fmt.Errorf("failed to insert alarm batch: %w", err)
-	}
-
-	log.Printf("alarm batch processed: %d/%d messages inserted", inserted, len(alarms))
-	return nil
-}*/
-
 // ProcessBatch обрабатывает батч алармов
 func (ap *AlarmProcessor) ProcessBatch(ctx context.Context, data []byte) error {
 	if !ap.config.Enable {
@@ -147,44 +121,3 @@ func (ap *AlarmProcessor) ProcessGetData(ctx context.Context, data map[string]in
 
 	return nil
 }
-
-/*func (ap *AlarmProcessor) ProcessGetData(ctx context.Context, data []byte, outputChan chan<- types.Message, moduleID string) error {
-	if !ap.config.Enable {
-		return fmt.Errorf("alarm processing is disabled")
-	}
-
-	var params types.AlarmMessGetType
-	if err := json.Unmarshal(data, &params); err != nil {
-		return fmt.Errorf("failed to unmarshal alarm get params: %w", err)
-	}
-
-	results, err := ap.db.GetData(ctx, params)
-	if err != nil {
-		return fmt.Errorf("failed to get alarm data: %w", err)
-	}
-
-	// Отправляем результаты в канал
-	responseData, err := json.Marshal(results)
-	if err != nil {
-		return fmt.Errorf("failed to marshal alarm response: %w", err)
-	}
-
-	msg := types.Message{
-		Type:     "alarms_set_data",
-		Data:     responseData,
-		InitDT:   time.Now(),
-		UpdateDT: time.Now(),
-		Source:   moduleID,
-	}
-
-	select {
-	case outputChan <- msg:
-		log.Printf("alarm data sent: %d records", len(results))
-	case <-ctx.Done():
-		return ctx.Err()
-	default:
-		return fmt.Errorf("output channel is full")
-	}
-
-	return nil
-}*/

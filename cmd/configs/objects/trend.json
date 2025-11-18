@@ -1,0 +1,46 @@
+{
+    "tags": {
+      "alias_sensor_0": {
+        "enable": true,
+        "id": 1,
+        "tag": "TR-001",
+        "name": "SENSOR NNAME 001",
+        "folder": "filter01"
+     },
+      "alias_sensor_1": {
+         "enable": true,
+         "id": 2,
+         "tag": "TR-002",
+         "name": "SENSOR NNAME 002",
+         "folder": "filter01"
+     },
+     "alias_sensor_2": {
+         "enable": true,
+         "id": 3,
+         "tag": "TR-003",
+         "name": "SENSOR NNAME 003",
+         "folder": "filter01"
+     },
+     "alias_sensor_3": {
+         "enable": true,
+         "id": 4,
+         "tag": "TR-004",
+         "name": "SENSOR NNAME 004",
+         "folder": "filter02"
+     },
+     "alias_sensor_4": {
+         "enable": true,
+         "id": 5,
+         "tag": "TR-005",
+         "name": "SENSOR NNAME 005",
+         "folder": "filter2"
+     },
+     "alias_sensor_5": {
+         "enable": true,
+         "id": 6,
+         "tag": "TR-006",
+         "name": "SENSOR NNAME 006",
+         "folder": "filter02"
+     }
+   }
+}

@@ -6,7 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"server-system/pkg/types"
+	"time"
 )
 
 // основная конфигурация модуля
@@ -26,6 +28,8 @@ func (db *Database) loadMainConfig(filename string) error {
 	if err := db.validateMainConfig(); err != nil {
 		return fmt.Errorf("ошибка валидации конфига: %w", err)
 	}
+
+	log.Printf("%+v", db.config)
 
 	return nil
 }
@@ -70,10 +74,36 @@ func (db *Database) loadTagsConfig(filename string) error {
 	return nil
 }
 
+// конфигурация тэгов
+func (db *Database) loadTrendConfig(filename string) error {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	var config types.TrendConfig
+	if err := json.Unmarshal(data, &config); err != nil {
+		return err
+	}
+
+	for key, tag := range config.Tags {
+		// Инициализируем поле Data начальными значениями
+		tag.Data = types.TrendTag{
+			IdObj:   tag.ID,                       // Преобразуем int64 в int
+			Value:   0.0,                          // Начальное значение
+			Quality: 0,                            // Начальное качество
+			Dt:      time.Now().UTC().UnixMilli(), // Текущее время в миллисекундах
+		}
+		db.dbTrend.Store(key, tag)
+	}
+
+	return nil
+}
+
 // конфигурация объектов через ObjectsManager
 func (db *Database) loadObjectsConfig() error {
 	for moduleName, moduleConfig := range db.config.Objects {
-		if !moduleConfig.Enabled {
+		if !moduleConfig.Enable {
 			continue
 		}
 

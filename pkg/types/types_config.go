@@ -5,7 +5,7 @@ import "time"
 // ObjectConfig - общие структуры для конфигураций
 // =========================================================
 type ModuleConfig struct {
-	Enabled    bool   `json:"enabled"`
+	Enable     bool   `json:"enable"`
 	ConfigFile string `json:"config_file"`
 }
 
@@ -17,6 +17,7 @@ type DatabaseMainConfig struct {
 	ID                 string                  `json:"id"`
 	BatchWriting       BatchConfig             `json:"batch_writing"`
 	DatabaseConfigPath string                  `json:"database_config_path"`
+	TrendConfig        TrendDbConfig           `json:"trend_config"`
 	Objects            map[string]ModuleConfig `json:"objects"`
 }
 
@@ -87,7 +88,7 @@ type BatchConfig struct {
 // AlarmMess - конфигурация сообщений
 // =========================================================
 // AlarmMessGetType параметры для запроса данных алармов
-type AlarmMessGetType struct {
+/*type AlarmMessGetType struct {
 	DtStart      int64  `json:"dt_start"`
 	DtEnd        int64  `json:"dt_end"`
 	TagFind      string `json:"tag_find"`
@@ -97,7 +98,7 @@ type AlarmMessGetType struct {
 	OpermessFind int    `json:"opermess_find"`
 	KvitFind     int    `json:"kvit_find"`
 	PageNum      int    `json:"page_num"`
-}
+}*/
 
 // AlarmMessDBType соответствует структуре из БД
 type AlarmMessDBType struct {
@@ -134,14 +135,36 @@ type VueCommand struct {
 	Time     string                 `json:"time" msgpack:"time"`
 }
 
-/*type AlarmMess struct {
-	ID        uint16           `json:"id"`
-	Type      uint16           `json:"type"`
-	Info      ObjectInfoConfig `json:"info"`
-	Uso       ObjectUsoConfig  `json:"uso"`
-	MessColor string           `json:"messColor"`
-	MessTxt   string           `json:"messTxt"`
-	MessType  int              `json:"messType"`
-	Opermess  int              `json:"opermess"`
-	Timestamp time.Time        `json:"timestamp"`
-}*/
+// TrendTag структура для хранения данных тренда
+type TrendTag struct {
+	ID      int64   `json:"id"`
+	IdObj   int     `json:"id_obj"`
+	Value   float64 `json:"value"`
+	Quality int     `json:"quality"`
+	Dt      int64   `json:"dt"`
+}
+
+type TrendConfig struct {
+	Tags map[string]TrendTagInfo `json:"tags"`
+}
+
+// TrendTagInfo структура для метаданных тэгов
+type TrendTagInfo struct {
+	ID        int       `json:"id"`
+	Enable    bool      `json:"enable"`
+	Tag       string    `json:"tag"`
+	Name      string    `json:"name"`
+	Folder    string    `json:"folder"`
+	CreatedAt time.Time `json:"created_at"`
+	Data      TrendTag  `json:"data"`
+}
+
+// TrendDbConfig - конфигурация
+// =========================================================
+type TrendDbConfig struct {
+	Enable     bool   `json:"enable"`
+	ConfigPath string `json:"config_path"`
+	SaveTimeMs int    `json:"save_time_ms"`
+	SaveType   int    `json:"save_type"`
+	BatchSize  int    `json:"batch_size"`
+}

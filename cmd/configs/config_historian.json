@@ -26,10 +26,15 @@
       "type": "pgsql",
       "host": "localhost",
       "port": 5432,
-      "user": "user",
+      "user": "postgres",
       "password": "root",
-      "dbname": "dbname",
+      "dbname": "dbTrend",
       "sslmode": "disable"
-    }
+    },
+    "batch_size": 1000,
+    "maintenance_time": "02:00",
+    "reindex_day": 0,
+    "retention_months": 12,
+    "auto_maintenance": true
   }
 }

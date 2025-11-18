@@ -35,6 +35,7 @@ type Historian struct {
 
 	// обработчики
 	alarmProcessor *AlarmProcessor
+	trendProcessor *TrendProcessor
 
 	// статистика
 	cntMsgGet atomic.Int64
@@ -96,9 +97,15 @@ func (hist *Historian) initializeProcessors() error {
 		log.Printf("alarm processor initialized")
 	}
 
-	//defer hist.Stop()
-
-	// TODO: Инициализировать обработчик трендов
+	// Инициализируем обработчик трендов
+	if hist.config.Trend.Enable {
+		processor, err := NewTrendProcessor(&hist.config.Trend)
+		if err != nil {
+			return fmt.Errorf("failed to initialize trend processor: %w", err)
+		}
+		hist.trendProcessor = processor
+		log.Printf("trend processor initialized")
+	}
 
 	return nil
 }
@@ -137,14 +144,14 @@ func (hist *Historian) processMessages() {
 
 			hist.cntMsgGet.Add(1)
 
-			log.Println("chanInputDbsT", msg)
+			//log.Println("chanInputDbsT", msg)
 
-			/*go func(m types.Message) {
+			go func(m types.Message) {
 				taskCtx, cancel := context.WithTimeout(hist.ctx, time.Duration(hist.config.LimitTimeMs)*time.Millisecond)
 				defer cancel()
 
 				hist.processMessage(taskCtx, m)
-			}(msg)*/
+			}(msg)
 		}
 
 	}
@@ -158,10 +165,10 @@ func (hist *Historian) processMessage(ctx context.Context, msg types.Message) {
 			hist.sendMessError("processMessage panic: %v", r)
 		}
 	}()
-	log.Println("xxxxxxxxxxxxx: ", msg.Type, msg.Source)
+	//log.Println("xxxxxxxxxxxxx: ", msg.Type, msg.Source)
 	switch msg.Type {
 	case "alarms_batch":
-		log.Println("alarms_batch received: ", msg.UpdateDT)
+		//log.Println("alarms_batch received: ", msg.UpdateDT)
 		if hist.alarmProcessor != nil {
 			if err := hist.alarmProcessor.ProcessBatch(ctx, msg.Data); err != nil {
 				hist.sendMessError("failed to process alarm batch: %v", err)
@@ -170,7 +177,7 @@ func (hist *Historian) processMessage(ctx context.Context, msg types.Message) {
 
 	case "command":
 		if msg.Source == "alarms_get_data" {
-			log.Println("alarms_get_data received: ", msg.UpdateDT)
+			//log.Println("alarms_get_data received: ", msg.UpdateDT)
 
 			var vueCmd types.VueCommand
 			if err := json.Unmarshal(msg.Data, &vueCmd); err != nil {
@@ -183,15 +190,29 @@ func (hist *Historian) processMessage(ctx context.Context, msg types.Message) {
 					hist.sendMessError("failed to process alarm get data: %v", err)
 				}
 			}
+		} else if msg.Source == "trends_get_data" {
+			log.Println("trends_get_data received: ", msg.UpdateDT)
+
+			var vueCmd types.VueCommand
+			if err := json.Unmarshal(msg.Data, &vueCmd); err != nil {
+				log.Printf("failed to unmarshal VueCommand: %v, raw data: %s", err, string(msg.Data))
+				return
+			}
+
+			if hist.trendProcessor != nil {
+				if err := hist.trendProcessor.ProcessGetData(ctx, vueCmd.Data, hist.chanOutputVue, hist.config.ID); err != nil {
+					hist.sendMessError("failed to process trend get data: %v", err)
+				}
+			}
 		}
 
 	case "trends_batch":
-		log.Println("trends_batch: ", msg.UpdateDT)
-		// TODO: добавить функцию сохранения данных в бд
-
-	case "trends_get_data":
-		log.Println("trends_get_data: ", msg.UpdateDT)
-		// TODO: запрос к бд на извлечение данных
+		log.Println("trends_batch received: ", msg.UpdateDT)
+		if hist.trendProcessor != nil {
+			if err := hist.trendProcessor.ProcessBatch(ctx, msg.Data); err != nil {
+				hist.sendMessError("failed to process trend batch: %v", err)
+			}
+		}
 	}
 }
 
@@ -199,6 +220,9 @@ func (hist *Historian) processMessage(ctx context.Context, msg types.Message) {
 func (hist *Historian) Stop() {
 	if hist.alarmProcessor != nil {
 		hist.alarmProcessor.Close()
+	}
+	if hist.trendProcessor != nil {
+		hist.trendProcessor.Close()
 	}
 }
 

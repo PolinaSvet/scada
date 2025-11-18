@@ -17,10 +17,15 @@ type AlarmConfig struct {
 	NewTable        NewTableConfig  `json:"new_table"`
 }
 
-// TrendConfig конфигурация трендов
+// TrendConfig конфигурация обработчика трендов
 type TrendConfig struct {
 	Enable          bool            `json:"enable"`
 	ConnectSettings ConnectSettings `json:"connect_settings"`
+	BatchSize       int             `json:"batch_size"`
+	MaintenanceTime string          `json:"maintenance_time"` // Время ежедневного обслуживания (формат: "02:00")
+	ReindexDay      int             `json:"reindex_day"`      // День недели для переиндексации (0-6, где 0=воскресенье)
+	RetentionMonths int             `json:"retention_months"` // Сколько месяцев хранить данные
+	AutoMaintenance bool            `json:"auto_maintenance"` // Автоматическое обслуживание
 }
 
 // ConnectSettings настройки подключения к БД
@@ -43,4 +48,25 @@ type NewTableConfig struct {
 	Name        string `json:"name"`
 	Every       string `json:"every"`
 	DurationDay int    `json:"duration_day"`
+}
+
+// InsertResult результат вставки данных
+type InsertResult struct {
+	Inserted      int     `json:"inserted"`
+	ExecutionDtMs float64 `json:"execution_dt_ms"`
+}
+
+// StorageStats статистика хранилища
+type StorageStats struct {
+	TotalPartitions int     `json:"total_partitions"`
+	TotalRecords    int     `json:"total_records"`
+	StorageSizeGB   float64 `json:"storage_size_gb"`
+	OldestDataDays  float64 `json:"oldest_data_days"`
+}
+
+// TagsInfoLoadResult результат загрузки tags_info
+type TagsInfoLoadResult struct {
+	DeletedRecords  int    `json:"deleted_records"`
+	InsertedRecords int    `json:"inserted_records"`
+	Status          string `json:"status"`
 }

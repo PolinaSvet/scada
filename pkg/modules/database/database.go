@@ -43,6 +43,7 @@ type Database struct {
 	batchProcessor      *batch.BatchProcessor
 	batchProcessorMess  *batch.BatchProcessor
 	batchProcessorHistA *batch.BatchProcessor
+	batchProcessorHistT *batch.BatchProcessor
 
 	// статистика
 	cntMsgGet int
@@ -56,9 +57,8 @@ type Database struct {
 	// Быстрый доступ по алиасам - sync.Map
 	aliasIndex sync.Map // ключ: string (alias), значение: []types.ObjectReference
 
-	// объекты - также используем sync.Map
-	//objSensors sync.Map // ключ: string, значение: types.ObjectConfig
-	//objDi      sync.Map // ключ: string, значение: types.ObjectConfig
+	// база тэгов - используем sync.Map для безопасного доступа из горутин
+	dbTrend sync.Map // ключ: string (alias), значение: types.TrendTagInfo
 
 	// Хранилища конфигов
 	objSensorsConfig sync.Map // ключ: string, значение: types.ObjectConfig
@@ -120,7 +120,13 @@ func (db *Database) Start() {
 
 	// Загружаем тэги
 	if err := db.loadTagsConfig(db.config.DatabaseConfigPath); err != nil {
-		db.sendMessError("Failed to load objects data: %v", err)
+		db.sendMessError("Failed to load database data: %v", err)
+		return
+	}
+
+	// Загружаем trend
+	if err := db.loadTrendConfig(db.config.TrendConfig.ConfigPath); err != nil {
+		db.sendMessError("Failed to load trend data: %v", err)
 		return
 	}
 
@@ -155,14 +161,28 @@ func (db *Database) Start() {
 		"alarms_batch",
 	)
 
+	db.batchProcessorHistT = batch.NewBatchProcessor(
+		db.chanOutputDbsT,
+		db.chanSystemMess,
+		db.config.BatchWriting,
+		db.config.ID,
+		"trends_batch",
+	)
+
 	// Запускаем обработчики в отдельных горутинах
 	go db.processStatus()
 	go db.processMessages()
 	go db.batchProcessor.Start(db.ctx)
 	go db.batchProcessorMess.Start(db.ctx)
 	go db.batchProcessorHistA.Start(db.ctx)
+	go db.batchProcessorHistT.Start(db.ctx)
+	go db.trendTicker()
 
-	//log.Printf("[%v] module started", db.config.ID)
+	// Запускаем обработчик трендов если включено
+	/*if db.config.TrendConfig.Enable && (db.config.TrendConfig.SaveType == 1 || db.config.TrendConfig.SaveType == 2) {
+		go db.trendTicker()
+	}*/
+
 	db.sendMessStatus("<%v> module started", db.config.ID)
 }
 
@@ -187,20 +207,12 @@ func (db *Database) processMessages() {
 			db.cntMsgGet++
 			db.statsMu.Unlock()
 
-			/*taskCtx, cancel := context.WithTimeout(db.ctx, time.Duration(db.config.LimitTimeMs)*time.Millisecond)
-			go func(m types.Message, cancelFunc context.CancelFunc) {
-				defer cancelFunc()
-
-				db.processMessage(taskCtx, m)
-			}(msg, cancel)*/
 			go func(m types.Message) {
 				taskCtx, cancel := context.WithTimeout(db.ctx, time.Duration(db.config.LimitTimeMs)*time.Millisecond)
 				defer cancel()
 
 				db.processMessage(taskCtx, m)
 			}(msg)
-
-			//go db.processMessage(msg)
 
 		case msg, ok := <-db.chanInputVue:
 			if !ok {
@@ -212,10 +224,6 @@ func (db *Database) processMessages() {
 			db.statsMu.Unlock()
 
 			go func(m types.Message) {
-				//taskCtx, cancel := context.WithTimeout(db.ctx, time.Duration(db.config.LimitTimeMs)*time.Millisecond)
-				//defer cancel()
-
-				//db.processMessage(taskCtx, m)
 
 				//log.Printf("xxx: %+v", m)
 				switch m.Source {
@@ -231,11 +239,19 @@ func (db *Database) processMessages() {
 
 					}
 
+				case "trends_get_data":
+					select {
+					case db.chanOutputDbsT <- m:
+					case <-db.ctx.Done():
+						return
+					default:
+
+					}
+
 				}
 
 			}(msg)
 
-			//go db.processMessage(msg)
 		}
 
 	}
@@ -327,74 +343,8 @@ func (db *Database) processTagValue(tagValue types.TagValue) {
 	// 4. Если значение изменилось, обновляем состояние связанных объектов
 	if valueChanged {
 		db.updateObjectState(tagValue.Alias, tagValue, oldValue)
-	}
-}
-
-// updateObjectState обновляет состояние объектов, связанных с тегом через алиас
-func (db *Database) updateObjectState(alias string, tagValue types.TagValue, oldValue interface{}) {
-	defer func() {
-		if r := recover(); r != nil {
-			db.sendMessError("updateObjectState panic for alias %s: %v", alias, r)
-		}
-	}()
-
-	objectRefsInterface, exists := db.aliasIndex.Load(alias)
-	if !exists {
-		return
-	}
-
-	objectRefs, ok := objectRefsInterface.([]types.ObjectReference)
-	if !ok {
-		return
-	}
-
-	for _, ref := range objectRefs {
-		if !db.objectsManager.HasStorage(ref.ObjectType) {
-			continue
-		}
-
-		// Загружаем конфиг
-		config, exists := db.objectsManager.LoadConfig(ref.ObjectType, ref.ObjectKey)
-		if !exists {
-			continue
-		}
-
-		// Загружаем состояние как interface{} или создаем новое
-		stateInterface, exists := db.objectsManager.LoadState(ref.ObjectType, ref.ObjectKey)
-		if !exists {
-			stateInterface = db.objectsManager.CreateNewState(ref.ObjectType)
-			if stateInterface == nil {
-				continue
-			}
-		}
-
-		// Вызываем обработчик с конкретным типом
-		if handler, exists := objects.Handlers[objects.ObjectType(ref.ObjectType)]; exists {
-			// Передаем конкретный тип состояния
-			alarmMessages := []types.AlarmMessDBType{}
-			handler(&config, &alarmMessages, stateInterface, tagValue, alias, oldValue)
-
-			//log.Println(len(alarmMessages), alarmMessages)
-
-			// Сохраняем обновленные данные
-			//db.objectsManager.StoreConfig(ref.ObjectType, ref.ObjectKey, config)
-			db.objectsManager.StoreState(ref.ObjectType, ref.ObjectKey, stateInterface)
-
-			// Создаем stateForVue с конкретным типом состояния
-			stateForVue := &types.ObjectStateForVue{
-				ID:        ref.ObjectKey,
-				Type:      ref.ObjectType,
-				ObjInfo:   config,
-				ObjVue:    stateInterface,
-				Timestamp: tagValue.Timestamp,
-			}
-
-			db.batchProcessor.Add(stateForVue)
-			if len(alarmMessages) > 0 {
-				db.batchProcessorMess.Add(alarmMessages)
-				db.batchProcessorHistA.Add(alarmMessages)
-			}
-		}
+		// Добавляем обработку трендов при изменении значения
+		db.updateTrendData(tagValue.Alias, tagValue)
 	}
 }
 
@@ -513,145 +463,3 @@ func (db *Database) sendMessDebug(format string, args ...interface{}) {
 func (db *Database) sendMessStatus(format string, args ...interface{}) {
 	db.sendMessage(types.MessageTypeStatus, format, args...)
 }
-
-/*
-// ========================================
-
-    db.printMapStats()
-	db.printSyncMapContents()
-	db.findAlias("alias_sensor_0")
-
-func (db *Database) getMapStats() map[string]int {
-	stats := make(map[string]int)
-
-	// Считаем dbTags
-	db.dbTags.Range(func(key, value interface{}) bool {
-		stats["dbTags"]++
-		return true
-	})
-
-	// Считаем objSensors
-	db.objSensors.Range(func(key, value interface{}) bool {
-		stats["objSensors"]++
-		return true
-	})
-
-	// Считаем objDi
-	db.objDi.Range(func(key, value interface{}) bool {
-		stats["objDi"]++
-		return true
-	})
-
-	// Считаем aliasIndex
-	db.aliasIndex.Range(func(key, value interface{}) bool {
-		if refs, ok := value.([]types.ObjectReference); ok {
-			stats["aliasIndex_unique"]++
-			stats["aliasIndex_total_refs"] += len(refs)
-		}
-		return true
-	})
-
-	return stats
-}
-
-// printMapStats выводит статистику
-func (db *Database) printMapStats() {
-	stats := db.getMapStats()
-	log.Println("=== Database Map Statistics ===")
-	for key, value := range stats {
-		log.Printf("  %s: %d", key, value)
-	}
-	log.Println("===============================")
-}
-
-func (db *Database) printSyncMapContents() {
-	log.Println("=== Database Sync.Map Contents ===")
-
-	// Выводим dbTags
-	log.Println("--- dbTags ---")
-	db.dbTags.Range(func(key, value interface{}) bool {
-		if tag, ok := value.(types.DatabaseTag); ok {
-			log.Printf("  %s: {Enable: %t, Tag: %s, DataType: %s}",
-				key, tag.Enable, tag.Tag, tag.DataType)
-		} else {
-			log.Printf("  %s: [INVALID TYPE]", key)
-		}
-		return true
-	})
-
-	// Выводим objSensors
-	log.Println("--- objSensors ---")
-	db.objSensors.Range(func(key, value interface{}) bool {
-		if obj, ok := value.(types.ObjectConfig); ok {
-			log.Printf("  %s: {Tag: %s, Name: %s}",
-				key, obj.Info.Tag, obj.Info.Name)
-		} else {
-			log.Printf("  %s: [INVALID TYPE]", key)
-		}
-		return true
-	})
-
-	// Выводим objDi
-	log.Println("--- objDi ---")
-	db.objDi.Range(func(key, value interface{}) bool {
-		if obj, ok := value.(types.ObjectConfig); ok {
-			log.Printf("  %s: {Tag: %s, Name: %s}",
-				key, obj.Info.Tag, obj.Info.Name)
-		} else {
-			log.Printf("  %s: [INVALID TYPE]", key)
-		}
-		return true
-	})
-
-	// Выводим aliasIndex
-	log.Println("--- aliasIndex ---")
-	db.aliasIndex.Range(func(key, value interface{}) bool {
-		if refs, ok := value.([]types.ObjectReference); ok {
-			log.Printf("  Алиас '%s':", key)
-			for i, ref := range refs {
-				log.Printf("    %d. Type: %s, Key: %s", i+1, ref.ObjectType, ref.ObjectKey)
-			}
-		} else {
-			log.Printf("  %s: [INVALID TYPE]", key)
-		}
-		return true
-	})
-
-	log.Println("=== End of Contents ===")
-}
-
-func (db *Database) findAlias(alias string) {
-	refsInterface, exists := db.aliasIndex.Load(alias)
-	if !exists {
-		log.Printf("Алиас '%s' не найден", alias)
-		return
-	}
-
-	refs, ok := refsInterface.([]types.ObjectReference)
-	if !ok {
-		log.Printf("Алиас '%s': неверный тип данных", alias)
-		return
-	}
-
-	log.Printf("Алиас '%s' найден, ссылается на %d объектов:", alias, len(refs))
-	for i, ref := range refs {
-		log.Printf("  %d. Type: %s, Key: %s", i+1, ref.ObjectType, ref.ObjectKey)
-
-		// Дополнительная информация об объекте
-		switch ref.ObjectType {
-		case "sensor":
-			if objInterface, exists := db.objSensors.Load(ref.ObjectKey); exists {
-				if obj, ok := objInterface.(types.ObjectConfig); ok {
-					log.Printf("     Object: %s (%s)", obj.Info.Name, obj.Info.Tag)
-				}
-			}
-		case "di":
-			if objInterface, exists := db.objDi.Load(ref.ObjectKey); exists {
-				if obj, ok := objInterface.(types.ObjectConfig); ok {
-					log.Printf("     Object: %s (%s)", obj.Info.Name, obj.Info.Tag)
-				}
-			}
-		}
-	}
-}
-*/

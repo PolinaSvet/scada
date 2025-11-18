@@ -188,7 +188,7 @@ func generateTestData(outputChan chan<- types.Message) {
 				Tag:       fmt.Sprintf("sensor_%d", i),
 				Alias:     fmt.Sprintf("alias_sensor_%d", i), //i%2 i
 				Value:     rand.Intn(100000),                 //float64(i) * 10.0,
-				Quality:   types.QualityGood,
+				Quality:   rand.Intn(100),
 				Timestamp: time.Now(),
 				DataType:  types.DataTypeFLOAT32,
 			}

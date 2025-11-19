@@ -68,7 +68,7 @@ func (db *Database) updateTrendData(alias string, tagValue types.TagValue) {
 		IdObj:   trendInfo.ID,
 		Value:   floatValue,
 		Quality: tagValue.Quality,
-		Dt:      tagValue.Timestamp.UTC().UnixMilli(),
+		Dt:      time.Now().UTC().UnixMilli(),
 	}
 
 	// Сохраняем обновленные данные
@@ -141,6 +141,7 @@ func (db *Database) processAllTrends() {
 		batchSize = 1000
 	}
 
+	currentTime := time.Now().UTC().UnixMilli()
 	var trendBatch []types.TrendTag
 	count := 0
 
@@ -160,6 +161,9 @@ func (db *Database) processAllTrends() {
 		if !trendInfo.Enable {
 			return true
 		}
+
+		// Обновляем время перед отправкой
+		trendInfo.Data.Dt = currentTime
 
 		// Добавляем в текущий батч
 		trendBatch = append(trendBatch, trendInfo.Data)

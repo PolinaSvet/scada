@@ -10,7 +10,7 @@ import (
 )
 
 // Ключ шифрования (в продакшене должен быть в env переменных)
-var encryptionKey = []byte("32-byte-long-key-1234567890123456")
+var encryptionKey = []byte("0123456789abcdef0123456789abcdef")
 
 // SetEncryptionKey устанавливает ключ шифрования
 func SetEncryptionKey(key string) error {

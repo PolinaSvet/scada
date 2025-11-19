@@ -27,7 +27,7 @@
       "host": "localhost",
       "port": 5432,
       "user": "postgres",
-      "password": "root",
+      "password": "enc:3WCpsgZUn9201cDdY0mjhnW+FPa9zAaGsjREb42OJ00=",
       "dbname": "dbTrend",
       "sslmode": "disable"
     },

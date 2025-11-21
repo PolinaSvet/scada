@@ -6,6 +6,9 @@
         <button class="control-btn" @click="refreshData" title="Обновить данные">
           🔄 Обновить
         </button>
+        <button class="control-btn" @click="refreshTrend" title="Обновить данные">
+          🔄 Trend
+        </button>
         <button class="control-btn" @click="showFilterDialog = true">
           🔍 Фильтры
         </button>
@@ -411,6 +414,19 @@ export default {
       objectsStore.sendCommand('alarms_system', 'command', 'alarms_get_data', commandData)
     }
 
+    const refreshTrend = () => {
+      const commandData = {
+        id_obj: 1,
+        dt_start: 1763530080349,
+        dt_end:   1763531754468,
+        type: 0,
+        limit: 100,
+        max_period_days: 30
+      }
+
+      objectsStore.sendCommand('alarms_system', 'command', 'trends_get_data', commandData)
+    }
+
     const toggleTableHeader = () => {
       showTableHeader.value = !showTableHeader.value
     }
@@ -546,6 +562,7 @@ export default {
       cancelFilters,
       clearAllFilters,
       getRowStyle,
+      refreshTrend,
       getCommandData
     }
   }

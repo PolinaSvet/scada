@@ -95,7 +95,7 @@ func (tp *TrendProcessor) ProcessBatch(ctx context.Context, data []byte) error {
 		batchSize = 1000
 	}
 
-	log.Println(len(trends), trends)
+	//log.Println(len(trends), trends)
 
 	totalInserted := 0
 	for i := 0; i < len(trends); i += batchSize {
@@ -113,7 +113,7 @@ func (tp *TrendProcessor) ProcessBatch(ctx context.Context, data []byte) error {
 		totalInserted += result.Inserted
 	}
 
-	log.Printf("trend batch processing completed: %d total records inserted", totalInserted)
+	//log.Printf("trend batch processing completed: %d total records inserted", totalInserted)
 	return nil
 }
 

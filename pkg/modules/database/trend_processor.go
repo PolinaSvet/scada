@@ -1,7 +1,6 @@
 package database
 
 import (
-	"log"
 	"server-system/pkg/types"
 	"time"
 )
@@ -183,5 +182,5 @@ func (db *Database) processAllTrends() {
 		db.sendTrendToBatch(trendBatch)
 	}
 
-	log.Printf("Processed %d trend tags in batches of %d", count, batchSize)
+	//log.Printf("Processed %d trend tags in batches of %d", count, batchSize)
 }

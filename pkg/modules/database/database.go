@@ -225,7 +225,7 @@ func (db *Database) processMessages() {
 
 			go func(m types.Message) {
 
-				//log.Printf("xxx: %+v", m)
+				log.Printf("xxx: %+v", m)
 				switch m.Source {
 				case "sendCommand":
 					objects.CommandExecute(m)

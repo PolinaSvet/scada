@@ -1,53 +1,32 @@
 // stores/objects.js
 import { defineStore } from 'pinia'
-import { decode, encode } from '@msgpack/msgpack'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { decode } from '@msgpack/msgpack'
 import { addToAlarmStore } from '@/stores/alarmStore.js'
 import { addMessHistBatch, clearAlarmHistStore } from '@/stores/alarmStoreHist.js'
+import { addTrendsHistBatch, clearTrendsHistStore } from '@/stores/trendStoreHist.js'
 
 export const useObjectsStore = defineStore('objects', () => {
-  // === WebSocket Connections ===
-  const dataConnection = ref(null)
-  const controlConnection = ref(null)
-  const testConnection = ref(null)
-  
-  // === Connection Status ===
-  const connectionStatus = ref({
-    data: 'disconnected',
-    control: 'disconnected', 
-    test: 'disconnected'
-  })
-  
-  // === Objects State (ОСНОВНАЯ ЛОГИКА) ===
-  const objects = ref({}) // Все объекты: { [objectId]: objectData }
-  const activeControl = ref(null) // Активный объект для управления
-  const activeSubscriptions = ref(new Set()) // Подписки на обновления
-  const messagesReceived = ref(0)
-  const messagesSent = ref(0)
-  
-  // === Флаг инициализации (для совместимости) ===
-  const isWebSocketInitialized = ref(false)
-  
-  // === Test Data (просто для консоли) ===
+  // === Objects State ===
+  const objects = ref({})
+  const activeControl = ref(null)
+  const activeSubscriptions = ref(new Set())
   const testMessages = ref([])
   
-  // === Config ===
-  const config = ref({
-    dataPort: 8081,
-    controlPort: 8082,
-    testPort: 8083,
-    clientId: 'client_' + Math.random().toString(36).substr(2, 9),
-    userId: 'user',
-    clientType: 'vue_client'
+  // === Message Statistics ===
+  const messageStats = ref({
+    data_batch: 0,
+    mess_batch: 0,
+    alarms_set_data: 0,
+    trends_set_data: 0,
+    unknown_messages: 0,
+    sendCommand: 0
   })
 
+  // === Флаг инициализации ===
+  const isWebSocketInitialized = ref(false)
+
   // === Getters ===
-  const isConnected = computed(() => {
-    return connectionStatus.value.data === 'connected' && 
-           connectionStatus.value.control === 'connected'
-  })
-  
-  // ОБЪЕКТЫ ПО ПОДПИСКАМ (основной геттер для компонентов)
   const subscribedObjects = computed(() => {
     const result = {}
     activeSubscriptions.value.forEach(id => {
@@ -57,54 +36,16 @@ export const useObjectsStore = defineStore('objects', () => {
     })
     return result
   })
-  
-  // Последние тестовые сообщения (только для отладки)
+
   const recentTestMessages = computed(() => {
-    return testMessages.value.slice(0, 10)
+    return testMessages.value.slice(-10)
   })
 
-  // === WebSocket Connection ===
-  const connectWebSocket = (type) => {
-    const portMap = {
-      data: config.value.dataPort,
-      control: config.value.controlPort,
-      test: config.value.testPort
-    }
-    
-    const url = `ws://localhost:${portMap[type]}/ws?clientId=${config.value.clientId}&userId=${config.value.userId}&type=${config.value.clientType}`
-    
-    const connection = new WebSocket(url)
-    connection.binaryType = 'arraybuffer'
-    
-    connection.onopen = () => {
-      connectionStatus.value[type] = 'connected'
-      console.log(`✅ ${type} WebSocket connected`)
-      
-      if (type === 'data') dataConnection.value = connection
-      else if (type === 'control') controlConnection.value = connection
-      else if (type === 'test') testConnection.value = connection
-    }
-    
-    connection.onmessage = (event) => {
-      handleMessage(type, event.data)
-    }
-    
-    connection.onclose = () => {
-      connectionStatus.value[type] = 'disconnected'
-      console.log(`❌ ${type} WebSocket disconnected`)
-    }
-    
-    connection.onerror = (error) => {
-      connectionStatus.value[type] = 'error'
-      console.error(`❌ ${type} WebSocket error:`, error)
-    }
-  }
-  
   // === Message Handling ===
-  const handleMessage = async (type, data) => {
+  const handleWebSocketMessage = async (event) => {
+    const { type, data } = event.detail
+    
     try {
-      messagesReceived.value++
-      
       let message
       if (typeof data === 'string') {
         message = JSON.parse(data)
@@ -114,110 +55,65 @@ export const useObjectsStore = defineStore('objects', () => {
       }
       
       processDecodedMessage(type, message)
-      //console.log('XXXXXXXXX',type, message)
       
     } catch (error) {
       console.error('❌ Error processing message:', error)
+      messageStats.value.unknown_messages++
     }
   }
-  
-  // === ОСНОВНАЯ ЛОГИКА ОБРАБОТКИ СООБЩЕНИЙ ===
+
+  // === Main Message Processing Logic ===
   const processDecodedMessage = (type, message) => {
     switch (type) {
       case 'data':
-        // ДАННЫЕ ОБЪЕКТОВ - основная логика
         if (message.type === 'data_batch' || message.type === 'updateObjectsBatch') {
           const objectsArray = message.data
-         
           if (Array.isArray(objectsArray)) {
             updateObjectsBatch(objectsArray)
-            //console.log(`📦 Received ${objectsArray.length} objects, subscriptions: ${activeSubscriptions.value.size}`)
+            messageStats.value.data_batch++
           }
         }
         break
       
       case 'test':
-          // ДАННЫЕ ОБЪЕКТОВ - основная логика
-          if (message.type === 'mess_batch' ) {
-            const objectsArray = message.data
-  
-            //console.log('mess_batch',objectsArray)
-            
-            if (Array.isArray(objectsArray)) {
-              updateMessBatch(objectsArray)
-              //console.log(`📦 mess_batch ${objectsArray.length}`)
-            }
+        if (message.type === 'mess_batch') {
+          const objectsArray = message.data
+          if (Array.isArray(objectsArray)) {
+            updateMessBatch(objectsArray)
+            messageStats.value.mess_batch++
           }
-
-          if (message.type === 'alarms_set_data' ) {
-            const objectsArray = message.data
-            console.log('alarms_set_data',message.data)
-            if (Array.isArray(objectsArray)) {
-              console.log(`📦 mess_hist ${objectsArray.length}`)
-              updateMessHistBatch(objectsArray)
-            }else{
-              clearAlarmHistStore()
-            }
+        }
+        else if (message.type === 'alarms_set_data') {
+          const objectsArray = message.data
+          if (Array.isArray(objectsArray)) {
+            updateMessHistBatch(objectsArray)
+            messageStats.value.alarms_set_data++
+          } else {
+            clearAlarmHistStore()
           }
-          break  
+        }
+        else if (message.type === 'trends_set_data') {
+          const objectsArray = message.data
+          if (Array.isArray(objectsArray)) {
+            updateTrendsHistBatch(objectsArray)
+            messageStats.value.trends_set_data++
+          } else {
+            clearTrendsHistStore()
+          }
+        }
+        break
         
       case 'control':
-        // ОТВЕТЫ НА КОМАНДЫ - логируем
         console.log('🎛️ Control response:', message)
         break
         
       default:
         console.log('❓ Unknown message type:', type, message)
+        messageStats.value.unknown_messages++
     }
   }
 
-  // === ИНИЦИАЛИЗАЦИЯ WebSocket (для совместимости) ===
-  const initializeWebSocket = async () => {
-    // Если WebSocket уже инициализирован, не делаем повторную инициализацию
-    if (isWebSocketInitialized.value) {
-      console.log('🔌 WebSocket already initialized')
-      return true
-    }
-
-    try {
-      console.log('🔌 Initializing WebSocket...')
-      connectAll()
-      isWebSocketInitialized.value = true
-      console.log('✅ WebSocket initialized successfully')
-      return true
-    } catch (error) {
-      console.error('❌ Failed to initialize WebSocket:', error)
-      return false
-    }
-  }
-
-  // Отключение WebSocket (вызывать при закрытии приложения)
-  const disconnectWebSocket = () => {
-    if (isWebSocketInitialized.value) {
-      disconnectAll()
-      isWebSocketInitialized.value = false
-      activeSubscriptions.value.clear()
-      console.log('🔌 WebSocket disconnected')
-    }
-  }
-
-  // === ОСНОВНЫЕ МЕТОДЫ ДЛЯ РАБОТЫ С СООБЩЕНИЯМИ ===
-
-  // Обновление объектов (сообщения)
-  const updateMessBatch = (objectsArray) => {
-      objectsArray.forEach(obj => {
-        addToAlarmStore(obj)
-      })
-  }
-
-  // Обновление объектов (исторические сообщения)
-  const updateMessHistBatch = (objectsArray) => {
-    addMessHistBatch(objectsArray)
-  } 
-
-  // === ОСНОВНЫЕ МЕТОДЫ ДЛЯ РАБОТЫ С ОБЪЕКТАМИ ===
-  
-  // Обновление объектов (фильтруем по подпискам)
+  // === Object Management Methods ===
   const updateObjectsBatch = (objectsArray) => {
     const updatedObjects = { ...objects.value }
     let updatedCount = 0
@@ -238,7 +134,21 @@ export const useObjectsStore = defineStore('objects', () => {
     }
   }
 
-  // ПОДПИСКИ (основная функциональность)
+  const updateMessBatch = (objectsArray) => {
+    objectsArray.forEach(obj => {
+      addToAlarmStore(obj)
+    })
+  }
+
+  const updateMessHistBatch = (objectsArray) => {
+    addMessHistBatch(objectsArray)
+  }
+
+  const updateTrendsHistBatch = (objectsArray) => {
+    addTrendsHistBatch(objectsArray)
+  }
+
+  // === Subscription Management ===
   const subscribe = (objectId) => {
     if (!activeSubscriptions.value.has(objectId)) {
       activeSubscriptions.value.add(objectId)
@@ -273,7 +183,7 @@ export const useObjectsStore = defineStore('objects', () => {
     console.log(`🗑️ Cleared all subscriptions: ${count}`)
   }
 
-  // УПРАВЛЕНИЕ ОБЪЕКТАМИ
+  // === Control Management ===
   const openControl = (objectId) => {
     const obj = objects.value[objectId]
     if (obj?.objInfo?.ctrlEnable) {
@@ -289,159 +199,118 @@ export const useObjectsStore = defineStore('objects', () => {
     console.log('🎮 Control closed')
   }
 
-  // Функция для кодирования сообщения
-  const encodeMessage = (type, data, source) => {
-
-    //const serializedData = JSON.stringify(data)
-    const serializedData = data
-
-    const message = {
-      id: generateMessageId(), // Нужно реализовать генерацию ID
-      type: type,
-      data: serializedData,
-      init_dt: new Date().toISOString(),
-      update_dt: new Date().toISOString(),
-      source: source,
-      clientId: config.value.clientId
+  // === ИНИЦИАЛИЗАЦИЯ WebSocket (остается здесь) ===
+  const initializeWebSocket = async () => {
+    if (isWebSocketInitialized.value) {
+      console.log('🔌 WebSocket already initialized')
+      return true
     }
-    return message
-  }
 
-  // Генерация ID сообщения
-  const generateMessageId = () => {
-    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-  }
-
-  // ОТПРАВКА КОМАНД (через control WebSocket)
-  const sendCommand = async (objectId, command,command_source, data = {}) => {
-    if (connectionStatus.value.control !== 'connected') {
-      console.error('❌ Control WebSocket not connected')
-      return { success: false, error: 'Control channel not connected' }
-    }
-    
-    const commandMessage = {
-      command: command,
-      objectId: objectId,
-      clientId: config.value.clientId,
-      userId: config.value.userId,
-      data: data,
-      time: new Date().toISOString()
-    }
-    
     try {
+      console.log('🔌 Initializing WebSocket...')
+      
+      // Импортируем websocket store динамически чтобы избежать циклических зависимостей
+      const { useWebSocketStore } = await import('@/stores/websocketConnection')
+      const websocketStore = useWebSocketStore()
+      
+      websocketStore.connectAll()
+      isWebSocketInitialized.value = true
+      
+      // Настраиваем обработчики сообщений
+      setupEventListeners()
+      
+      console.log('✅ WebSocket initialized successfully')
+      return true
+    } catch (error) {
+      console.error('❌ Failed to initialize WebSocket:', error)
+      return false
+    }
+  }
 
-      // Упаковываем в структуру Message
-      const message = encodeMessage(command, commandMessage,command_source)
+  // Отключение WebSocket
+  const disconnectWebSocket = () => {
+    if (isWebSocketInitialized.value) {
+      // Импортируем websocket store динамически
+      import('@/stores/websocketConnection').then(({ useWebSocketStore }) => {
+        const websocketStore = useWebSocketStore()
+        websocketStore.disconnectAll()
+      })
+      
+      isWebSocketInitialized.value = false
+      activeSubscriptions.value.clear()
+      removeEventListeners()
+      console.log('🔌 WebSocket disconnected')
+    }
+  }
 
-      const encodedMessage = encode(message)
-      controlConnection.value.send(encodedMessage)
-      messagesSent.value++
-      console.log(`📤 Command sent: ${command} to ${objectId}`, message)
-      return { success: true }
+  // === Event Listener Setup ===
+  const setupEventListeners = () => {
+    window.addEventListener('websocketMessage', handleWebSocketMessage)
+  }
+
+  const removeEventListeners = () => {
+    window.removeEventListener('websocketMessage', handleWebSocketMessage)
+  }
+
+  // === Send Command (использует websocket store) ===
+  const sendCommand = async (objectId, command, command_source, data = {}) => {
+    try {
+      const { useWebSocketStore } = await import('@/stores/websocketConnection')
+      const websocketStore = useWebSocketStore()
+      
+      return await websocketStore.sendCommand(objectId, command, command_source, data)
     } catch (error) {
       console.error('❌ Error sending command:', error)
       return { success: false, error: error.message }
     }
   }
 
-  // УПРАВЛЕНИЕ СОЕДИНЕНИЕМ
-  const connectAll = () => {
-    console.log('🔌 Connecting all WebSockets...')
-    connectWebSocket('data')
-    connectWebSocket('control')
-    connectWebSocket('test')
+  // === Send Message from HMI ===
+  const sendMessageFromHMI = async (MessName, MessState, Color) => {
+    try {
+      const { useWebSocketStore } = await import('@/stores/websocketConnection')
+      const websocketStore = useWebSocketStore()
+      
+      return await websocketStore.sendMessageFromHMI(MessName, MessState, Color)
+    } catch (error) {
+      console.error('❌ Error sending HMI message:', error)
+      return { success: false, error: error.message }
+    }
   }
 
-  const disconnectAll = () => {
-    const connections = [
-      dataConnection.value,
-      controlConnection.value,
-      testConnection.value
-    ]
-    
-    connections.forEach(conn => {
-      if (conn && conn.readyState === WebSocket.OPEN) {
-        conn.close()
-      }
-    })
-    
-    dataConnection.value = null
-    controlConnection.value = null
-    testConnection.value = null
-    
-    Object.keys(connectionStatus.value).forEach(key => {
-      connectionStatus.value[key] = 'disconnected'
-    })
-    
-    console.log('🔌 All WebSockets disconnected')
-  }
-
-  const updateConfig = (newConfig) => {
-    config.value = { ...config.value, ...newConfig }
-  }
-
-  // Очистка при уничтожении компонента
+  // Очистка
   const cleanup = () => {
     disconnectWebSocket()
   }
+
+  // Автоматическая настройка обработчиков при создании store
+  setupEventListeners()
 
   return {
     // State
     objects,
     activeControl,
     activeSubscriptions,
-    connectionStatus,
     testMessages,
-    config,
-    messagesReceived,
-    messagesSent,
-    isWebSocketInitialized, // ← ДОБАВЛЕНО для совместимости
+    messageStats,
+    isWebSocketInitialized,
     
-    // Getters  
-    isConnected,
-    subscribedObjects, // ОСНОВНОЙ - объекты по подпискам
+    // Getters
+    subscribedObjects,
     recentTestMessages,
     
     // Actions
-    // Инициализация (для совместимости)
     initializeWebSocket,
     disconnectWebSocket,
-    
-    // Подписки
     subscribe,
     unsubscribe,
     subscribeMultiple,
     unsubscribeMultiple,
     clearAllSubscriptions,
-    
-    // Управление
     openControl,
     closeControl,
     sendCommand,
-    
-    // Соединение
-    connectAll,
-    disconnectAll,
-    updateConfig,
+    sendMessageFromHMI,
     cleanup
   }
 })
-
-/*
-// В компоненте - ВСЕ РАБОТАЕТ КАК РАНЬШЕ
-import { useObjectsStore } from '@/stores/objects'
-
-const objectsStore = useObjectsStore()
-
-// Старый код работает:
-onMounted(async () => {
-  // Инициализация как раньше
-  await objectsStore.initializeWebSocket()
-  objectsStore.subscribe(props.id)
-})
-
-// Геттеры работают:
-const objData = objectsStore.objects[props.id] // прямой доступ к objects
-// или
-const objData = objectsStore.subscribedObjects[props.id] // через подписки
-*/

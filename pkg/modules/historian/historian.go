@@ -207,7 +207,7 @@ func (hist *Historian) processMessage(ctx context.Context, msg types.Message) {
 		}
 
 	case "trends_batch":
-		log.Println("trends_batch received: ", msg.UpdateDT)
+		//log.Println("trends_batch received: ", msg.UpdateDT)
 		if hist.trendProcessor != nil {
 			if err := hist.trendProcessor.ProcessBatch(ctx, msg.Data); err != nil {
 				hist.sendMessError("failed to process trend batch: %v", err)

@@ -6,6 +6,7 @@ import ScreenSensors2 from '@/components/screens/ScreenSensors2.vue'
 import ScreenSensors3 from '@/components/screens/ScreenSensors3.vue'
 import ScreenAlarms from '@/components/screens/ScreenAlarms.vue'
 import ScreenAlarmsHist from '@/components/screens/ScreenAlarmsHist.vue'
+import ScreenTrendsHist from '@/components/screens/ScreenTrendsHist.vue'
 
 // Импорты SVG
 import MnemoMain from '@/assets/svg/screens/MnemoMain.svg?raw'
@@ -63,6 +64,13 @@ export const SCREENS_CONFIG = {
     icon: '📋',
     title: 'ЖУРНАЛ ИСТОРИЧЕСКИХ СОБЫТИЙ',
     component: ScreenAlarmsHist
+  },
+  trendsHist: {
+    id: 'trendsHist',
+    label: 'ТРЕНДЫ',
+    icon: '📊',
+    title: 'ТРЕНДЫ',
+    component: ScreenTrendsHist
   }
 }
 

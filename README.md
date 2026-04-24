@@ -101,6 +101,42 @@
 
 ## 🏗️ Архитектура системы
 
+```mermaid
+flowchart TB
+    subgraph PLC["🏭 ВНЕШНЕЕ ОБОРУДОВАНИЕ"]
+        direction LR
+        PLK1["ПЛК-1"]
+        PLKn["ПЛК-n"]
+    end
+
+    Protocols["📡 Промышленные протоколы<br>Modbus TCP / OPC DA / OPC UA"]
+
+    subgraph Backend["⚙️ SCADA: СЕРВЕРНАЯ ЧАСТЬ (Golang)"]
+        direction TB
+        Core["🧠 CORE (ЯДРО)<br>• Управление модулями<br>• Каналы обмена<br>• Буферизация данных"]
+        
+        subgraph Modules["Модули"]
+            direction LR
+            Database["💾 DATABASE<br>• Обработка<br>• Объекты<br>• Логика"]
+            Historian["🗄️ HISTORIAN<br>• PostgreSQL<br>• Алармы<br>• Тренды"]
+            VueWay["🔌 VUEWAY<br>• WebSocket<br>• 3 порта<br>• Команды"]
+        end
+    end
+
+    WebSocket["🌐 WebSocket (WSS)<br>:8081 | :8082 | :8083"]
+
+    subgraph Frontend["🎨 SCADA: ВИЗУАЛИЗАЦИЯ (Vue.js)"]
+        HMI["🖥️ HMI ИНТЕРФЕЙС<br>Мнемокадры | Алармы | Тренды | Управление | Диагностика"]
+    end
+
+    %% Связи
+    PLC --> Protocols --> Backend
+    Core --> Modules
+    Database <--> Historian
+    Database <--> VueWay
+    Backend --> WebSocket --> Frontend
+```
+
 <pre style="font-family: 'Courier New', Courier, monospace; font-size: 12px; line-height: 1.2; background: #f5f5f5; padding: 15px; border-radius: 8px; overflow-x: auto;">
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              ВНЕШНЕЕ ОБОРУДОВАНИЕ                           │

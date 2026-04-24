@@ -564,7 +564,8 @@ ON sinkross_trend_{partition} (tag, dt);
 
 ```bash
 # Создание базы данных
-psql -U postgres -c "CREATE DATABASE scada;"
+psql -U postgres -c "CREATE DATABASE dbScada;"
+psql -U postgres -c "CREATE DATABASE dbTrend;"
 
 # Выполнение скриптов
 psql -U postgres -d scada -f server-system/doc/sql/scada_alarm_001.sql

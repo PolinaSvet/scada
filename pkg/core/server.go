@@ -50,6 +50,8 @@ func DataInit() {
 
 	go generateTestData(chanGenToDbs)
 
+	fmt.Println(config)
+
 	// 4. Запуск database модуля
 	dbsInit := database.DatabaseInit{
 		Ctx:            ctx,

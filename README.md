@@ -1,45 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<style>
-    body {
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 14px;
-        line-height: 1.5;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-    pre, code {
-        font-family: 'Courier New', Courier, monospace;
-        background-color: #f5f5f5;
-        padding: 2px 4px;
-        border-radius: 4px;
-    }
-    pre {
-        padding: 12px;
-        overflow-x: auto;
-    }
-    table {
-        border-collapse: collapse;
-        width: 100%;
-    }
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
-    th {
-        background-color: #f2f2f2;
-    }
-    h1, h2, h3, h4, h5, h6 {
-        font-family: 'Courier New', Courier, monospace;
-    }
-</style>
-</head>
-<body>
-
 # OpenSCADA Go+Vue
 
 ![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white)
@@ -76,26 +34,26 @@
         <tbody>
             <tr>
                 <td style="border: 1px solid #ddd; padding: 15px; vertical-align: top;">
-                    <b>Экран 1</b><br>
+                    <b>Экран 1: ОСНОВНОЙ ЭКРАН</b><br>
                     <img src="doc/img/01.PNG" width="100%" style="max-width: 300px; border-radius: 8px; margin-top: 10px;">
-                    <br><small>ОСНОВНОЙ ЭКРАН</small>
+                    <br>
                 </td>
                 <td style="border: 1px solid #ddd; padding: 15px; vertical-align: top;">
-                    <b>Экран 2</b><br>
+                    <b>Экран 2: МЕСТНАЯ ОПЕРАТОРНАЯ (023)</b><br>
                     <img src="doc/img/02.PNG" width="100%" style="max-width: 300px; border-radius: 8px; margin-top: 10px;">
-                    <br><small>МЕСТНАЯ ОПЕРАТОРНАЯ (023)</small>
+                    <br>
                 </td>
             </tr>
             <tr>
                 <td style="border: 1px solid #ddd; padding: 15px; vertical-align: top;">
-                    <b>Экран 3</b><br>
+                    <b>Экран 3: СКЛАДСКОЙ КОМПЛЕКС (101)</b><br>
                     <img src="doc/img/03.PNG" width="100%" style="max-width: 300px; border-radius: 8px; margin-top: 10px;">
-                    <br><small>СКЛАДСКОЙ КОМПЛЕКС (101)</small>
+                    <br>
                 </td>
                 <td style="border: 1px solid #ddd; padding: 15px; vertical-align: top;">
-                    <b>Экран 4</b><br>
+                    <b>Экран 4: СКЛАДСКОЙ КОМПЛЕКС (102)</b><br>
                     <img src="doc/img/04.PNG" width="100%" style="max-width: 300px; border-radius: 8px; margin-top: 10px;">
-                    <br><small>СКЛАДСКОЙ КОМПЛЕКС (102)</small>
+                    <br>
                 </td>
             </tr>
             <tr>
@@ -435,7 +393,7 @@ ON sinkross_histmess(code, dt);
 
 | Порт | Назначение |
 |------|------------|
-| `8081` | Обмен объектными моделями (данные датчиков, алармов, трендов) |
+| `8081` | Обмен объектными моделями (данные датчиков, ...) |
 | `8082` | Передача управляющих команд (включить/выключить, изменить уставку) |
 | `8083` | Получение исторических данных (алармы, тренды) |
 
@@ -709,7 +667,7 @@ npm run build
 
 ## 📄 Лицензия
 
-MIT License. Подробнее в файле [LICENSE](LICENSE).
+MIT License.
 
 
 
@@ -722,5 +680,3 @@ MIT License. Подробнее в файле [LICENSE](LICENSE).
 
 *Система находится в активной разработке.*
 
-</body>
-</html>

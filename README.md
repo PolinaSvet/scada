@@ -58,38 +58,38 @@
             </tr>
             <tr>
                 <td style="border: 1px solid #ddd; padding: 15px; vertical-align: top;">
-                    <b>Экран 5</b><br>
+                    <b>Экран 5: СОБЫТИЯ СИСТЕМЫ</b><br>
                     <img src="doc/img/05.PNG" width="100%" style="max-width: 300px; border-radius: 8px; margin-top: 10px;">
-                    <br><small>СОБЫТИЯ СИСТЕМЫ</small>
+                    <br>
                 </td>
                 <td style="border: 1px solid #ddd; padding: 15px; vertical-align: top;">
-                    <b>Экран 6</b><br>
+                    <b>Экран 6: СОБЫТИЯ СИСТЕМЫ</b><br>
                     <img src="doc/img/06.PNG" width="100%" style="max-width: 300px; border-radius: 8px; margin-top: 10px;">
-                    <br><small>СОБЫТИЯ СИСТЕМЫ</small>
+                    <br>
                 </td>
             </tr>
             <tr>
                 <td style="border: 1px solid #ddd; padding: 15px; vertical-align: top;">
-                    <b>Экран 7</b><br>
+                    <b>Экран 7: ЖУРНАЛ ИСТОРИЧЕСКИХ СОБЫТИЙ</b><br>
                     <img src="doc/img/07.PNG" width="100%" style="max-width: 300px; border-radius: 8px; margin-top: 10px;">
-                    <br><small>ЖУРНАЛ ИСТОРИЧЕСКИХ СОБЫТИЙ</small>
+                    <br>
                 </td>
                 <td style="border: 1px solid #ddd; padding: 15px; vertical-align: top;">
-                    <b>Экран 8</b><br>
+                    <b>Экран 8: ТРЕНДЫ</b><br>
                     <img src="doc/img/08.PNG" width="100%" style="max-width: 300px; border-radius: 8px; margin-top: 10px;">
-                    <br><small>ТРЕНДЫ</small>
+                    <br>
                 </td>
             </tr>
             <tr>
                 <td style="border: 1px solid #ddd; padding: 15px; vertical-align: top;">
-                    <b>Экран 9</b><br>
+                    <b>Экран 9: ОКНО УПРАВЛЕНИЯ</b><br>
                     <img src="doc/img/09.PNG" width="100%" style="max-width: 300px; border-radius: 8px; margin-top: 10px;">
-                    <br><small>ОКНО УПРАВЛЕНИЯ</small>
+                    <br>
                 </td>
                 <td style="border: 1px solid #ddd; padding: 15px; vertical-align: top;">
-                    <b>Экран 10</b><br>
+                    <b>Экран 10: ОКНО ПОДТВЕРЖДЕНИЯ КОМАНДЫ</b><br>
                     <img src="doc/img/10.PNG" width="100%" style="max-width: 300px; border-radius: 8px; margin-top: 10px;">
-                    <br><small>ОКНО ПОДТВЕРЖДЕНИЯ КОМАНДЫ</small>
+                    <br>
                 </td>
             </tr>
         </tbody>
@@ -101,7 +101,7 @@
 
 ## 🏗️ Архитектура системы
 
-```
+<pre style="font-family: 'Courier New', Courier, monospace; font-size: 12px; line-height: 1.2; background: #f5f5f5; padding: 15px; border-radius: 8px; overflow-x: auto;">
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              ВНЕШНЕЕ ОБОРУДОВАНИЕ                           │
 │                                                                             │
@@ -160,7 +160,7 @@
 │   └─────────────────────────────────────────────────────────────────────┘   │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
-```
+</pre>
 
 ---
 
